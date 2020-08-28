@@ -1,0 +1,17 @@
+@import '~@angular/material/theming';
+
+@import '_colors';
+
+// Common styles for Angular Material. Should only be included one time.
+@include mat-core();
+
+// Angular material theme colors.
+$argho-app-web-theme: mat-light-theme((
+  color: (
+    primary: $palette-primary,
+    accent: $palette-secondary,
+    warn: $palette-warn,
+  )
+));
+
+@include angular-material-theme($argho-app-web-theme);
