@@ -1,0 +1,12 @@
+@import '_colors';
+@import '_fonts';
+
+.mat-toolbar.mat-primary {
+  color: $color-text;
+}
+
+.toolbar-title {
+  font-family: $font-title;
+  font-size: 1.5rem;
+  margin-left: 1em;
+}

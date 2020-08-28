@@ -9,9 +9,9 @@ describe('workspace-project App', () => {
     page = new AppPage();
   });
 
-  it('should display welcome message', () => {
+  it('should display Argho Tuning as toolbar title', () => {
     page.navigateTo();
-    expect(page.getTitleText()).toEqual('argho-app-web app is running!');
+    expect(page.getToolbarTitle()).toEqual('Argho Tuning');
   });
 
   afterEach(async () => {

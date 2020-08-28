@@ -1,2 +1,12 @@
-<h1>Argho Tuning</h1>
-<p>Small remaining TODO: Implement web application.</p>
+<div class="page-shell">
+  <app-toolbar (menuClick)="sidenav.toggle()"></app-toolbar>
+  <mat-sidenav-container class="page-main">
+    <mat-sidenav #sidenav>
+      <app-sidenav></app-sidenav>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="page-content">
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

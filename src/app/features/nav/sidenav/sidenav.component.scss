@@ -1,0 +1,16 @@
+@import '_colors';
+
+mat-nav-list {
+  color: $color-text-secondary;
+}
+
+fa-icon {
+  color: $color-icon-secondary;
+  margin-right: 1em;
+  text-align: center;
+  width: 1.5em;
+}
+
+.link-text {
+  margin-right: 1em;
+}

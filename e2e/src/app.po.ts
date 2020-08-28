@@ -5,8 +5,8 @@ export class AppPage {
     return browser.get(browser.baseUrl) as Promise<unknown>;
   }
 
-  getTitleText(): Promise<string> {
-    const el = element(by.css('app-root .content span'));
+  getToolbarTitle(): Promise<string> {
+    const el = element(by.css('app-root .toolbar-title'));
     return el.getText() as Promise<string>;
   }
 }

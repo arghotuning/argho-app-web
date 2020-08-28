@@ -1,0 +1,14 @@
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.page-main {
+  flex-grow: 1;
+}
+
+.page-content {
+  display: flex;
+  flex-direction: column;
+}

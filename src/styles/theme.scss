@@ -1,9 +1,15 @@
 @import '~@angular/material/theming';
 
 @import '_colors';
+@import '_fonts';
+
+// Custom typography.
+$argho-typography: mat-typography-config(
+  $font-family: $font-body,
+);
 
 // Common styles for Angular Material. Should only be included one time.
-@include mat-core();
+@include mat-core($argho-typography);
 
 // Angular material theme colors.
 $argho-app-web-theme: mat-light-theme((
