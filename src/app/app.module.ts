@@ -3,6 +3,7 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
+import {EditorModule} from './features/editor/editor.module';
 import {NavModule} from './features/nav/nav.module';
 import {SimplePagesModule} from './features/simple-pages/simple-pages.module';
 import {UiInfraModule} from './infra/ui/ui.module';
@@ -12,6 +13,7 @@ import {UiInfraModule} from './infra/ui/ui.module';
   imports: [
     AppRoutingModule,
     BrowserModule,
+    EditorModule,
     NavModule,
     SimplePagesModule,
     UiInfraModule,

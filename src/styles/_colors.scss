@@ -1,6 +1,6 @@
 @import '~@angular/material/theming';
 
-$palette-primary: mat-palette($mat-teal, 500);
+$palette-primary: mat-palette($mat-teal, 600);
 $palette-secondary: mat-palette($mat-deep-purple, 700);
 $palette-warn: mat-palette($mat-red);
 
@@ -8,7 +8,7 @@ $color-link: mat-color($palette-secondary, 500);
 $color-link-visited: mat-color($palette-secondary, 500);
 $color-link-active: mat-color($palette-secondary, 300);
 
-$color-bg: #fcfefe;
+$color-bg: #fdffff;
 $color-text: #111;
 
 $color-text-secondary: #212121;
