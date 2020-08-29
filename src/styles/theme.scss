@@ -3,9 +3,18 @@
 @import '_colors';
 @import '_fonts';
 
-// Custom typography.
+// Custom typography; use a different font for headings.
+// Size and letter spacing values taken from @angular/material/theming.
 $argho-typography: mat-typography-config(
-  $font-family: $font-body,
+  $font-family:  $font-body,
+  $display-4:    mat-typography-level(112px, 112px, 500, $font-family: $font-title, $letter-spacing: -0.05em),
+  $display-3:    mat-typography-level(56px, 56px, 500, $font-family: $font-title, $letter-spacing: -0.02em),
+  $display-2:    mat-typography-level(45px, 48px, 500, $font-family: $font-title, $letter-spacing: -0.005em),
+  $display-1:    mat-typography-level(34px, 40px, 500, $font-family: $font-title),
+  $headline:     mat-typography-level(24px, 32px, 500, $font-family: $font-title),
+  $title:        mat-typography-level(20px, 32px, 500, $font-family: $font-title),
+  $subheading-2: mat-typography-level(16px, 28px, 500, $font-family: $font-title),
+  $subheading-1: mat-typography-level(15px, 24px, 500, $font-family: $font-title),
 );
 
 // Common styles for Angular Material. Should only be included one time.

@@ -11,4 +11,15 @@
 .page-content {
   display: flex;
   flex-direction: column;
+  max-width: 860px;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 1em;
+}
+
+@media (min-width: 720px) {
+  .page-content {
+    padding-left: 2em;
+    padding-right: 2em;
+  }
 }
