@@ -4,6 +4,7 @@
 .toolbar-logo {
   margin-left: 0.5em;
   height: 1.75em;
+  vertical-align: middle;
   width: 1.75em;
 }
 
@@ -11,4 +12,9 @@
   color: $color-text;
   font-family: $font-title;
   font-size: 1.5rem;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
