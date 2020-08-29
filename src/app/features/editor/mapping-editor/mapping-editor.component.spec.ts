@@ -1,19 +1,19 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {EditorComponent} from './editor.component';
+import {MappingEditorComponent} from './mapping-editor.component';
 
-describe('EditorComponent', () => {
-  let component: EditorComponent;
-  let fixture: ComponentFixture<EditorComponent>;
+describe('MappingEditorComponent', () => {
+  let component: MappingEditorComponent;
+  let fixture: ComponentFixture<MappingEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EditorComponent],
+      declarations: [MappingEditorComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EditorComponent);
+    fixture = TestBed.createComponent(MappingEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

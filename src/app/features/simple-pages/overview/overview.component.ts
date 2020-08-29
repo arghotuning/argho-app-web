@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
   faCodeBranch,
   faCompass,
@@ -12,6 +12,7 @@ import {
   selector: 'app-overview',
   templateUrl: './overview.component.html',
   styleUrls: ['./overview.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OverviewComponent {
   // Font Awesome icons:

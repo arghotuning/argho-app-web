@@ -1,19 +1,19 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {EditorComponent} from './editor.component';
+import {ScaleEditorComponent} from './scale-editor.component';
 
-describe('EditorComponent', () => {
-  let component: EditorComponent;
-  let fixture: ComponentFixture<EditorComponent>;
+describe('ScaleEditorComponent', () => {
+  let component: ScaleEditorComponent;
+  let fixture: ComponentFixture<ScaleEditorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EditorComponent],
+      declarations: [ScaleEditorComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EditorComponent);
+    fixture = TestBed.createComponent(ScaleEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

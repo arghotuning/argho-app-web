@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
   faCodeBranch,
   faDownload,
@@ -13,14 +13,15 @@ import {
   selector: 'app-sidenav',
   templateUrl: './sidenav.component.html',
   styleUrls: ['./sidenav.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidenavComponent {
   // Font Awesome Icons:
-  faCodeBranch = faCodeBranch
-  faDownload = faDownload
-  faEnvelope = faEnvelope
-  faFileCode = faFileCode
-  faGraduationCap = faGraduationCap
-  faHome = faHome
-  faMusic = faMusic
+  faCodeBranch = faCodeBranch;
+  faDownload = faDownload;
+  faEnvelope = faEnvelope;
+  faFileCode = faFileCode;
+  faGraduationCap = faGraduationCap;
+  faHome = faHome;
+  faMusic = faMusic;
 }

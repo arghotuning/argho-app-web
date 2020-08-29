@@ -1,19 +1,19 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {EditorComponent} from './editor.component';
+import {TuningMetadataComponent} from './tuning-metadata.component';
 
-describe('EditorComponent', () => {
-  let component: EditorComponent;
-  let fixture: ComponentFixture<EditorComponent>;
+describe('TuningMetadataComponent', () => {
+  let component: TuningMetadataComponent;
+  let fixture: ComponentFixture<TuningMetadataComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EditorComponent],
+      declarations: [TuningMetadataComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EditorComponent);
+    fixture = TestBed.createComponent(TuningMetadataComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,19 +1,19 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {EditorComponent} from './editor.component';
+import {TuningAnalysisComponent} from './tuning-analysis.component';
 
-describe('EditorComponent', () => {
-  let component: EditorComponent;
-  let fixture: ComponentFixture<EditorComponent>;
+describe('TuningAnalysisComponent', () => {
+  let component: TuningAnalysisComponent;
+  let fixture: ComponentFixture<TuningAnalysisComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EditorComponent],
+      declarations: [TuningAnalysisComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EditorComponent);
+    fixture = TestBed.createComponent(TuningAnalysisComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

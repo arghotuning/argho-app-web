@@ -1,23 +1,9 @@
-import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
-
-import {Component} from '@angular/core';
-import {
-  ArghoEditorModel,
-  TuningMetadataSnapshot,
-} from '@arghotuning/argho-editor';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditorComponent {
-  tuningMetadata!: TuningMetadataSnapshot;
-
-  constructor(data: TuningDataService) {
-    // Note: Subscription is always called synchronously.
-    data.model.tuningMetadata().subscribe(metadata => {
-      this.tuningMetadata = metadata;
-    });
-  }
-}
+export class EditorComponent { }

@@ -1,2 +1,11 @@
 <h2 class="mat-headline">Tuning Editor</h2>
-<p>Tuning Name: {{tuningMetadata.name}}</p>
+
+<app-file-buttons></app-file-buttons>
+<app-tuning-metadata></app-tuning-metadata>
+
+<mat-tab-group dynamicHeight>
+  <mat-tab label="Scale"><app-scale-editor></app-scale-editor></mat-tab>
+  <mat-tab label="Mapping"><app-mapping-editor></app-mapping-editor></mat-tab>
+  <mat-tab label="Analyze"><app-tuning-analysis></app-tuning-analysis></mat-tab>
+  <mat-tab label="Play"><app-tuning-player></app-tuning-player></mat-tab>
+</mat-tab-group>
