@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 @import '~@angular/material/theming';
 
 $palette-primary: mat-palette($mat-teal, 600);
@@ -13,3 +15,5 @@ $color-text: #111;
 
 $color-text-secondary: #212121;
 $color-icon-secondary: #666;
+
+$color-field-bg: color.change(mat-color($palette-primary, 300), $alpha: 0.15);

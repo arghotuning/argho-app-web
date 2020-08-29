@@ -1,4 +1,10 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {
+  faCompass,
+  faFile,
+  faSave,
+  faUpload,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-file-buttons',
@@ -6,4 +12,10 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
   styleUrls: ['./file-buttons.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FileButtonsComponent { }
+export class FileButtonsComponent {
+  // Font Awesome icons:
+  faFile = faFile;
+  faUpload = faUpload;
+  faSave = faSave;
+  faCompass = faCompass;
+}

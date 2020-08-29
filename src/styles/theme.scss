@@ -30,3 +30,8 @@ $argho-app-web-theme: mat-light-theme((
 ));
 
 @include angular-material-theme($argho-app-web-theme);
+
+// Customize filled form field background color:
+.mat-form-field-appearance-fill .mat-form-field-flex {
+  background: $color-field-bg;
+}

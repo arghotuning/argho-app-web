@@ -1,1 +1,13 @@
-<p>tuning-metadata works!</p>
+<mat-expansion-panel (opened)="handleOpened()" (closed)="handleClosed()">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      {{isOpen ? 'Tuning Metadata' : tuningMetadata.name}}
+      <fa-icon *ngIf="!isOpen" [icon]="faEdit"></fa-icon>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  
+  <mat-form-field appearance="fill" backgroundColor="primary">
+    <mat-label>Tuning Name</mat-label>
+    <input #tuningNameInput matInput [value]="tuningMetadata.name">
+  </mat-form-field>
+</mat-expansion-panel>
