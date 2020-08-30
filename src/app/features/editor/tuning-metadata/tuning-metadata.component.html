@@ -5,10 +5,30 @@
       <fa-icon *ngIf="!isOpen" [icon]="faEdit"></fa-icon>
     </mat-panel-title>
   </mat-expansion-panel-header>
-  
-  <mat-form-field appearance="fill" backgroundColor="primary">
-    <mat-label>Tuning Name</mat-label>
-    <input #tuningNameInput matInput [value]="tuningMetadata.name"
-           (change)="handleNameChange()">
-  </mat-form-field>
+
+  <div class="tuning-metadata-fields">
+    <mat-form-field appearance="fill" backgroundColor="primary">
+      <mat-label>Tuning Name</mat-label>
+      <input #tuningNameInput matInput class="tuning-name" [value]="tuningMetadata.name"
+            (change)="handleNameChange()" maxlength="100">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" backgroundColor="primary">
+      <mat-label>Description</mat-label>
+      <textarea #tuningDescInput matInput class="tuning-desc" [value]="tuningMetadata.description"
+                rows="2" maxlength="1000" (change)="handleDescChange()"></textarea>
+    </mat-form-field>
+
+    <label for="accidentals" class="prefix-label">Accidentals</label>
+    <mat-button-toggle-group id="accidentals" #accidentalGroup="matButtonToggleGroup"
+        [value]="tuningMetadata.accidentalDisplayPref"
+        (change)="handleAccidentalChange(accidentalGroup.value)">
+      <mat-button-toggle value="FLATS" aria-label="Display accidentals as flats">
+        ♭
+      </mat-button-toggle>
+      <mat-button-toggle value="SHARPS" aria-label="Display accidentals as sharps">
+        ♯
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
 </mat-expansion-panel>

@@ -2,6 +2,7 @@ import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   ViewChild,
@@ -10,6 +11,7 @@ import {
   ArghoEditorModel,
   TuningMetadataSnapshot,
 } from '@arghotuning/argho-editor';
+import {AccidentalDisplayPref} from '@arghotuning/arghotun';
 import {faEdit} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -25,17 +27,21 @@ export class TuningMetadataComponent {
   @ViewChild('tuningNameInput')
   tuningNameInput: ElementRef<HTMLInputElement> | undefined;
 
+  @ViewChild('tuningDescInput')
+  tuningDescInput: ElementRef<HTMLTextAreaElement> | undefined;
+
   // Font Awesome icons:
   faEdit = faEdit;
 
   private readonly model: ArghoEditorModel;
 
-  constructor(data: TuningDataService) {
+  constructor(data: TuningDataService, changeDetector: ChangeDetectorRef) {
     this.model = data.model;
 
     // Note: Always called back synchronously.
     this.model.tuningMetadata().subscribe(metadata => {
       this.tuningMetadata = metadata;
+      changeDetector.markForCheck();
     });
   }
 
@@ -55,7 +61,7 @@ export class TuningMetadataComponent {
     this.isOpen = false;
   }
 
-  getAndMaybeCorrectName_(): string {
+  private getAndMaybeCorrectName_(): string {
     if (!this.tuningNameInput) {
       return '';
     }
@@ -76,5 +82,35 @@ export class TuningMetadataComponent {
 
   handleNameChange(): void {
     this.model.setTuningName(this.getAndMaybeCorrectName_());
+  }
+
+  private getAndMaybeCorrectDesc_(): string {
+    if (!this.tuningDescInput) {
+      return '';
+    }
+
+    const rawValue = this.tuningDescInput.nativeElement.value;
+
+    // Note: Description parsing is always successful, and there are no warnings
+    // shown for value correction.
+    const parseResult =
+        this.model.inputParser().forTuningMetadata().parseDescription(rawValue);
+    const correctedValue = parseResult.getValue();
+    if (rawValue !== correctedValue) {
+      this.tuningDescInput.nativeElement.value = correctedValue;
+    }
+
+    return correctedValue;
+  }
+
+  handleDescChange(): void {
+    this.model.setDescription(this.getAndMaybeCorrectDesc_());
+  }
+
+  handleAccidentalChange(value: string): void {
+    this.model.setDisplayAccidentalsAs(
+      value === 'SHARPS' ?
+        AccidentalDisplayPref.SHARPS :
+        AccidentalDisplayPref.FLATS);
   }
 }
