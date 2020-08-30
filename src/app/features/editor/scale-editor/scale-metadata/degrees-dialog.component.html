@@ -1,0 +1,25 @@
+<h1 mat-dialog-title># Degrees</h1>
+
+<div mat-dialog-content>
+  <mat-form-field appearance="fill" backgroundColor="primary" hintLabel="between 2 and 128">
+    <input type="number" #numDegreesInput matInput class="scale-num-degrees" [value]="newNumDegrees"
+           (change)="handleValueChange(numDegreesInput.value)" [min]="minValue" [max]="maxValue"
+           autofocus>
+  </mat-form-field>
+
+  <div class="degrees-change-info">
+    <ng-container *ngIf="newNumDegrees < oldNumDegrees">
+      This will <strong>remove {{oldNumDegrees - newNumDegrees}}</strong>
+      {{oldNumDegrees - newNumDegrees == 1 ? 'degree' : 'degrees'}} from the end.
+    </ng-container>
+    <ng-container *ngIf="oldNumDegrees < newNumDegrees">
+      This will <strong>add {{newNumDegrees - oldNumDegrees}}</strong>
+      {{newNumDegrees - oldNumDegrees == 1 ? 'degree' : 'degrees'}} to the end.
+    </ng-container>
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <button class="ok-btn" mat-button (click)="commit()" [disabled]="!isValid">Ok</button>
+  <button class="cancel-btn" mat-button mat-dialog-close>Cancel</button>
+</div>

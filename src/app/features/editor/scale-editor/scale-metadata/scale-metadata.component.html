@@ -1,1 +1,9 @@
-<p>scale-metadata works!</p>
+<div class="scale-metadata-block">
+  <button mat-button (click)="openDegreesDialog()">{{scaleMetadata.numDegrees}} <fa-icon [icon]="faEdit"></fa-icon></button>
+  degrees
+</div>
+
+<div class="scale-metadata-block">
+  <button mat-button>{{scaleMetadata.octavesSpanned}} <fa-icon [icon]="faEdit"></fa-icon></button>
+  {{scaleMetadata.octavesSpanned === 1 ? 'octave' : 'octaves'}}
+</div>
