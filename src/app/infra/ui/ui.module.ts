@@ -9,6 +9,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatListModule} from '@angular/material/list';
 import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatTableModule} from '@angular/material/table';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -16,9 +17,7 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [],
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   exports: [
     BrowserAnimationsModule,
     FontAwesomeModule,
@@ -31,6 +30,7 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
     MatInputModule,
     MatListModule,
     MatSidenavModule,
+    MatTableModule,
     MatTabsModule,
     MatToolbarModule,
   ],
