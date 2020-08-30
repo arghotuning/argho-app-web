@@ -7,9 +7,12 @@ import {EditorComponent} from './editor.component';
 import {FileButtonsComponent} from './file-buttons/file-buttons.component';
 import {MappingEditorComponent} from './mapping-editor/mapping-editor.component';
 import {ScaleEditorComponent} from './scale-editor/scale-editor.component';
+import {ScaleMetadataComponent} from './scale-editor/scale-metadata/scale-metadata.component';
+import {ScaleRootComponent} from './scale-editor/scale-root/scale-root.component';
+import {ScaleTableComponent} from './scale-editor/scale-table/scale-table.component';
 import {TuningAnalysisComponent} from './tuning-analysis/tuning-analysis.component';
 import {TuningMetadataComponent} from './tuning-metadata/tuning-metadata.component';
-import { TuningPlayerComponent } from './tuning-player/tuning-player.component';
+import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +20,9 @@ import { TuningPlayerComponent } from './tuning-player/tuning-player.component';
     FileButtonsComponent,
     MappingEditorComponent,
     ScaleEditorComponent,
+    ScaleMetadataComponent,
+    ScaleRootComponent,
+    ScaleTableComponent,
     TuningAnalysisComponent,
     TuningMetadataComponent,
     TuningPlayerComponent,
