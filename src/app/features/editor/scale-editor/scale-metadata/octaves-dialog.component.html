@@ -1,1 +1,18 @@
-<p>octaves-dialog works!</p>
+<h1 mat-dialog-title># Octaves</h1>
+
+<div mat-dialog-content>
+  <mat-form-field appearance="fill" backgroundColor="primary" hintLabel="between 1 and 13">
+    <input type="number" #numOctavesInput matInput class="scale-num-octaves" [value]="newNumOctaves"
+           (change)="handleValueChange(numOctavesInput.value)" [min]="minValue" [max]="maxValue"
+           autofocus>
+  </mat-form-field>
+
+  <div class="octaves-change-info">
+    Octaves sounding between one repetition of the scale to the next.
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <button class="ok-btn" mat-button (click)="commit()" [disabled]="!isValid">Ok</button>
+  <button class="cancel-btn" mat-button mat-dialog-close>Cancel</button>
+</div>

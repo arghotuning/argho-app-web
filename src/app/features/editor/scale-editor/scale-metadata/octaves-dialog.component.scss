@@ -1,0 +1,19 @@
+@import '_colors';
+
+.ok-btn { order: 1; }
+.cancel-btn { order: 0; }
+
+.mat-dialog-content {
+  max-width: 80vw;
+  width: 18em;
+}
+
+.mat-dialog-actions {
+  justify-content: flex-end;
+}
+
+.octaves-change-info {
+  color: $color-text-secondary;
+  margin-top: 1em;
+  min-height: 3em;
+}
