@@ -8,6 +8,7 @@ import {FileButtonsComponent} from './file-buttons/file-buttons.component';
 import {MappingEditorComponent} from './mapping-editor/mapping-editor.component';
 import {ScaleEditorComponent} from './scale-editor/scale-editor.component';
 import {DegreesDialogComponent} from './scale-editor/scale-metadata/degrees-dialog.component';
+import {OctavesDialogComponent} from './scale-editor/scale-metadata/octaves-dialog.component';
 import {ScaleMetadataComponent} from './scale-editor/scale-metadata/scale-metadata.component';
 import {ScaleRootComponent} from './scale-editor/scale-root/scale-root.component';
 import {ScaleTableComponent} from './scale-editor/scale-table/scale-table.component';
@@ -21,6 +22,7 @@ import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
     EditorComponent,
     FileButtonsComponent,
     MappingEditorComponent,
+    OctavesDialogComponent,
     ScaleEditorComponent,
     ScaleMetadataComponent,
     ScaleRootComponent,
@@ -35,6 +37,7 @@ import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
   ],
   entryComponents: [
     DegreesDialogComponent,
+    OctavesDialogComponent,
   ],
   exports: [EditorComponent],
 })

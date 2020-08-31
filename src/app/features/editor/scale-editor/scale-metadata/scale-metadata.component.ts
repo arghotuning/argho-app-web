@@ -13,6 +13,7 @@ import {
 import {faEdit} from '@fortawesome/free-solid-svg-icons';
 
 import {DegreesDialogComponent} from './degrees-dialog.component';
+import {OctavesDialogComponent} from './octaves-dialog.component';
 
 @Component({
   selector: 'app-scale-metadata',
@@ -44,5 +45,9 @@ export class ScaleMetadataComponent {
 
   openDegreesDialog(): void {
     this.dialog.open(DegreesDialogComponent);
+  }
+
+  openOctavesDialog(): void {
+    this.dialog.open(OctavesDialogComponent);
   }
 }
