@@ -39,3 +39,13 @@ $argho-app-web-theme: mat-light-theme((
 .mat-button-toggle-checked {
   background-color: $color-checked-button;
 }
+
+// Hosted web font for Bravura Text (just flat and sharp accidentals).
+@font-face {
+  font-family: 'Bravura Text';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Bravura Text'), url(../assets/bravura-text-flat-sharp.woff2) format('woff2');
+  unicode-range: U+266D, U+266F;
+}

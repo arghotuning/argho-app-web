@@ -1,0 +1,8 @@
+@import '_fonts';
+
+.accidental {
+  font-family: $font-accidental;
+  margin-left: 0.1em;
+  position: relative;
+  top: -0.4em;
+}
