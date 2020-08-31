@@ -1,1 +1,6 @@
-<p>scale-root works!</p>
+<mat-form-field class="global-tune" appearance="fill" backgroundColor="primary">
+  <mat-label>Global Tune</mat-label>
+  <input type="number" #globalTuneInput matInput class="global-tune" [value]="scaleRoot.globalTuneA4Hz.toFixed(2)"
+         [min]="minGlobalTune" [max]="maxGlobalTune" (blur)="handleGlobalTuneBlur()">
+  <mat-hint><app-spelled-pitch [pitch]="globalTunePitch"></app-spelled-pitch> (Hz)</mat-hint>
+</mat-form-field>
