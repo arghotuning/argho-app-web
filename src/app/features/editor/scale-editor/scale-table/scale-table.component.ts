@@ -1,24 +1,32 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+} from '@angular/core';
+import {
+  ArghoEditorModel,
+  DisplayedIndex,
+  ScaleRoot,
+  UpperDegrees,
+} from '@arghotuning/argho-editor';
+import {TunedInterval} from '@arghotuning/arghotun';
+
+function toRatioString(tunedInterval: TunedInterval): string {
+  const num = tunedInterval.getRatioNumerator();
+  const den = tunedInterval.getRatioDenominator();
+
+  const numStr = Number.isInteger(num) ? num.toString() : num.toFixed(4);
+  return `${numStr} / ${den}`;
 }
 
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
+export interface TuningTableRow {
+  deg: DisplayedIndex;
+  cents?: string;
+  ratio?: string;
+  freqHz: string;
+}
 
 @Component({
   selector: 'app-scale-table',
@@ -27,6 +35,52 @@ const ELEMENT_DATA: PeriodicElement[] = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScaleTableComponent {
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
+  private readonly model: ArghoEditorModel;
+
+  scaleRoot: ScaleRoot | undefined;
+  upperDegrees: UpperDegrees | undefined;
+
+  displayedColumns: string[] = ['deg', 'ratio', 'cents', 'freq'];
+  dataSource: TuningTableRow[] = [];
+
+  constructor(data: TuningDataService, changeDetector: ChangeDetectorRef) {
+    this.model = data.model;
+
+    // Note: Always called back synchronously.
+    this.model.scaleRoot().subscribe(scaleRoot => {
+      this.scaleRoot = scaleRoot;
+      this.updateTableData_();
+      changeDetector.markForCheck();
+    });
+
+    this.model.upperDegrees().subscribe(upperDegrees => {
+      this.upperDegrees = upperDegrees;
+      this.updateTableData_();
+      changeDetector.markForCheck();
+    });
+  }
+
+  private updateTableData_(): void {
+    if (!this.scaleRoot || !this.upperDegrees) {
+      return;
+    }
+
+    this.dataSource = [];
+
+    // Root.
+    this.dataSource.push({
+      deg: new DisplayedIndex(0),
+      freqHz: this.scaleRoot.rootFreqHz.toFixed(4),
+    });
+
+    // Upper degrees.
+    for (const upperDeg of this.upperDegrees.getAll()) {
+      this.dataSource.push({
+        deg: upperDeg.deg,
+        cents: upperDeg.tunedInterval.getCents().toFixed(4),
+        ratio: toRatioString(upperDeg.tunedInterval),
+        freqHz: upperDeg.freqHz.toFixed(4),
+      });
+    }
+  }
 }

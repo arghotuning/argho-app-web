@@ -1,0 +1,29 @@
+@import '_fonts';
+
+.scale-deg {
+  min-width: 1.5rem;
+  text-align: end;
+}
+
+.scale-ratio {
+  min-width: 4rem;
+  text-align: center;
+}
+
+.mat-column-cents {
+  padding-right: 1em;
+}
+
+.scale-cents {
+  min-width: 5rem;
+  text-align: end;
+}
+
+.scale-freq {
+  min-width: 5rem;
+  text-align: end;
+}
+
+.mat-cell {
+  font-family: $font-monospace;
+}

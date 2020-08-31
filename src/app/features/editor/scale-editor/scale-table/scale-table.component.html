@@ -1,26 +1,36 @@
 <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-  <!-- Position Column -->
-  <ng-container matColumnDef="position">
-    <mat-header-cell *matHeaderCellDef>Deg.</mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.position}} </mat-cell>
+  <ng-container matColumnDef="deg">
+    <mat-header-cell *matHeaderCellDef><span class="scale-deg">Deg.</span></mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="scale-deg">{{element.deg.displayNumber}}</span>
+    </mat-cell>
   </ng-container>
 
-  <!-- Name Column -->
-  <ng-container matColumnDef="name">
-    <mat-header-cell *matHeaderCellDef>Ratio</mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.name}} </mat-cell>
+  <ng-container matColumnDef="ratio">
+    <mat-header-cell *matHeaderCellDef><span class="scale-ratio">Ratio</span></mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="scale-ratio">
+        <ng-container *ngIf="element.ratio">{{element.ratio}}</ng-container>
+        <ng-container *ngIf="!element.ratio">-</ng-container>
+      </span>
+    </mat-cell>
   </ng-container>
 
-  <!-- Weight Column -->
-  <ng-container matColumnDef="weight">
-    <mat-header-cell *matHeaderCellDef>Cents</mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.weight}} </mat-cell>
+  <ng-container matColumnDef="cents">
+    <mat-header-cell *matHeaderCellDef><span class="scale-cents">Cents</span></mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="scale-cents">
+        <ng-container *ngIf="element.cents">{{element.cents}}</ng-container>
+        <ng-container *ngIf="!element.cents">-</ng-container>
+      </span>
+    </mat-cell>
   </ng-container>
 
-  <!-- Symbol Column -->
-  <ng-container matColumnDef="symbol">
-    <mat-header-cell *matHeaderCellDef>Freq (Hz)</mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.symbol}} </mat-cell>
+  <ng-container matColumnDef="freq">
+    <mat-header-cell *matHeaderCellDef><span class="scale-freq">Freq (Hz)</span></mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="scale-freq">{{element.freqHz}}</span>
+    </mat-cell>
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
