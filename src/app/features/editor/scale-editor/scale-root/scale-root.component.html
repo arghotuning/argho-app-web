@@ -4,3 +4,11 @@
          [min]="minGlobalTune" [max]="maxGlobalTune" (blur)="handleGlobalTuneBlur()">
   <mat-hint><app-spelled-pitch [pitch]="globalTunePitch"></app-spelled-pitch> (Hz)</mat-hint>
 </mat-form-field>
+
+<mat-form-field class="root-spec" appearance="fill" backgroundColor="primary">
+  <mat-label>Specify root as</mat-label>
+  <mat-select [value]="scaleRoot.specType" (selectionChange)="handleSpecTypeChanged($event.value)">
+    <mat-option [value]="RootScaleDegreeSpecType.EXACT_FREQ">exact frequency</mat-option>
+    <mat-option [value]="RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH">relative to 12-TET</mat-option>
+  </mat-select>
+</mat-form-field>

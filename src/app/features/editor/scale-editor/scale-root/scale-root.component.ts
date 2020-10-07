@@ -12,8 +12,14 @@ import {
   ArghoEditorSettings,
   DisplayedMidiPitch,
   ScaleRoot,
+  TuningMetadataSnapshot,
 } from '@arghotuning/argho-editor';
-import {AccidentalDisplayPref, ArghoTuningLimits} from '@arghotuning/arghotun';
+import {
+  AccidentalDisplayPref,
+  ArghoTuningLimits,
+  RootScaleDegreeSpecType,
+  TuningMetadata,
+} from '@arghotuning/arghotun';
 
 const MIDI_PITCH_A4 = 69;
 
@@ -24,10 +30,14 @@ const MIDI_PITCH_A4 = 69;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScaleRootComponent {
+  RootScaleDegreeSpecType = RootScaleDegreeSpecType;
+
   private readonly model: ArghoEditorModel;
 
   scaleRoot!: ScaleRoot;
   globalTunePitch!: DisplayedMidiPitch;
+
+  tuningMetadata!: TuningMetadataSnapshot;
 
   @ViewChild('globalTuneInput')
   globalTuneInput: ElementRef<HTMLInputElement> | undefined;
@@ -42,13 +52,14 @@ export class ScaleRootComponent {
     let settings: ArghoEditorSettings;
     this.model.settings().subscribe(s => settings = s);
 
+    this.model.tuningMetadata().subscribe(tm => this.tuningMetadata = tm);
+
     // Note: Always called back synchronously.
     this.model.scaleRoot().subscribe(scaleRoot => {
       this.scaleRoot = scaleRoot;
 
-      // Note: AccidentalDisplayPref doesn't matter here, since A is natural...
       this.globalTunePitch = new DisplayedMidiPitch(
-        MIDI_PITCH_A4, AccidentalDisplayPref.SHARPS, settings);
+        MIDI_PITCH_A4, this.tuningMetadata.accidentalDisplayPref, settings);
 
       changeDetector.markForCheck();
     });
@@ -66,5 +77,18 @@ export class ScaleRootComponent {
     }
 
     this.globalTuneInput.nativeElement.value = this.scaleRoot.globalTuneA4Hz.toFixed(2);
+  }
+
+  async handleSpecTypeChanged(specType: RootScaleDegreeSpecType): Promise<void> {
+    switch (specType) {
+      case RootScaleDegreeSpecType.EXACT_FREQ:
+        return this.model.setScaleRootExactFreqHz(this.scaleRoot.rootFreqHz);
+
+      case RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH:
+        const pitch = this.scaleRoot.nearestMidiPitch;
+        return this.model.setScaleRoot12tetRelative(
+          pitch.midiPitch, this.scaleRoot.centsFrom12tet,
+          this.tuningMetadata.accidentalDisplayPref);
+    }
   }
 }
