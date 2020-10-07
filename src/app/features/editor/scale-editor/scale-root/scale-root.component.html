@@ -6,7 +6,7 @@
 </mat-form-field>
 
 <mat-form-field class="root-spec" appearance="fill" backgroundColor="primary">
-  <mat-label>Specify root as</mat-label>
+  <mat-label>Specify Root As</mat-label>
   <mat-select [value]="scaleRoot.specType" (selectionChange)="handleSpecTypeChanged($event.value)">
     <mat-option [value]="RootScaleDegreeSpecType.EXACT_FREQ">exact freq</mat-option>
     <mat-option [value]="RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH">12TET relative</mat-option>
@@ -20,3 +20,12 @@
          [min]="minFreqHz" [max]="maxFreqHz" (blur)="handleExactFreqBlur()">
   <mat-hint>Freq (Hz)</mat-hint>
 </mat-form-field>
+
+<ng-container *ngIf="scaleRoot.specType == RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH">
+  <mat-form-field class="cents-offset" appearance="fill" backgroundColor="primary">
+    <mat-label>Cents Offset</mat-label>
+    <input type="number" #centsOffsetInput matInput [value]="scaleRoot.centsFrom12tet.toFixed(4)"
+            [min]="minCentsOffset" [max]="maxCentsOffset" (blur)="handleCentsOffsetBlur()">
+    <mat-hint>from 12TET</mat-hint>
+  </mat-form-field>
+</ng-container>

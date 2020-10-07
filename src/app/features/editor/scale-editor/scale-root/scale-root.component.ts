@@ -51,6 +51,12 @@ export class ScaleRootComponent {
   minFreqHz = ArghoTuningLimits.FREQ_HZ_MIN;
   maxFreqHz = ArghoTuningLimits.FREQ_HZ_MAX;
 
+  @ViewChild('centsOffsetInput')
+  centsOffsetInput: ElementRef<HTMLInputElement> | undefined;
+
+  minCentsOffset = ArghoTuningLimits.CENTS_FROM_NEAREST_12TET_MIN;
+  maxCentsOffset = ArghoTuningLimits.CENTS_FROM_NEAREST_12TET_MAX;
+
   constructor(data: TuningDataService, changeDetector: ChangeDetectorRef) {
     this.model = data.model;
 
@@ -110,5 +116,21 @@ export class ScaleRootComponent {
     }
 
     this.exactFreqInput.nativeElement.value = this.scaleRoot.rootFreqHz.toFixed(4);
+  }
+
+  async handleCentsOffsetBlur(): Promise<void> {
+    if (!this.centsOffsetInput) {
+      return;
+    }
+
+    const parseResult = this.model.inputParser().forScaleRoot()
+      .parseCentsFrom12tet(this.centsOffsetInput.nativeElement.value);
+    if (parseResult.hasValidValue()) {
+      const update = parseResult.getValue();
+      await this.model.setScaleRoot12tetRelative(
+        update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+    }
+
+    this.centsOffsetInput.nativeElement.value = this.scaleRoot.centsFrom12tet.toFixed(4);
   }
 }
