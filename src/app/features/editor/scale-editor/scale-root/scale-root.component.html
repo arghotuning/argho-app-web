@@ -1,6 +1,6 @@
 <mat-form-field class="global-tune" appearance="fill" backgroundColor="primary">
   <mat-label>Global Tune</mat-label>
-  <input type="number" #globalTuneInput matInput class="global-tune" [value]="scaleRoot.globalTuneA4Hz.toFixed(2)"
+  <input type="number" #globalTuneInput matInput [value]="scaleRoot.globalTuneA4Hz.toFixed(2)"
          [min]="minGlobalTune" [max]="maxGlobalTune" (blur)="handleGlobalTuneBlur()">
   <mat-hint><app-spelled-pitch [pitch]="globalTunePitch"></app-spelled-pitch> (Hz)</mat-hint>
 </mat-form-field>
@@ -8,7 +8,15 @@
 <mat-form-field class="root-spec" appearance="fill" backgroundColor="primary">
   <mat-label>Specify root as</mat-label>
   <mat-select [value]="scaleRoot.specType" (selectionChange)="handleSpecTypeChanged($event.value)">
-    <mat-option [value]="RootScaleDegreeSpecType.EXACT_FREQ">exact frequency</mat-option>
-    <mat-option [value]="RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH">relative to 12-TET</mat-option>
+    <mat-option [value]="RootScaleDegreeSpecType.EXACT_FREQ">exact freq</mat-option>
+    <mat-option [value]="RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH">12TET relative</mat-option>
   </mat-select>
+</mat-form-field>
+
+<mat-form-field *ngIf="scaleRoot.specType == RootScaleDegreeSpecType.EXACT_FREQ"
+                class="exact-freq" appearance="fill" backgroundColor="primary">
+  <mat-label>Exact Root</mat-label>
+  <input type="number" #exactFreqInput matInput [value]="scaleRoot.rootFreqHz.toFixed(4)"
+         [min]="minFreqHz" [max]="maxFreqHz" (blur)="handleExactFreqBlur()">
+  <mat-hint>Freq (Hz)</mat-hint>
 </mat-form-field>

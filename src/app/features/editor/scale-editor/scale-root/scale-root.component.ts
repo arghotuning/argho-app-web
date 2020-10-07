@@ -45,6 +45,12 @@ export class ScaleRootComponent {
   minGlobalTune = ArghoTuningLimits.GLOBAL_TUNE_A4_HZ_MIN;
   maxGlobalTune = ArghoTuningLimits.GLOBAL_TUNE_A4_HZ_MAX;
 
+  @ViewChild('exactFreqInput')
+  exactFreqInput: ElementRef<HTMLInputElement> | undefined;
+
+  minFreqHz = ArghoTuningLimits.FREQ_HZ_MIN;
+  maxFreqHz = ArghoTuningLimits.FREQ_HZ_MAX;
+
   constructor(data: TuningDataService, changeDetector: ChangeDetectorRef) {
     this.model = data.model;
 
@@ -90,5 +96,19 @@ export class ScaleRootComponent {
           pitch.midiPitch, this.scaleRoot.centsFrom12tet,
           this.tuningMetadata.accidentalDisplayPref);
     }
+  }
+
+  async handleExactFreqBlur(): Promise<void> {
+    if (!this.exactFreqInput) {
+      return;
+    }
+
+    const parseResult = this.model.inputParser().forScaleRoot()
+      .parseExactFreqHz(this.exactFreqInput.nativeElement.value);
+    if (parseResult.hasValidValue()) {
+      await this.model.setScaleRootExactFreqHz(parseResult.getValue());
+    }
+
+    this.exactFreqInput.nativeElement.value = this.scaleRoot.rootFreqHz.toFixed(4);
   }
 }
