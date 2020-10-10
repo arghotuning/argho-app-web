@@ -6,6 +6,9 @@ $palette-primary: mat-palette($mat-teal, 600);
 $palette-secondary: mat-palette($mat-deep-purple, 700);
 $palette-warn: mat-palette($mat-red);
 
+$color-primary: mat-color($palette-primary, 600);
+$color-secondary: mat-color($palette-secondary, 700);
+
 $color-link: mat-color($palette-secondary, 500);
 $color-link-visited: mat-color($palette-secondary, 500);
 $color-link-active: mat-color($palette-secondary, 300);

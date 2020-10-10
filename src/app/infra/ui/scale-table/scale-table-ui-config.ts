@@ -1,7 +1,7 @@
 import {Set} from 'immutable';
 
 /** Optional column groups that can be shown/hidden. */
-export const enum ScaleTableColGroup {
+export enum ScaleTableColGroup {
   INPUT_KEY,
   RATIO,
   CENTS,

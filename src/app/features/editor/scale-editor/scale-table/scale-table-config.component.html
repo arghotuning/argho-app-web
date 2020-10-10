@@ -1,0 +1,47 @@
+<button mat-button class="menu-button" [matMenuTriggerFor]="menu"
+        aria-label="Hide/show scale table columns">
+  <fa-icon [icon]="faChevronCircleDown"></fa-icon>
+</button>
+<mat-menu #menu="matMenu">
+  <div class="menu-header">Show columns</div>
+  <button mat-menu-item (click)="toggle(ScaleTableColGroup.INPUT_KEY, $event)">
+    <span class="icon-container">
+      <fa-icon [icon]="faCheck"
+               *ngIf="config.colGroups.contains(ScaleTableColGroup.INPUT_KEY)">
+      </fa-icon>
+    </span>
+    Input Key
+  </button>
+  <button mat-menu-item (click)="toggle(ScaleTableColGroup.RATIO, $event)">
+    <span class="icon-container">
+      <fa-icon [icon]="faCheck"
+               *ngIf="config.colGroups.contains(ScaleTableColGroup.RATIO)">
+      </fa-icon>
+    </span>
+    Ratio
+  </button>
+  <button mat-menu-item (click)="toggle(ScaleTableColGroup.CENTS, $event)">
+    <span class="icon-container">
+      <fa-icon [icon]="faCheck"
+               *ngIf="config.colGroups.contains(ScaleTableColGroup.CENTS)">
+      </fa-icon>
+    </span>
+    Cents
+  </button>
+  <button mat-menu-item (click)="toggle(ScaleTableColGroup.FREQ, $event)">
+    <span class="icon-container">
+      <fa-icon [icon]="faCheck"
+               *ngIf="config.colGroups.contains(ScaleTableColGroup.FREQ)">
+      </fa-icon>
+    </span>
+    Frequency
+  </button>
+  <button mat-menu-item (click)="toggle(ScaleTableColGroup.COMPARE_12TET, $event)">
+    <span class="icon-container">
+      <fa-icon [icon]="faCheck"
+               *ngIf="config.colGroups.contains(ScaleTableColGroup.COMPARE_12TET)">
+      </fa-icon>
+    </span>
+    12TET Compare
+  </button>
+</mat-menu>

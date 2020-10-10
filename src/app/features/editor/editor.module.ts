@@ -11,6 +11,7 @@ import {DegreesDialogComponent} from './scale-editor/scale-metadata/degrees-dial
 import {OctavesDialogComponent} from './scale-editor/scale-metadata/octaves-dialog.component';
 import {ScaleMetadataComponent} from './scale-editor/scale-metadata/scale-metadata.component';
 import {ScaleRootComponent} from './scale-editor/scale-root/scale-root.component';
+import {ScaleTableConfigComponent} from './scale-editor/scale-table/scale-table-config.component';
 import {ScaleTableComponent} from './scale-editor/scale-table/scale-table.component';
 import {TuningAnalysisComponent} from './tuning-analysis/tuning-analysis.component';
 import {TuningMetadataComponent} from './tuning-metadata/tuning-metadata.component';
@@ -27,6 +28,7 @@ import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
     ScaleMetadataComponent,
     ScaleRootComponent,
     ScaleTableComponent,
+    ScaleTableConfigComponent,
     TuningAnalysisComponent,
     TuningMetadataComponent,
     TuningPlayerComponent,
