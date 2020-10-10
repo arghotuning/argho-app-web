@@ -38,6 +38,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.13.0",
     "@fortawesome/free-regular-svg-icons": "^5.13.0",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "immutable": "^4.0.0-rc.12",
     "rxjs": "^6.6.2",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
@@ -51,6 +52,7 @@
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
     "jasmine-core": "~3.5.0",
+    "jasmine-immutable-matchers": "^2.0.1",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.0.0",
     "karma-chrome-launcher": "~3.1.0",
