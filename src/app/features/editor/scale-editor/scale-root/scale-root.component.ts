@@ -1,4 +1,6 @@
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {toFixedClean} from 'src/app/infra/ui/numeric/numeric-util';
+import {simpleAccidentalStr} from 'src/app/infra/ui/spelled-pitch/spelled-pitch-util';
 
 import {
   ChangeDetectionStrategy,
@@ -15,10 +17,8 @@ import {
   TuningMetadataSnapshot,
 } from '@arghotuning/argho-editor';
 import {
-  AccidentalDisplayPref,
   ArghoTuningLimits,
   RootScaleDegreeSpecType,
-  TuningMetadata,
 } from '@arghotuning/arghotun';
 
 const MIDI_PITCH_A4 = 69;
@@ -51,6 +51,9 @@ export class ScaleRootComponent {
   minFreqHz = ArghoTuningLimits.FREQ_HZ_MIN;
   maxFreqHz = ArghoTuningLimits.FREQ_HZ_MAX;
 
+  @ViewChild('nearestPitchInput')
+  nearestPitchInput: ElementRef<HTMLInputElement> | undefined;
+
   @ViewChild('centsOffsetInput')
   centsOffsetInput: ElementRef<HTMLInputElement> | undefined;
 
@@ -77,6 +80,10 @@ export class ScaleRootComponent {
     });
   }
 
+  globalTuneStrValue(): string {
+    return toFixedClean(this.scaleRoot.globalTuneA4Hz, 2);
+  }
+
   async handleGlobalTuneBlur(): Promise<void> {
     if (!this.globalTuneInput) {
       return;
@@ -88,7 +95,7 @@ export class ScaleRootComponent {
       await this.model.setGlobalTuneA4Hz(parseResult.getValue());
     }
 
-    this.globalTuneInput.nativeElement.value = this.scaleRoot.globalTuneA4Hz.toFixed(2);
+    this.globalTuneInput.nativeElement.value = this.globalTuneStrValue();
   }
 
   async handleSpecTypeChanged(specType: RootScaleDegreeSpecType): Promise<void> {
@@ -104,6 +111,10 @@ export class ScaleRootComponent {
     }
   }
 
+  exactFreqStrValue(): string {
+    return toFixedClean(this.scaleRoot.rootFreqHz, 4);
+  }
+
   async handleExactFreqBlur(): Promise<void> {
     if (!this.exactFreqInput) {
       return;
@@ -115,7 +126,32 @@ export class ScaleRootComponent {
       await this.model.setScaleRootExactFreqHz(parseResult.getValue());
     }
 
-    this.exactFreqInput.nativeElement.value = this.scaleRoot.rootFreqHz.toFixed(4);
+    this.exactFreqInput.nativeElement.value = this.exactFreqStrValue();
+  }
+
+  nearestPitchStrValue(): string {
+    const pitch = this.scaleRoot.nearestMidiPitch;
+    return pitch.letter + simpleAccidentalStr(pitch.accidental) + pitch.octaveNumber;
+  }
+
+  async handleNearestPitchBlur(): Promise<void> {
+    if (!this.nearestPitchInput) {
+      return;
+    }
+
+    const parseResult = this.model.inputParser().forScaleRoot()
+      .parseNearestMidiPitch(this.nearestPitchInput.nativeElement.value);
+    if (parseResult.hasValidValue()) {
+      const update = parseResult.getValue();
+      await this.model.setScaleRoot12tetRelative(
+        update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+    }
+
+    this.nearestPitchInput.nativeElement.value = this.nearestPitchStrValue();
+  }
+
+  centsOffsetStrValue(): string {
+    return toFixedClean(this.scaleRoot.centsFrom12tet, 4);
   }
 
   async handleCentsOffsetBlur(): Promise<void> {
@@ -131,6 +167,6 @@ export class ScaleRootComponent {
         update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
     }
 
-    this.centsOffsetInput.nativeElement.value = this.scaleRoot.centsFrom12tet.toFixed(4);
+    this.centsOffsetInput.nativeElement.value = this.centsOffsetStrValue();
   }
 }

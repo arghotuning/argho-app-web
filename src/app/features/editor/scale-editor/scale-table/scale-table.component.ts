@@ -1,4 +1,5 @@
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {toFixedClean} from 'src/app/infra/ui/numeric/numeric-util';
 
 import {
   ChangeDetectionStrategy,
@@ -17,7 +18,7 @@ function toRatioString(tunedInterval: TunedInterval): string {
   const num = tunedInterval.getRatioNumerator();
   const den = tunedInterval.getRatioDenominator();
 
-  const numStr = Number.isInteger(num) ? num.toString() : num.toFixed(4);
+  const numStr = Number.isInteger(num) ? num.toString() : toFixedClean(num, 4);
   return `${numStr} / ${den}`;
 }
 
@@ -70,16 +71,16 @@ export class ScaleTableComponent {
     // Root.
     this.dataSource.push({
       deg: new DisplayedIndex(0),
-      freqHz: this.scaleRoot.rootFreqHz.toFixed(4),
+      freqHz: toFixedClean(this.scaleRoot.rootFreqHz, 4),
     });
 
     // Upper degrees.
     for (const upperDeg of this.upperDegrees.getAll()) {
       this.dataSource.push({
         deg: upperDeg.deg,
-        cents: upperDeg.tunedInterval.getCents().toFixed(4),
+        cents: toFixedClean(upperDeg.tunedInterval.getCents(), 4),
         ratio: toRatioString(upperDeg.tunedInterval),
-        freqHz: upperDeg.freqHz.toFixed(4),
+        freqHz: toFixedClean(upperDeg.freqHz, 4),
       });
     }
   }

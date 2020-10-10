@@ -1,6 +1,6 @@
 <mat-form-field class="global-tune" appearance="fill" backgroundColor="primary">
   <mat-label>Global Tune</mat-label>
-  <input type="number" #globalTuneInput matInput [value]="scaleRoot.globalTuneA4Hz.toFixed(2)"
+  <input type="number" #globalTuneInput matInput [value]="globalTuneStrValue()"
          [min]="minGlobalTune" [max]="maxGlobalTune" (blur)="handleGlobalTuneBlur()">
   <mat-hint><app-spelled-pitch [pitch]="globalTunePitch"></app-spelled-pitch> (Hz)</mat-hint>
 </mat-form-field>
@@ -16,15 +16,22 @@
 <mat-form-field *ngIf="scaleRoot.specType == RootScaleDegreeSpecType.EXACT_FREQ"
                 class="exact-freq" appearance="fill" backgroundColor="primary">
   <mat-label>Exact Root</mat-label>
-  <input type="number" #exactFreqInput matInput [value]="scaleRoot.rootFreqHz.toFixed(4)"
+  <input type="number" #exactFreqInput matInput [value]="exactFreqStrValue()"
          [min]="minFreqHz" [max]="maxFreqHz" (blur)="handleExactFreqBlur()">
   <mat-hint>Freq (Hz)</mat-hint>
 </mat-form-field>
 
 <ng-container *ngIf="scaleRoot.specType == RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH">
+  <mat-form-field class="nearest-midi-pitch" appearance="fill" backgroundColor="primary">
+    <mat-label>Nearest Pitch</mat-label>
+    <input #nearestPitchInput matInput [value]="nearestPitchStrValue()"
+           (blur)="handleNearestPitchBlur()">
+    <mat-hint>to scale root</mat-hint>
+  </mat-form-field>
+
   <mat-form-field class="cents-offset" appearance="fill" backgroundColor="primary">
     <mat-label>Cents Offset</mat-label>
-    <input type="number" #centsOffsetInput matInput [value]="scaleRoot.centsFrom12tet.toFixed(4)"
+    <input type="number" #centsOffsetInput matInput [value]="centsOffsetStrValue()"
             [min]="minCentsOffset" [max]="maxCentsOffset" (blur)="handleCentsOffsetBlur()">
     <mat-hint>from 12TET</mat-hint>
   </mat-form-field>
