@@ -1,5 +1,10 @@
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 import {toFixedClean} from 'src/app/infra/ui/numeric/numeric-util';
+import {
+  ScaleTableColGroup,
+  ScaleTableUiConfig,
+} from 'src/app/infra/ui/scale-table/scale-table-ui-config';
+import {ScaleTableService} from 'src/app/infra/ui/scale-table/scale-table.service';
 
 import {
   ChangeDetectionStrategy,
@@ -9,6 +14,7 @@ import {
 import {
   ArghoEditorModel,
   DisplayedIndex,
+  DisplayedMidiPitch,
   ScaleRoot,
   UpperDegrees,
 } from '@arghotuning/argho-editor';
@@ -22,10 +28,22 @@ function toRatioString(tunedInterval: TunedInterval): string {
   return `${numStr} / ${den}`;
 }
 
+export enum ScaleTableCol {
+  INPUT_KEY = 'inKey',
+  DEG = 'deg',
+  MEASURE_FROM = 'from',
+  RATIO = 'ratio',
+  CENTS = 'cents',
+  FREQ = 'freq',
+  // TODO: Add support for 12TET comparison.
+}
+
 export interface TuningTableRow {
+  firstMappedPitch?: DisplayedMidiPitch | null,
   deg: DisplayedIndex;
-  cents?: string;
+  measureFrom?: DisplayedIndex,
   ratio?: string;
+  cents?: string;
   freqHz: string;
 }
 
@@ -36,18 +54,26 @@ export interface TuningTableRow {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScaleTableComponent {
+  ScaleTableCol = ScaleTableCol;
+
   private readonly model: ArghoEditorModel;
 
-  scaleRoot: ScaleRoot | undefined;
-  upperDegrees: UpperDegrees | undefined;
+  scaleRoot!: ScaleRoot;
+  upperDegrees!: UpperDegrees;
 
-  displayedColumns: string[] = ['deg', 'ratio', 'cents', 'freq'];
+  displayedColumns: ScaleTableCol[] = [];
   dataSource: TuningTableRow[] = [];
 
-  constructor(data: TuningDataService, changeDetector: ChangeDetectorRef) {
+  constructor(data: TuningDataService, uiService: ScaleTableService, changeDetector: ChangeDetectorRef) {
     this.model = data.model;
 
-    // Note: Always called back synchronously.
+    // Note: All these subscriptions are called back synchronously the first time.
+
+    uiService.config().subscribe(uiConfig => {
+      this.updateDisplayedCols_(uiConfig);
+      changeDetector.markForCheck();
+    });
+
     this.model.scaleRoot().subscribe(scaleRoot => {
       this.scaleRoot = scaleRoot;
       this.updateTableData_();
@@ -61,6 +87,25 @@ export class ScaleTableComponent {
     });
   }
 
+  private updateDisplayedCols_(uiConfig: ScaleTableUiConfig) {
+    const cols: ScaleTableCol[] = [];
+    if (uiConfig.colGroups.contains(ScaleTableColGroup.INPUT_KEY)) {
+      cols.push(ScaleTableCol.INPUT_KEY);
+    }
+    cols.push(ScaleTableCol.DEG);
+    cols.push(ScaleTableCol.MEASURE_FROM);
+    if (uiConfig.colGroups.contains(ScaleTableColGroup.RATIO)) {
+      cols.push(ScaleTableCol.RATIO);
+    }
+    if (uiConfig.colGroups.contains(ScaleTableColGroup.CENTS)) {
+      cols.push(ScaleTableCol.CENTS);
+    }
+    if (uiConfig.colGroups.contains(ScaleTableColGroup.FREQ)) {
+      cols.push(ScaleTableCol.FREQ);
+    }
+    this.displayedColumns = cols;
+  }
+
   private updateTableData_(): void {
     if (!this.scaleRoot || !this.upperDegrees) {
       return;
@@ -70,6 +115,7 @@ export class ScaleTableComponent {
 
     // Root.
     this.dataSource.push({
+      firstMappedPitch: this.scaleRoot.firstMappedPitch,
       deg: new DisplayedIndex(0),
       freqHz: toFixedClean(this.scaleRoot.rootFreqHz, 4),
     });
@@ -77,9 +123,11 @@ export class ScaleTableComponent {
     // Upper degrees.
     for (const upperDeg of this.upperDegrees.getAll()) {
       this.dataSource.push({
+        firstMappedPitch: upperDeg.firstMappedPitch,
         deg: upperDeg.deg,
-        cents: toFixedClean(upperDeg.tunedInterval.getCents(), 4),
+        measureFrom: upperDeg.measureFrom,
         ratio: toRatioString(upperDeg.tunedInterval),
+        cents: toFixedClean(upperDeg.tunedInterval.getCents(), 4),
         freqHz: toFixedClean(upperDeg.freqHz, 4),
       });
     }

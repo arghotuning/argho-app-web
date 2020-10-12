@@ -1,12 +1,29 @@
 <mat-table [dataSource]="dataSource" class="scale-table mat-elevation-z2">
-  <ng-container matColumnDef="deg">
+  <ng-container [matColumnDef]="ScaleTableCol.INPUT_KEY">
+    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="scale-in-key">
+        <app-spelled-pitch *ngIf="element.firstMappedPitch" [pitch]="element.firstMappedPitch"></app-spelled-pitch>
+        <ng-container *ngIf="!element.firstMappedPitch">-</ng-container>
+      </span>
+    </mat-cell>
+  </ng-container>
+
+  <ng-container [matColumnDef]="ScaleTableCol.DEG">
     <mat-header-cell *matHeaderCellDef><span class="scale-deg">Deg.</span></mat-header-cell>
     <mat-cell *matCellDef="let element">
       <span class="scale-deg">{{element.deg.displayNumber}}</span>
     </mat-cell>
   </ng-container>
 
-  <ng-container matColumnDef="ratio">
+  <ng-container [matColumnDef]="ScaleTableCol.MEASURE_FROM">
+    <mat-header-cell *matHeaderCellDef><span class="scale-measure-from">Meas.<br>From</span></mat-header-cell>
+    <mat-cell *matCellDef="let element">
+      <span class="scale-measure-from">{{element.measureFrom?.displayNumber || '-'}}</span>
+    </mat-cell>
+  </ng-container>
+
+  <ng-container [matColumnDef]="ScaleTableCol.RATIO">
     <mat-header-cell *matHeaderCellDef><span class="scale-ratio">Ratio</span></mat-header-cell>
     <mat-cell *matCellDef="let element">
       <span class="scale-ratio">
@@ -16,7 +33,7 @@
     </mat-cell>
   </ng-container>
 
-  <ng-container matColumnDef="cents">
+  <ng-container [matColumnDef]="ScaleTableCol.CENTS">
     <mat-header-cell *matHeaderCellDef><span class="scale-cents">Cents</span></mat-header-cell>
     <mat-cell *matCellDef="let element">
       <span class="scale-cents">
@@ -26,7 +43,7 @@
     </mat-cell>
   </ng-container>
 
-  <ng-container matColumnDef="freq">
+  <ng-container [matColumnDef]="ScaleTableCol.FREQ">
     <mat-header-cell *matHeaderCellDef><span class="scale-freq">Freq (Hz)</span></mat-header-cell>
     <mat-cell *matCellDef="let element">
       <span class="scale-freq">{{element.freqHz}}</span>

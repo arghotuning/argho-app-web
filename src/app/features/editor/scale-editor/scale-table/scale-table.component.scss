@@ -1,10 +1,18 @@
+@import '_colors';
 @import '_fonts';
 
 .scale-table {
   margin: 0.5em 0.25em 0.5em 0.25em;
 }
 
-.scale-deg {
+.scale-in-key {
+  color: $color-text-label;
+  min-width: 1.5rem;
+  text-align: end;
+}
+
+.scale-deg,
+.scale-measure-from {
   min-width: 1.5rem;
   text-align: end;
 }
@@ -29,5 +37,15 @@
 }
 
 .mat-cell {
-  font-family: $font-monospace;
+  .scale-deg,
+  .scale-measure-from,
+  .scale-ratio,
+  .scale-cents,
+  .scale-freq {
+    font-family: $font-monospace;
+  }
+
+  .scale-in-key {
+    font-size: 0.65rem;
+  }
 }
