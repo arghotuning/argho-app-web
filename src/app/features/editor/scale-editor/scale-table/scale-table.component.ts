@@ -25,9 +25,10 @@ function toRatioString(tunedInterval: TunedInterval): string {
   const den = tunedInterval.getRatioDenominator();
 
   const numStr = Number.isInteger(num) ? num.toString() : toFixedClean(num, 4);
-  return `${numStr} / ${den}`;
+  return `${numStr}\xa0/\xa0${den}`;  // '\xa0' is &nbsp; non-breaking space.
 }
 
+// NOTE: These must match up with .mat-column-* suffixes in CSS.
 export enum ScaleTableCol {
   INPUT_KEY = 'inKey',
   DEG = 'deg',
