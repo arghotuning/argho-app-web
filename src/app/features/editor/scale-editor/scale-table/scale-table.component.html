@@ -1,6 +1,7 @@
 <div class="scale-table-wrapper">
 
-<table mat-table [dataSource]="dataSource" class="scale-table mat-elevation-z2">
+<table mat-table [dataSource]="dataSource" class="scale-table mat-elevation-z2"
+       (click)="handleTableClick($event)">
   <ng-container [matColumnDef]="ScaleTableCol.INPUT_KEY">
     <th mat-header-cell *matHeaderCellDef></th>
     <td mat-cell *matCellDef="let element">
@@ -20,14 +21,14 @@
 
   <ng-container [matColumnDef]="ScaleTableCol.MEASURE_FROM">
     <th mat-header-cell *matHeaderCellDef><span class="scale-measure-from">Meas.<br>From</span></th>
-    <td mat-cell *matCellDef="let element">
+    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
       <span class="scale-measure-from">{{element.measureFrom?.displayNumber || '-'}}</span>
     </td>
   </ng-container>
 
   <ng-container [matColumnDef]="ScaleTableCol.RATIO">
     <th mat-header-cell *matHeaderCellDef><span class="scale-ratio">Ratio</span></th>
-    <td mat-cell *matCellDef="let element">
+    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
       <span class="scale-ratio">
         <ng-container *ngIf="element.ratio">{{element.ratio}}</ng-container>
         <ng-container *ngIf="!element.ratio">-</ng-container>
@@ -37,7 +38,7 @@
 
   <ng-container [matColumnDef]="ScaleTableCol.CENTS">
     <th mat-header-cell *matHeaderCellDef><span class="scale-cents">Cents</span></th>
-    <td mat-cell *matCellDef="let element">
+    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
       <span class="scale-cents">
         <ng-container *ngIf="element.cents">{{element.cents}}</ng-container>
         <ng-container *ngIf="!element.cents">-</ng-container>
@@ -47,13 +48,21 @@
 
   <ng-container [matColumnDef]="ScaleTableCol.FREQ">
     <th mat-header-cell *matHeaderCellDef><span class="scale-freq">Freq (Hz)</span></th>
-    <td mat-cell *matCellDef="let element">
+    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
       <span class="scale-freq">{{element.freqHz}}</span>
     </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" [attr.data-deg-idx]="row.deg.index"></tr>
 </table>
+
+<mat-card #scaleFieldEditor class="scale-field-editor mat-elevation-z6"
+          [style.display]="showPopupEditor ? 'block' : 'none'">
+  <mat-form-field appearance="standard">
+    <mat-label>Ratio</mat-label>
+    <input #popupInput matInput value="345.6789">
+  </mat-form-field>
+</mat-card>
 
 </div>

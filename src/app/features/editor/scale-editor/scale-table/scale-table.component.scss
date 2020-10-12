@@ -39,6 +39,7 @@
 .scale-table-wrapper {
   overflow-x: auto;
   padding: 0.5em 0.25em 0.5em 0.25em;
+  position: relative;  // Position popup editor relative to.
 }
 
 .scale-in-key {
@@ -61,4 +62,18 @@
   .scale-in-key {
     font-size: 0.65rem;
   }
+}
+
+.mat-cell.editable:hover {
+  background-color: $color-field-bg;
+  cursor: pointer;
+}
+
+.scale-field-editor {
+  background-color: $color-editor-bg;
+  padding: 0 1em;
+
+  position: absolute;
+  top: 0;
+  left: 0;
 }

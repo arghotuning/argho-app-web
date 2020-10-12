@@ -10,6 +10,9 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
+  HostListener,
+  ViewChild,
 } from '@angular/core';
 import {
   ArghoEditorModel,
@@ -39,7 +42,17 @@ export enum ScaleTableCol {
   // TODO: Add support for 12TET comparison.
 }
 
+function colForCell(cellEl: Element): ScaleTableCol {
+  for (const col of Object.values(ScaleTableCol)) {
+    if (cellEl.classList.contains('mat-column-' + col)) {
+      return col;
+    }
+  }
+  throw Error('Scale Table: unexpected column!');
+}
+
 export interface TuningTableRow {
+  editable: boolean;
   firstMappedPitch?: DisplayedMidiPitch | null,
   deg: DisplayedIndex;
   measureFrom?: DisplayedIndex,
@@ -47,6 +60,9 @@ export interface TuningTableRow {
   cents?: string;
   freqHz: string;
 }
+
+/** Type of action to take when popup editor is dismissed. */
+const enum PopupEditorAction {DISCARD, TRY_COMMIT}
 
 @Component({
   selector: 'app-scale-table',
@@ -64,6 +80,14 @@ export class ScaleTableComponent {
 
   displayedColumns: ScaleTableCol[] = [];
   dataSource: TuningTableRow[] = [];
+
+  showPopupEditor = false;
+
+  @ViewChild('scaleFieldEditor', {read: ElementRef})
+  scaleFieldEditor: ElementRef<Element> | undefined;
+
+  @ViewChild('popupInput')
+  popupInput: ElementRef<HTMLInputElement> | undefined;
 
   constructor(data: TuningDataService, uiService: ScaleTableService, changeDetector: ChangeDetectorRef) {
     this.model = data.model;
@@ -116,6 +140,7 @@ export class ScaleTableComponent {
 
     // Root.
     this.dataSource.push({
+      editable: false,
       firstMappedPitch: this.scaleRoot.firstMappedPitch,
       deg: new DisplayedIndex(0),
       freqHz: toFixedClean(this.scaleRoot.rootFreqHz, 4),
@@ -124,6 +149,7 @@ export class ScaleTableComponent {
     // Upper degrees.
     for (const upperDeg of this.upperDegrees.getAll()) {
       this.dataSource.push({
+        editable: true,
         firstMappedPitch: upperDeg.firstMappedPitch,
         deg: upperDeg.deg,
         measureFrom: upperDeg.measureFrom,
@@ -131,6 +157,67 @@ export class ScaleTableComponent {
         cents: toFixedClean(upperDeg.tunedInterval.getCents(), 4),
         freqHz: toFixedClean(upperDeg.freqHz, 4),
       });
+    }
+  }
+
+  handleTableClick(e: MouseEvent) {
+    let cellEl = e.target as Element;
+
+    // Find the containing table cell.
+    while (cellEl.tagName !== 'TD' && cellEl !== e.currentTarget) {
+      cellEl = cellEl.parentElement as Element;
+    }
+    if (cellEl.tagName !== 'TD' || !cellEl.classList.contains('editable')) {
+      return;
+    }
+
+    this.showPopupEditor_(cellEl);
+    e.stopPropagation();
+  }
+
+  private hidePopupEditor_(action: PopupEditorAction) {
+    if (!this.showPopupEditor) {
+      return;
+    }
+
+    // TODO: Implement.
+
+    this.showPopupEditor = false;
+  }
+
+  private showPopupEditor_(cellEl: Element) {
+    this.hidePopupEditor_(PopupEditorAction.TRY_COMMIT);
+
+    const rowEl = cellEl.parentElement as Element;
+    const degIdx = parseInt(rowEl.getAttribute('data-deg-idx') as string);
+
+    const col = colForCell(cellEl);
+
+    // TODO: Implement.
+
+    this.showPopupEditor = true;
+    setTimeout(() => {
+      this.popupInput?.nativeElement.select();
+    }, 0);
+  }
+
+  @HostListener('body:click', ['$event'])
+  handleBodyClick(e: MouseEvent) {
+    if (!this.scaleFieldEditor) {
+      return;
+    }
+
+    if (!this.scaleFieldEditor.nativeElement.contains(e.target as Node)) {
+      this.hidePopupEditor_(PopupEditorAction.TRY_COMMIT);
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      this.hidePopupEditor_(PopupEditorAction.TRY_COMMIT);
+    } else if (e.key === 'Escape') {
+      this.hidePopupEditor_(PopupEditorAction.DISCARD);
     }
   }
 }
