@@ -1,6 +1,6 @@
 <div class="scale-table-wrapper">
 
-<table mat-table [dataSource]="dataSource" class="scale-table mat-elevation-z2"
+<table #scaleTable mat-table [dataSource]="dataSource" class="scale-table mat-elevation-z2"
        (click)="handleTableClick($event)">
   <ng-container [matColumnDef]="ScaleTableCol.INPUT_KEY">
     <th mat-header-cell *matHeaderCellDef></th>
@@ -57,11 +57,11 @@
   <tr mat-row *matRowDef="let row; columns: displayedColumns;" [attr.data-deg-idx]="row.deg.index"></tr>
 </table>
 
-<mat-card #scaleFieldEditor class="scale-field-editor mat-elevation-z6"
+<mat-card #popupEditor class="scale-field-editor mat-elevation-z6"
           [style.display]="showPopupEditor ? 'block' : 'none'">
-  <mat-form-field appearance="standard">
-    <mat-label>Ratio</mat-label>
-    <input #popupInput matInput value="345.6789">
+  <mat-form-field #popupField appearance="standard">
+    <mat-label>{{popupLabel}}</mat-label>
+    <input #popupInput matInput (blur)="handlePopupInputBlur()">
   </mat-form-field>
 </mat-card>
 

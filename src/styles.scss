@@ -46,3 +46,8 @@ a.mat-raised-button {
 strong {
   font-weight: $font-body-med-weight;
 }
+
+.warning-snackbar {
+  background-color: $color-warning;
+  color: $color-text;
+}

@@ -8,6 +8,7 @@ $palette-warn: mat-palette($mat-red);
 
 $color-primary: mat-color($palette-primary, 600);
 $color-secondary: mat-color($palette-secondary, 700);
+$color-warning: mat-color($mat-amber, 400);
 
 $color-link: mat-color($palette-secondary, 500);
 $color-link-visited: mat-color($palette-secondary, 500);
