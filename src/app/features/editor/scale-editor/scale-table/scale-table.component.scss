@@ -46,6 +46,17 @@
   color: $color-text-label;
 }
 
+.mat-header-cell {
+  .scale-measure-from-wrapper {
+    padding-left: 0.5em;
+  }
+}
+
+.menu-header {
+  color: $color-text-label;
+  padding: 0 1em;
+}
+
 .mat-cell {
   .scale-deg {
     font-weight: bold;
@@ -76,4 +87,13 @@
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.scale-measure-from-wrapper {
+  display: flex;
+
+  button {
+    min-width: 0;
+    padding: 0 0.5em;
+  }
 }

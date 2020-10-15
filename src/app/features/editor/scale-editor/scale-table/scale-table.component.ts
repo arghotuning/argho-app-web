@@ -19,6 +19,7 @@ import {
   ArghoEditorModel,
   DisplayedIndex,
   DisplayedMidiPitch,
+  MeasureFromPreset,
   ScaleRoot,
   UpperDegrees,
 } from '@arghotuning/argho-editor';
@@ -28,6 +29,7 @@ import {
   TunedInterval,
   TunedIntervalSpecType,
 } from '@arghotuning/arghotun';
+import {faAngleDown} from '@fortawesome/free-solid-svg-icons';
 
 function toRatioString(tunedInterval: TunedInterval): string {
   const num = tunedInterval.getRatioNumerator();
@@ -101,6 +103,9 @@ const SNACKBAR_DURATION_MS = 2000;
 })
 export class ScaleTableComponent {
   ScaleTableCol = ScaleTableCol;
+
+  // Font Awesome icons:
+  faAngleDown = faAngleDown;
 
   private readonly model: ArghoEditorModel;
 
@@ -435,5 +440,13 @@ export class ScaleTableComponent {
     } else if (e.key === 'Escape') {
       this.hidePopupEditor_(PopupEditorAction.DISCARD);
     }
+  }
+
+  async setMeasureFromScaleRoot(): Promise<void> {
+    await this.model.setMeasureFromPreset(MeasureFromPreset.SCALE_ROOT);
+  }
+
+  async setMeasureFromDegBelow(): Promise<void> {
+    await this.model.setMeasureFromPreset(MeasureFromPreset.DEGREE_BELOW);
   }
 }

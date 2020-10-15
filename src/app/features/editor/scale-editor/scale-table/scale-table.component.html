@@ -20,7 +20,17 @@
   </ng-container>
 
   <ng-container [matColumnDef]="ScaleTableCol.MEASURE_FROM">
-    <th mat-header-cell *matHeaderCellDef><span class="scale-measure-from">Meas.<br>From</span></th>
+    <th mat-header-cell *matHeaderCellDef>
+      <div class="scale-measure-from-wrapper">
+        <span class="scale-measure-from">Meas.<br>From</span>
+        <button mat-button [matMenuTriggerFor]="measFromMenu"><fa-icon [icon]="faAngleDown"></fa-icon></button>
+        <mat-menu #measFromMenu="matMenu">
+          <div class="menu-header">Measure all from</div>
+          <button mat-menu-item (click)="setMeasureFromScaleRoot()">Root</button>
+          <button mat-menu-item (click)="setMeasureFromDegBelow()">Degree Below</button>
+        </mat-menu>
+      </div>
+    </th>
     <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
       <span class="scale-measure-from">{{element.measureFrom?.displayNumber || '-'}}</span>
     </td>
