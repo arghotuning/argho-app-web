@@ -10,7 +10,7 @@
     <mat-form-field appearance="fill" backgroundColor="primary">
       <mat-label>Tuning Name</mat-label>
       <input #tuningNameInput matInput class="tuning-name" [value]="tuningMetadata.name"
-            (change)="handleNameChange()" maxlength="100">
+            (change)="handleNameChange()" (keydown.enter)="$event.target.blur()" maxlength="100">
     </mat-form-field>
 
     <mat-form-field appearance="fill" backgroundColor="primary">

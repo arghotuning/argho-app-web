@@ -84,6 +84,10 @@ export class TuningMetadataComponent {
     this.model.setTuningName(this.getAndMaybeCorrectName_());
   }
 
+  handleNameEnter(): void {
+    this.tuningNameInput?.nativeElement.blur();
+  }
+
   private getAndMaybeCorrectDesc_(): string {
     if (!this.tuningDescInput) {
       return '';

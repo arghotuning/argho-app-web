@@ -4,7 +4,7 @@
   <mat-form-field appearance="fill" backgroundColor="primary" hintLabel="between 2 and 128">
     <input type="number" #numDegreesInput matInput class="scale-num-degrees" [value]="newNumDegrees"
            (change)="handleValueChange(numDegreesInput.value)" [min]="minValue" [max]="maxValue"
-           autofocus>
+           autofocus (keydown.enter)="$event.target.blur()">
   </mat-form-field>
 
   <div class="degrees-change-info">
