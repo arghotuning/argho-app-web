@@ -23,7 +23,9 @@
     <th mat-header-cell *matHeaderCellDef>
       <div class="scale-measure-from-wrapper">
         <span class="scale-measure-from">Meas.<br>From</span>
-        <button mat-button [matMenuTriggerFor]="measFromMenu"><fa-icon [icon]="faAngleDown"></fa-icon></button>
+        <button mat-button [matMenuTriggerFor]="measFromMenu" aria-label="Select a measure from preset">
+          <fa-icon [icon]="faAngleDown"></fa-icon>
+        </button>
         <mat-menu #measFromMenu="matMenu">
           <div class="menu-header">Measure all from</div>
           <button mat-menu-item (click)="setMeasureFromScaleRoot()">Root</button>
