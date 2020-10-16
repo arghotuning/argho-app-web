@@ -169,4 +169,8 @@ export class ScaleRootComponent {
 
     this.centsOffsetInput.nativeElement.value = this.centsOffsetStrValue();
   }
+
+  blurTarget(eventTarget: EventTarget | null): void {
+    (eventTarget as HTMLElement).blur();
+  }
 }

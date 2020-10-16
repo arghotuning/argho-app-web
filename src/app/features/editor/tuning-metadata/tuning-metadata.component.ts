@@ -84,10 +84,6 @@ export class TuningMetadataComponent {
     this.model.setTuningName(this.getAndMaybeCorrectName_());
   }
 
-  handleNameEnter(): void {
-    this.tuningNameInput?.nativeElement.blur();
-  }
-
   private getAndMaybeCorrectDesc_(): string {
     if (!this.tuningDescInput) {
       return '';
@@ -116,5 +112,9 @@ export class TuningMetadataComponent {
       value === 'SHARPS' ?
         AccidentalDisplayPref.SHARPS :
         AccidentalDisplayPref.FLATS);
+  }
+
+  blurTarget(eventTarget: EventTarget | null): void {
+    (eventTarget as HTMLElement).blur();
   }
 }

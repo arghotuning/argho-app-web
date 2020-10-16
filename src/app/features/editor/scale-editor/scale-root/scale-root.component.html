@@ -2,7 +2,7 @@
   <mat-label>Global Tune</mat-label>
   <input type="number" #globalTuneInput matInput [value]="globalTuneStrValue()"
          [min]="minGlobalTune" [max]="maxGlobalTune" (blur)="handleGlobalTuneBlur()"
-         (keydown.enter)="$event.target.blur()">
+         (keydown.enter)="blurTarget($event.target)">
   <mat-hint><app-spelled-pitch [pitch]="globalTunePitch"></app-spelled-pitch> (Hz)</mat-hint>
 </mat-form-field>
 
@@ -19,7 +19,7 @@
   <mat-label>Exact Root</mat-label>
   <input type="number" #exactFreqInput matInput [value]="exactFreqStrValue()"
          [min]="minFreqHz" [max]="maxFreqHz" (blur)="handleExactFreqBlur()"
-         (keydown.enter)="$event.target.blur()">
+         (keydown.enter)="blurTarget($event.target)">
   <mat-hint>Freq (Hz)</mat-hint>
 </mat-form-field>
 
@@ -27,7 +27,7 @@
   <mat-form-field class="nearest-midi-pitch" appearance="fill" backgroundColor="primary">
     <mat-label>Nearest Pitch</mat-label>
     <input #nearestPitchInput matInput [value]="nearestPitchStrValue()"
-           (blur)="handleNearestPitchBlur()" (keydown.enter)="$event.target.blur()">
+           (blur)="handleNearestPitchBlur()" (keydown.enter)="blurTarget($event.target)">
     <mat-hint>to scale root</mat-hint>
   </mat-form-field>
 
@@ -35,7 +35,7 @@
     <mat-label>Cents Offset</mat-label>
     <input type="number" #centsOffsetInput matInput [value]="centsOffsetStrValue()"
             [min]="minCentsOffset" [max]="maxCentsOffset" (blur)="handleCentsOffsetBlur()"
-            (keydown.enter)="$event.target.blur()">
+            (keydown.enter)="blurTarget($event.target)">
     <mat-hint>from 12TET</mat-hint>
   </mat-form-field>
 </ng-container>

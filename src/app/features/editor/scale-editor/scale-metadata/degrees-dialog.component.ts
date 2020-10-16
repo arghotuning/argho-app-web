@@ -64,4 +64,8 @@ export class DegreesDialogComponent {
     this.model.resetNumDegrees(this.newNumDegrees);
     this.dialogRef.close();
   }
+
+  blurTarget(eventTarget: EventTarget | null): void {
+    (eventTarget as HTMLElement).blur();
+  }
 }

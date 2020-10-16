@@ -4,7 +4,7 @@
   <mat-form-field appearance="fill" backgroundColor="primary" hintLabel="between 1 and 13">
     <input type="number" #numOctavesInput matInput class="scale-num-octaves" [value]="newNumOctaves"
            (change)="handleValueChange(numOctavesInput.value)" [min]="minValue" [max]="maxValue"
-           autofocus (keydown.enter)="$event.target.blur()">
+           autofocus (keydown.enter)="blurTarget($event.target)">
   </mat-form-field>
 
   <div class="octaves-change-info">

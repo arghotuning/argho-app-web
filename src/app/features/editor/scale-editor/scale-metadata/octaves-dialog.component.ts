@@ -64,4 +64,8 @@ export class OctavesDialogComponent {
     this.model.setOctavesSpanned(this.newNumOctaves);
     this.dialogRef.close();
   }
+
+  blurTarget(eventTarget: EventTarget | null): void {
+    (eventTarget as HTMLElement).blur();
+  }
 }
