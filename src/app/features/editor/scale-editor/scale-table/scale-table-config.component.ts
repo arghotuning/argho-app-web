@@ -4,13 +4,18 @@ import {
 } from 'src/app/infra/ui/scale-table/scale-table-ui-config';
 import {ScaleTableService} from 'src/app/infra/ui/scale-table/scale-table.service';
 
-import {ChangeDetectorRef, Component} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+} from '@angular/core';
 import {faCheck, faChevronCircleDown} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-scale-table-config',
   templateUrl: './scale-table-config.component.html',
   styleUrls: ['./scale-table-config.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScaleTableConfigComponent {
   // Font Awesome icons:

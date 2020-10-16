@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.mapping-metadata-block {
+  padding-right: 1em;
+
+  .mat-button {
+    padding: 0 0.5em;
+    min-width: 3.5em;
+  }
+}

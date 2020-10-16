@@ -6,6 +6,9 @@ import {NgModule} from '@angular/core';
 import {EditorComponent} from './editor.component';
 import {FileButtonsComponent} from './file-buttons/file-buttons.component';
 import {MappingEditorComponent} from './mapping-editor/mapping-editor.component';
+import {KeySpanDialogComponent} from './mapping-editor/mapping-metadata/key-span-dialog.component';
+import {MappingMetadataComponent} from './mapping-editor/mapping-metadata/mapping-metadata.component';
+import {MappingTableComponent} from './mapping-editor/mapping-table/mapping-table.component';
 import {ScaleEditorComponent} from './scale-editor/scale-editor.component';
 import {DegreesDialogComponent} from './scale-editor/scale-metadata/degrees-dialog.component';
 import {OctavesDialogComponent} from './scale-editor/scale-metadata/octaves-dialog.component';
@@ -22,7 +25,10 @@ import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
     DegreesDialogComponent,
     EditorComponent,
     FileButtonsComponent,
+    KeySpanDialogComponent,
     MappingEditorComponent,
+    MappingMetadataComponent,
+    MappingTableComponent,
     OctavesDialogComponent,
     ScaleEditorComponent,
     ScaleMetadataComponent,
@@ -39,6 +45,7 @@ import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
   ],
   entryComponents: [
     DegreesDialogComponent,
+    KeySpanDialogComponent,
     OctavesDialogComponent,
   ],
   exports: [EditorComponent],

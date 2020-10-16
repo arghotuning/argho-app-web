@@ -12,36 +12,36 @@ import {ArghoEditorModel} from '@arghotuning/argho-editor';
 import {ArghoTuningLimits} from '@arghotuning/arghotun';
 
 @Component({
-  selector: 'app-degrees-dialog',
-  templateUrl: './degrees-dialog.component.html',
-  styleUrls: ['./degrees-dialog.component.scss'],
+  selector: 'app-key-span-dialog',
+  templateUrl: './key-span-dialog.component.html',
+  styleUrls: ['./key-span-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DegreesDialogComponent {
+export class KeySpanDialogComponent {
   private readonly model: ArghoEditorModel;
 
-  oldNumDegrees!: number;
-  newNumDegrees!: number;
+  oldKeySpan!: number;
+  newKeySpan!: number;
 
-  minValue = ArghoTuningLimits.SCALE_DEGREES_MIN;
-  maxValue = ArghoTuningLimits.SCALE_DEGREES_MAX;
+  minValue = ArghoTuningLimits.KEY_SPAN_MIN;
+  maxValue = ArghoTuningLimits.KEY_SPAN_MAX;
 
   isValid = true;
 
-  @ViewChild('numDegreesInput')
-  numDegreesInput: ElementRef<HTMLInputElement> | undefined;
+  @ViewChild('keySpanInput')
+  keySpanInput: ElementRef<HTMLInputElement> | undefined;
 
   constructor(
     data: TuningDataService,
     changeDetector: ChangeDetectorRef,
-    private readonly dialogRef: MatDialogRef<DegreesDialogComponent>,
+    private readonly dialogRef: MatDialogRef<KeySpanDialogComponent>,
   ) {
     this.model = data.model;
 
-    // Note: Always called back synchronously.
-    this.model.scaleMetadata().subscribe(scaleMetadata => {
-      this.oldNumDegrees = scaleMetadata.numDegrees;
-      this.newNumDegrees = scaleMetadata.numDegrees;
+    // Note: Called back synchronously the first time.
+    this.model.mappedKeys().subscribe(mappedKeys => {
+      this.oldKeySpan = mappedKeys.keySpan;
+      this.newKeySpan = mappedKeys.keySpan;
       changeDetector.markForCheck();
     });
   }
@@ -49,19 +49,19 @@ export class DegreesDialogComponent {
   handleValueChange(value: string): void {
     // Validate user input.
     const parseResult =
-      this.model.inputParser().forScaleMetadata().parseNumScaleDegrees(value);
+        this.model.inputParser().forMappedKeys().parseKeySpan(value);
     this.isValid = parseResult.hasValidValue();
 
     if (this.isValid) {
-      this.newNumDegrees = parseResult.getValue();
-      if (this.numDegreesInput) {
-        this.numDegreesInput.nativeElement.value = this.newNumDegrees.toString();
+      this.newKeySpan = parseResult.getValue();
+      if (this.keySpanInput) {
+        this.keySpanInput.nativeElement.value = this.newKeySpan.toString();
       }
     }
   }
 
   commit(): void {
-    this.model.resetNumDegrees(this.newNumDegrees);
+    this.model.setMappingKeySpan(this.newKeySpan);
     this.dialogRef.close();
   }
 

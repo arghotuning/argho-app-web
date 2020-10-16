@@ -29,7 +29,7 @@ export class OctavesDialogComponent {
   isValid = true;
 
   @ViewChild('numOctavesInput')
-  tuningNameInput: ElementRef<HTMLInputElement> | undefined;
+  numOctavesInput: ElementRef<HTMLInputElement> | undefined;
 
   constructor(
     data: TuningDataService,
@@ -54,8 +54,8 @@ export class OctavesDialogComponent {
 
     if (parseResult.hasValidValue()) {
       this.newNumOctaves = parseResult.getValue();
-      if (this.tuningNameInput) {
-        this.tuningNameInput.nativeElement.value = this.newNumOctaves.toString();
+      if (this.numOctavesInput) {
+        this.numOctavesInput.nativeElement.value = this.newNumOctaves.toString();
       }
     }
   }

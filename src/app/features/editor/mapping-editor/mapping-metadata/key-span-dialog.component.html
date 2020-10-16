@@ -1,0 +1,26 @@
+<h1 mat-dialog-title># Chromatic Keys Spanned</h1>
+
+<div mat-dialog-content>
+  <mat-form-field appearance="fill" backgroundColor="primary" hintLabel="between 2 and 128">
+    <input type="number" #keySpanInput matInput class="mapping-key-span" [value]="newKeySpan"
+           (change)="handleValueChange(keySpanInput.value)" [min]="minValue" [max]="maxValue"
+           autofocus (keydown.enter)="blurTarget($event.target)">
+  </mat-form-field>
+
+  <div class="key-span-change-info">
+    <ng-container *ngIf="newKeySpan < oldKeySpan">
+      This will <strong>remove {{oldKeySpan - newKeySpan}}</strong> mapped
+      {{oldKeySpan - newKeySpan == 1 ? 'key' : 'keys'}} from the end.
+    </ng-container>
+    <ng-container *ngIf="oldKeySpan < newKeySpan">
+      This will <strong>add {{newKeySpan - oldKeySpan}}</strong> mapped
+      {{newKeySpan - oldKeySpan == 1 ? 'key' : 'keys'}} to the end. New keys will start out as
+      unmapped, until you assign scale degrees to them.
+    </ng-container>
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <button class="ok-btn" mat-button (click)="commit()" [disabled]="!isValid">Ok</button>
+  <button class="cancel-btn" mat-button mat-dialog-close>Cancel</button>
+</div>

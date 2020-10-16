@@ -6,4 +6,4 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
   styleUrls: ['./mapping-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MappingEditorComponent { }
+export class MappingEditorComponent {}
