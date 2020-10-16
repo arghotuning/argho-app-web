@@ -301,7 +301,7 @@ export class ScaleTableComponent {
     }
   }
 
-  private showPopupEditor_(cellEl: Element) {
+  private showPopupEditor_(cellEl: Element): void {
     this.hidePopupEditor_(PopupEditorAction.TRY_COMMIT);
     if (!this.popupEditor || !this.popupField || !this.popupInput) {
       return;

@@ -28,14 +28,12 @@
   <tr mat-row *matRowDef="let row; columns: columns;" [attr.data-key-idx]="row.key.index"></tr>
 </table>
 
-<!--
 <mat-card #popupEditor class="mapping-field-editor mat-elevation-z6"
           [style.display]="showPopupEditor ? 'block' : 'none'">
   <mat-form-field #popupField appearance="standard">
-    <mat-label>{{popupLabel}}</mat-label>
-    <input #popupInput matInput (blur)="handlePopupInputBlur()">
+    <mat-label>Scale Deg.</mat-label>
+    <input #popupInput type="text" matInput (blur)="handlePopupInputBlur()">
   </mat-form-field>
 </mat-card>
--->
 
 </div>
