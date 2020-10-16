@@ -1,5 +1,9 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {UiInfraModule} from 'src/app/infra/ui/ui.module';
 
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
+
+import {ErrorDialogComponent} from './error-dialog.component';
 import {FileButtonsComponent} from './file-buttons.component';
 
 describe('FileButtonsComponent', () => {
@@ -9,6 +13,11 @@ describe('FileButtonsComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [FileButtonsComponent],
+      imports: [UiInfraModule],
+    }).overrideModule(BrowserDynamicTestingModule, {
+      set: {
+        entryComponents: [ErrorDialogComponent],
+      },
     }).compileComponents();
   }));
 

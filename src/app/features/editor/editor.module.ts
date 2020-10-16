@@ -4,6 +4,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 
 import {EditorComponent} from './editor.component';
+import {ErrorDialogComponent} from './file-buttons/error-dialog.component';
 import {FileButtonsComponent} from './file-buttons/file-buttons.component';
 import {MappingEditorComponent} from './mapping-editor/mapping-editor.component';
 import {KeySpanDialogComponent} from './mapping-editor/mapping-metadata/key-span-dialog.component';
@@ -24,6 +25,7 @@ import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
   declarations: [
     DegreesDialogComponent,
     EditorComponent,
+    ErrorDialogComponent,
     FileButtonsComponent,
     KeySpanDialogComponent,
     MappingEditorComponent,
@@ -45,6 +47,7 @@ import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
   ],
   entryComponents: [
     DegreesDialogComponent,
+    ErrorDialogComponent,
     KeySpanDialogComponent,
     OctavesDialogComponent,
   ],

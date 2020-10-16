@@ -8,7 +8,7 @@
 </button>
 
 <a #saveButton mat-button color="primary" (click)="saveTuning()">
-  <fa-icon [icon]="faSave"></fa-icon> SAVE
+  <fa-icon [icon]="faSave"></fa-icon> SAVE{{hasUnsavedChanges ? '*' : ''}}
 </a>
 
 <a mat-button color="accent" href="/explore"><fa-icon [icon]="faCompass"></fa-icon> Explore world tunings</a>

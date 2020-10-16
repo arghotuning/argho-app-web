@@ -2,10 +2,13 @@ import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
+  HostListener,
   ViewChild,
 } from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {ArghoEditorContext, ArghoEditorModel} from '@arghotuning/argho-editor';
 import {Tuning, TuningJsonSerializer} from '@arghotuning/arghotun';
@@ -15,6 +18,8 @@ import {
   faSave,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
+
+import {ErrorDialogComponent, ErrorDialogData} from './error-dialog.component';
 
 const NON_ALPHANUMERIC = /[^a-z0-9]/gi;
 
@@ -37,6 +42,8 @@ export class FileButtonsComponent {
   private readonly context: ArghoEditorContext;
   private readonly model: ArghoEditorModel;
 
+  hasUnsavedChanges = false;
+
   // Font Awesome icons:
   faFile = faFile;
   faUpload = faUpload;
@@ -52,18 +59,45 @@ export class FileButtonsComponent {
   constructor(
     data: TuningDataService,
     private readonly snackBar: MatSnackBar,
+    private readonly dialog: MatDialog,
+    private readonly changeDetector: ChangeDetectorRef,
   ) {
     this.context = data.context;
     this.model = data.model;
+
+    // Listen for any unsaved changes.
+    const subscriber = () => this.handleModelChange_();
+    this.model.tuningMetadata().subscribe(subscriber);
+    this.model.scaleMetadata().subscribe(subscriber);
+    this.model.scaleRoot().subscribe(subscriber);
+    this.model.upperDegrees().subscribe(subscriber);
+    this.model.mappedKeys().subscribe(subscriber);
+
+    // (Must re-initialize this to ignore the first-time synchronous callbacks).
+    this.hasUnsavedChanges = false;
   }
 
-  resetTuning() {
+  private handleModelChange_(): void {
+    this.hasUnsavedChanges = true;
+    this.changeDetector.markForCheck();
+  }
+
+  private clearUnsavedChanges_(): void {
+    // Run this async to make sure any pending changes don't interfere.
+    setTimeout(() => {
+      this.hasUnsavedChanges = false;
+      this.changeDetector.detectChanges();
+    }, 10);
+  }
+
+  async resetTuning(): Promise<void> {
     // TODO: Track pending changes and confirm before losing them.
     // Also catch navigation away from page.
-    this.model.resetToDefault12tet();
+    await this.model.resetToDefault12tet();
+    this.clearUnsavedChanges_();
   }
 
-  openFile() {
+  async openFile(): Promise<void> {
     if (!this.fileInput) {
       return;
     }
@@ -76,9 +110,9 @@ export class FileButtonsComponent {
     const file = fileList[0];
 
     const reader = new FileReader();
-    reader.addEventListener('load', loadEvent => {
+    reader.addEventListener('load', async loadEvent => {
       if (loadEvent.target?.result) {
-        this.parseAndLoadTuning_(String(loadEvent.target?.result));
+        await this.parseAndLoadTuning_(String(loadEvent.target?.result));
       }
 
       // Always clear file value when done, so future changes update.
@@ -88,7 +122,11 @@ export class FileButtonsComponent {
     });
 
     reader.addEventListener('error', errorEvent => {
-      // TODO: Show error to user.
+      const dialogData: ErrorDialogData = {
+        title: 'Error opening file',
+        msgs: [reader.error!.message],
+      };
+      this.dialog.open(ErrorDialogComponent, {data: dialogData});
 
       // Always clear file value when done, so future changes update.
       if (this.fileInput) {
@@ -104,10 +142,20 @@ export class FileButtonsComponent {
       const parseResult = await this.model.loadTuningFromJsonString(inputJsonString);
 
       if (parseResult.warnings.length >= 1) {
-        // TODO: Show warnings here.
+        const dialogData: ErrorDialogData = {
+          title: 'File parse warnings',
+          msgs: parseResult.warnings,
+        };
+        this.dialog.open(ErrorDialogComponent, {data: dialogData});
       }
+
+      this.clearUnsavedChanges_();
     } catch (e) {
-      // TODO: Show (e as Error).message to user in dialog.
+      const dialogData: ErrorDialogData = {
+        title: 'File parse error',
+        msgs: [(e as Error).message],
+      };
+      this.dialog.open(ErrorDialogComponent, {data: dialogData});
     }
   }
 
@@ -128,5 +176,12 @@ export class FileButtonsComponent {
     this.saveButton.nativeElement.href = jsonBlobUrl;
     this.saveButton.nativeElement.target = '_blank';
     this.saveButton.nativeElement.download = getDefaultDownloadFileName(tuningSnapshot);
+
+    this.clearUnsavedChanges_();
+  }
+
+  @HostListener('window:beforeunload')
+  handleBeforeUnload(): boolean {
+    return !this.hasUnsavedChanges;
   }
 }

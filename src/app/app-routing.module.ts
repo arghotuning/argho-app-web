@@ -27,6 +27,6 @@ const routes: Routes = [
     RouterModule.forRoot(routes),
     SimplePagesModule,
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

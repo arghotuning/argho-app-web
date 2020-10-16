@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+
+<div mat-dialog-content>
+  <ul class="error-list">
+    <li *ngFor="let msg of data.msgs">{{msg}}</li>
+  </ul>
+</div>
+
+<div mat-dialog-actions>
+  <button class="ok-btn" mat-button mat-dialog-close>Ok</button>
+</div>
