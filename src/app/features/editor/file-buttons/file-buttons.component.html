@@ -1,4 +1,14 @@
-<button mat-button color="primary"><fa-icon [icon]="faFile"></fa-icon> NEW</button>
-<button mat-button color="primary"><fa-icon [icon]="faUpload"></fa-icon> OPEN</button>
-<button mat-button color="primary"><fa-icon [icon]="faSave"></fa-icon> SAVE</button>
+<button mat-button color="primary" (click)="resetTuning()">
+  <fa-icon [icon]="faFile"></fa-icon> NEW
+</button>
+
+<input #fileInput type="file" accept=".arghotun" style="display: none" (change)="openFile()">
+<button mat-button color="primary" (click)="fileInput.click()">
+  <fa-icon [icon]="faUpload"></fa-icon> OPEN
+</button>
+
+<a #saveButton mat-button color="primary" (click)="saveTuning()">
+  <fa-icon [icon]="faSave"></fa-icon> SAVE
+</a>
+
 <a mat-button color="accent" href="/explore"><fa-icon [icon]="faCompass"></fa-icon> Explore world tunings</a>
