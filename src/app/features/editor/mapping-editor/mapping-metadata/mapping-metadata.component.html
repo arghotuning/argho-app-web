@@ -1,4 +1,13 @@
 <div class="mapping-metadata-block">
+  <mat-form-field class="mapping-root" appearance="fill" backgroundColor="primary">
+    <mat-label>Mapping Root</mat-label>
+    <input #mappingRootInput matInput [value]="mappingRootPitchStrValue()"
+           (blur)="handleMappingRootBlur()" (keydown.enter)="blurTarget($event.target)">
+    <mat-hint>input key for scale root</mat-hint>
+  </mat-form-field>
+</div>
+
+<div class="mapping-metadata-block">
   <button mat-button (click)="openKeySpanDialog()">{{keySpan}} <fa-icon [icon]="faEdit"></fa-icon></button>
-  keys spanned
+  keys
 </div>

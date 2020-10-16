@@ -1,9 +1,12 @@
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {simpleAccidentalStr} from 'src/app/infra/ui/spelled-pitch/spelled-pitch-util';
 
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {ArghoEditorModel, DisplayedMidiPitch} from '@arghotuning/argho-editor';
@@ -22,6 +25,9 @@ export class MappingMetadataComponent {
 
   keySpan!: number;
   mappingRoot!: DisplayedMidiPitch;
+
+  @ViewChild('mappingRootInput')
+  mappingRootInput: ElementRef<HTMLInputElement> | undefined;
 
   // Font Awesome icons:
   faEdit = faEdit;
@@ -44,5 +50,30 @@ export class MappingMetadataComponent {
 
   openKeySpanDialog(): void {
     this.dialog.open(KeySpanDialogComponent);
+  }
+
+  mappingRootPitchStrValue() {
+    const pitch = this.mappingRoot;
+    return pitch.letter + simpleAccidentalStr(pitch.accidental) + pitch.octaveNumber;
+  }
+
+  async handleMappingRootBlur(): Promise<void> {
+    if (!this.mappingRootInput) {
+      return;
+    }
+
+    const parseResult = this.model.inputParser().forMappedKeys()
+        .parseRootMidiPitch(this.mappingRootInput.nativeElement.value);
+    if (parseResult.hasValidValue()) {
+      const update = parseResult.getValue();
+      await this.model.setMappingRootPitch(
+          update.rootMidiPitch, update.displayPref);
+    }
+
+    this.mappingRootInput.nativeElement.value = this.mappingRootPitchStrValue();
+  }
+
+  blurTarget(eventTarget: EventTarget | null): void {
+    (eventTarget as HTMLElement).blur();
   }
 }
