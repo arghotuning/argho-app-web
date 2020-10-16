@@ -48,7 +48,7 @@ function toFreqString(freqHz: FreqHz): string {
 }
 
 // NOTE: These must match up with .mat-column-* suffixes in CSS.
-export enum ScaleTableCol {
+enum ScaleTableCol {
   INPUT_KEY = 'inKey',
   DEG = 'deg',
   MEASURE_FROM = 'from',

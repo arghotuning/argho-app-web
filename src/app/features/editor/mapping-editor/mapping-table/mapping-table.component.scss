@@ -1,0 +1,30 @@
+@import '_colors';
+
+.mat-column-num {
+  padding-right: 0.5em;
+  text-align: right;
+}
+
+.mat-column-key {
+  padding-left: 1em;
+  padding-right: 1em;
+  text-align: center;
+}
+
+.mat-column-deg {
+  border-left: 1px solid #eee;
+  padding-left: 1em;
+  text-align: center;
+}
+
+.mat-cell {
+  .mapping-num {
+    color: $color-text-label;
+    font-size: 0.65rem;
+  }
+}
+
+.mat-cell.editable:hover {
+  background-color: $color-field-bg;
+  cursor: pointer;
+}

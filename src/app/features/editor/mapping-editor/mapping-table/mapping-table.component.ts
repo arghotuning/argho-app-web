@@ -5,7 +5,26 @@ import {
   ChangeDetectorRef,
   Component,
 } from '@angular/core';
-import {ArghoEditorModel, MappedKeys} from '@arghotuning/argho-editor';
+import {
+  ArghoEditorModel,
+  DisplayedIndex,
+  DisplayedMidiPitch,
+  MappedKeys,
+} from '@arghotuning/argho-editor';
+
+export interface MappingTableRow {
+  editable: boolean;
+  key: DisplayedIndex,
+  pitch?: DisplayedMidiPitch | null,
+  mappedDeg: DisplayedIndex | null,
+}
+
+// NOTE: These must match up with .mat-column-* suffixes in CSS.
+enum MappingTableCol {
+  NUM = 'num',
+  KEY = 'key',
+  DEG = 'deg',
+}
 
 @Component({
   selector: 'app-mapping-table',
@@ -14,9 +33,22 @@ import {ArghoEditorModel, MappedKeys} from '@arghotuning/argho-editor';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MappingTableComponent {
+  MappingTableCol = MappingTableCol;
+
   private readonly model: ArghoEditorModel;
 
   mappedKeys!: MappedKeys;
+
+  columns: MappingTableCol[] = [
+    MappingTableCol.NUM,
+    MappingTableCol.KEY,
+    MappingTableCol.DEG,
+  ];
+
+  dataSource: MappingTableRow[] = [];
+
+  showPopupEditor = false;
+  private popupEditorKeyIndex_: number | null = null;
 
   constructor(
     data: TuningDataService,
@@ -33,6 +65,17 @@ export class MappingTableComponent {
   }
 
   private updateTableData_() {
-    // TODO.
+    this.dataSource = this.mappedKeys.getAll().map(mappedKey => {
+      return {
+        editable: mappedKey.key.index !== 0,
+        key: mappedKey.key,
+        pitch: mappedKey.inputPitch,
+        mappedDeg: mappedKey.mappedDegree,
+      };
+    });
+  }
+
+  handleTableClick(e: MouseEvent) {
+    // TODO...
   }
 }
