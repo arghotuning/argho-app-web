@@ -14,7 +14,7 @@
 .mat-column-deg {
   border-left: 1px solid #eee;
   padding-left: 1em;
-  text-align: center;
+  text-align: left;
 }
 
 .mapping-table-wrapper {
@@ -42,4 +42,16 @@
   position: absolute;
   top: 0;
   left: 0;
+}
+
+.play-button-wrapper {
+  display: inline-block;
+  width: 1.5em;
+
+  .play-button {
+    color: $color-primary;
+    font-size: 0.65rem;
+    min-width: 0;
+    padding: 0 0.75em;
+  }
 }

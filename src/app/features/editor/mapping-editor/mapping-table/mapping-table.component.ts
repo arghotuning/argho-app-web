@@ -1,3 +1,4 @@
+import {StoppableNote, SynthService} from 'src/app/infra/synth/synth.service';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
 import {
@@ -14,7 +15,10 @@ import {
   DisplayedIndex,
   DisplayedMidiPitch,
   MappedKeys,
+  ScaleRoot,
+  UpperDegrees,
 } from '@arghotuning/argho-editor';
+import {faPlayCircle} from '@fortawesome/free-solid-svg-icons';
 
 export interface MappingTableRow {
   editable: boolean;
@@ -37,6 +41,12 @@ const POPUP_MIN_WIDTH_PX = 80;
 const POPUP_OFFSET_PX = 2;
 
 const SNACKBAR_DURATION_MS = 2000;
+const MIN_NOTE_DURATION_MS = 150;
+
+interface PlayingNote {
+  note: StoppableNote;
+  startTimeMs: number;
+}
 
 @Component({
   selector: 'app-mapping-table',
@@ -47,9 +57,14 @@ const SNACKBAR_DURATION_MS = 2000;
 export class MappingTableComponent {
   MappingTableCol = MappingTableCol;
 
+  // Font Awesome icons:
+  faPlayCircle = faPlayCircle;
+
   private readonly model: ArghoEditorModel;
 
   mappedKeys!: MappedKeys;
+  scaleRoot!: ScaleRoot;
+  upperDegrees!: UpperDegrees;
 
   columns: MappingTableCol[] = [
     MappingTableCol.NUM,
@@ -58,6 +73,8 @@ export class MappingTableComponent {
   ];
 
   dataSource: MappingTableRow[] = [];
+
+  private readonly playingNotes_: {[degIndex: number]: PlayingNote | null} = {};
 
   showPopupEditor = false;
   private popupEditorKeyIndex_: number | null = null;
@@ -76,6 +93,7 @@ export class MappingTableComponent {
 
   constructor(
     data: TuningDataService,
+    private readonly synth: SynthService,
     changeDetector: ChangeDetectorRef,
     private readonly snackBar: MatSnackBar,
   ) {
@@ -85,6 +103,18 @@ export class MappingTableComponent {
     this.model.mappedKeys().subscribe(mappedKeys => {
       this.mappedKeys = mappedKeys;
       this.updateTableData_();
+      changeDetector.markForCheck();
+    });
+
+    this.model.scaleRoot().subscribe(scaleRoot => {
+      this.scaleRoot = scaleRoot;
+      // Doesn't affect mapping table data, only playback...
+      changeDetector.markForCheck();
+    });
+
+    this.model.upperDegrees().subscribe(upperDegrees => {
+      this.upperDegrees = upperDegrees;
+      // Doesn't affect mapping table data, only playback...
       changeDetector.markForCheck();
     });
   }
@@ -102,10 +132,16 @@ export class MappingTableComponent {
 
   handleTableClick(e: MouseEvent) {
     let cellEl = e.target as Element;
+    if (cellEl.classList.contains('play-button')) {
+      return;
+    }
 
     // Find the containing table cell.
     while (cellEl.tagName !== 'TD' && cellEl !== e.currentTarget) {
       cellEl = cellEl.parentElement as Element;
+      if (cellEl.classList.contains('play-button')) {
+        return;
+      }
     }
     if (cellEl.tagName !== 'TD' || !cellEl.classList.contains('editable')) {
       return;
@@ -232,6 +268,35 @@ export class MappingTableComponent {
       this.hidePopupEditor_(PopupEditorAction.TRY_COMMIT);
     } else if (e.key === 'Escape') {
       this.hidePopupEditor_(PopupEditorAction.DISCARD);
+    }
+  }
+
+  playDegree(degIndex: number): void {
+    this.stopDegree(degIndex);
+
+    const freqHz = (degIndex === 0) ?
+        this.scaleRoot.rootFreqHz : this.upperDegrees.get(degIndex).freqHz;
+    this.playingNotes_[degIndex] = {
+      note: this.synth.playNoteOn(freqHz),
+      startTimeMs: Date.now(),
+    };
+  }
+
+  stopDegree(degIndex: number): void {
+    const playingNote = this.playingNotes_[degIndex];
+    this.playingNotes_[degIndex] = null;
+
+    if (playingNote) {
+      const minEndTimeMs = playingNote.startTimeMs + MIN_NOTE_DURATION_MS;
+      const nowMs = Date.now();
+      const remainingMs = Math.max(0, minEndTimeMs - nowMs);
+
+      if (remainingMs > 0) {
+        // Stop after note reaches minimum duration.
+        setTimeout(() => playingNote.note.stop(), remainingMs);
+      } else {
+        playingNote.note.stop();  // Stop immediately.
+      }
     }
   }
 }

@@ -20,7 +20,16 @@
   <ng-container [matColumnDef]="MappingTableCol.DEG">
     <th mat-header-cell *matHeaderCellDef><span class="mapping-deg">Scale Deg.</span></th>
     <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
-      <span class="mapping-deg">{{element.mappedDeg?.displayNumber || '-'}}</span>
+      <span class="mapping-deg">
+        <span class="play-button-wrapper">
+          <button *ngIf="element.mappedDeg" mat-button class="play-button" aria-label="Play"
+                  (mousedown)="playDegree(element.mappedDeg.index)"
+                  (mouseup)="stopDegree(element.mappedDeg.index)">
+            <fa-icon [icon]="faPlayCircle"></fa-icon>
+          </button>
+        </span>
+        {{element.mappedDeg?.displayNumber || '-'}}
+      </span>
     </td>
   </ng-container>
 
