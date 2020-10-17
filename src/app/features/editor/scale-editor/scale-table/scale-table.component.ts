@@ -1,3 +1,4 @@
+import {StoppableNote, SynthService} from 'src/app/infra/synth/synth.service';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 import {toFixedClean} from 'src/app/infra/ui/numeric/numeric-util';
 import {
@@ -29,7 +30,11 @@ import {
   TunedInterval,
   TunedIntervalSpecType,
 } from '@arghotuning/arghotun';
-import {faAngleDown} from '@fortawesome/free-solid-svg-icons';
+import {
+  faAngleDown,
+  faPlay,
+  faPlayCircle,
+} from '@fortawesome/free-solid-svg-icons';
 
 function toRatioString(tunedInterval: TunedInterval): string {
   const num = tunedInterval.getRatioNumerator();
@@ -94,6 +99,12 @@ const POPUP_MIN_WIDTH_PX = 80;
 const POPUP_OFFSET_PX = 2;
 
 const SNACKBAR_DURATION_MS = 2000;
+const MIN_NOTE_DURATION_MS = 150;
+
+interface PlayingNote {
+  note: StoppableNote;
+  startTimeMs: number;
+}
 
 @Component({
   selector: 'app-scale-table',
@@ -106,6 +117,7 @@ export class ScaleTableComponent {
 
   // Font Awesome icons:
   faAngleDown = faAngleDown;
+  faPlayCircle = faPlayCircle;
 
   private readonly model: ArghoEditorModel;
 
@@ -114,6 +126,8 @@ export class ScaleTableComponent {
 
   displayedColumns: ScaleTableCol[] = [];
   dataSource: TuningTableRow[] = [];
+
+  private readonly playingNotes_: {[degIndex: number]: PlayingNote | null} = {};
 
   showPopupEditor = false;
   popupLabel = '';
@@ -135,6 +149,7 @@ export class ScaleTableComponent {
   constructor(
     data: TuningDataService,
     uiService: ScaleTableService,
+    private readonly synth: SynthService,
     changeDetector: ChangeDetectorRef,
     private readonly snackBar: MatSnackBar,
   ) {
@@ -210,10 +225,16 @@ export class ScaleTableComponent {
 
   handleTableClick(e: MouseEvent) {
     let cellEl = e.target as Element;
+    if (cellEl.classList.contains('play-button')) {
+      return;
+    }
 
     // Find the containing table cell.
     while (cellEl.tagName !== 'TD' && cellEl !== e.currentTarget) {
       cellEl = cellEl.parentElement as Element;
+      if (cellEl.classList.contains('play-button')) {
+        return;
+      }
     }
     if (cellEl.tagName !== 'TD' || !cellEl.classList.contains('editable')) {
       return;
@@ -448,5 +469,34 @@ export class ScaleTableComponent {
 
   async setMeasureFromDegBelow(): Promise<void> {
     await this.model.setMeasureFromPreset(MeasureFromPreset.DEGREE_BELOW);
+  }
+
+  playDegree(degIndex: number): void {
+    this.stopDegree(degIndex);
+
+    const freqHz = (degIndex === 0) ?
+        this.scaleRoot.rootFreqHz : this.upperDegrees.get(degIndex).freqHz;
+    this.playingNotes_[degIndex] = {
+      note: this.synth.playNoteOn(freqHz),
+      startTimeMs: Date.now(),
+    };
+  }
+
+  stopDegree(degIndex: number): void {
+    const playingNote = this.playingNotes_[degIndex];
+    this.playingNotes_[degIndex] = null;
+
+    if (playingNote) {
+      const minEndTimeMs = playingNote.startTimeMs + MIN_NOTE_DURATION_MS;
+      const nowMs = Date.now();
+      const remainingMs = Math.max(0, minEndTimeMs - nowMs);
+
+      if (remainingMs > 0) {
+        // Stop after note reaches minimum duration.
+        setTimeout(() => playingNote.note.stop(), remainingMs);
+      } else {
+        playingNote.note.stop();  // Stop immediately.
+      }
+    }
   }
 }
