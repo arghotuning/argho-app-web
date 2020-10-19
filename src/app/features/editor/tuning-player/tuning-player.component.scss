@@ -19,11 +19,7 @@ $field-gap: 1em;
     margin-bottom: $field-gap;
   }
 
-  .midi-inputs {
-    width: 12em;
-  }
-
-  .midi-channel {
-    width: 6em;
-  }
+  .midi-inputs { width: 12em; }
+  .midi-channel { width: 6em; }
+  .waveform { width: 8em; }
 }

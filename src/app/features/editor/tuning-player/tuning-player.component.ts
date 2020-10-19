@@ -4,6 +4,7 @@ import {
   WebMidiAccessState,
   WebMidiInputPort,
 } from 'src/app/infra/synth/midi.service';
+import {OscWaveform, SynthService} from 'src/app/infra/synth/synth.service';
 
 import {
   ChangeDetectionStrategy,
@@ -25,9 +26,11 @@ export class TuningPlayerComponent {
   allInputPorts: WebMidiInputPort[] = [];
   activeInput: OpenedMidiInput | null = null;
   channel = 'omni';
+  waveform!: OscWaveform;
 
   constructor(
     private readonly midiService: MidiService,
+    private readonly synth: SynthService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {
     this.midiService.accessState().subscribe(accessState => {
@@ -35,6 +38,11 @@ export class TuningPlayerComponent {
       if (this.accessState === WebMidiAccessState.GRANTED) {
         this.initInputs_();
       }
+      this.changeDetector.markForCheck();
+    });
+
+    this.synth.waveform().subscribe(waveform => {
+      this.waveform = waveform;
       this.changeDetector.markForCheck();
     });
   }
@@ -73,5 +81,9 @@ export class TuningPlayerComponent {
       ch = new DisplayedIndex(parseInt(chanStr) - 1);
     }
     this.midiService.setMidiChannel(ch);
+  }
+
+  handleWaveformChange(waveform: OscWaveform): void {
+    this.synth.setOscWaveform(waveform);
   }
 }

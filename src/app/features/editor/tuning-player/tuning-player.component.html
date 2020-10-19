@@ -59,4 +59,14 @@
       <mat-option value="16">16</mat-option>
     </mat-select>
   </mat-form-field>
+
+  <mat-form-field class="waveform" appearance="fill" backgroundColor="primary">
+    <mat-label>Waveform</mat-label>
+    <mat-select [value]="waveform" (selectionChange)="handleWaveformChange($event.value)">
+      <mat-option value="sine">Sine</mat-option>
+      <mat-option value="triangle">Triangle</mat-option>
+      <mat-option value="square">Square</mat-option>
+      <mat-option value="sawtooth">Sawtooth</mat-option>
+    </mat-select>
+  </mat-form-field>
 </div>

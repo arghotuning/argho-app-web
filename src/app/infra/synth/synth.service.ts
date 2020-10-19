@@ -1,3 +1,5 @@
+import {BehaviorSubject, Observable} from 'rxjs';
+
 import {Injectable} from '@angular/core';
 import {FreqHz} from '@arghotuning/arghotun';
 
@@ -12,7 +14,8 @@ const audioContext = new window.AudioContext();
 
 const ATTACK_TIME_SECS = 0.04;
 const DECAY_TIME_SECS = 10.0;
-const RELEASE_TIME_SECS = 0.2;
+const RELEASE_TIME_SECS = 0.3;
+const STOP_TIME_SECS = 0.2;
 
 function newGlobalVolume(): GainNode {
   const globalVol = audioContext.createGain();
@@ -35,9 +38,11 @@ function newLimiter(): DynamicsCompressorNode {
   return limiter;
 }
 
-function newOscillator(): OscillatorNode {
+export type OscWaveform = 'sine' | 'triangle' | 'square' | 'sawtooth';
+
+function newOscillator(waveform: OscWaveform): OscillatorNode {
   const osc = audioContext.createOscillator();
-  osc.type = 'square';  // TODO: Allow customization.
+  osc.type = waveform;
   return osc;
 }
 
@@ -51,7 +56,7 @@ function newAmplitudeEnvelope(): GainNode {
 interface Voice {
   osc: OscillatorNode;
   ampEnv: GainNode;
-  isPlaying: boolean;
+  stopTimeSecs: number;
 }
 
 /** Interface for a single note that must be stopped to end its playback. */
@@ -65,6 +70,8 @@ export class SynthService {
   private readonly voices_: Voice[] = [];
   private readonly globalVol_: GainNode;
   private readonly limiter_: DynamicsCompressorNode;
+
+  private waveform_ = new BehaviorSubject<OscWaveform>('square');
 
   constructor() {
     this.globalVol_ = newGlobalVolume();
@@ -80,10 +87,10 @@ export class SynthService {
    */
   playNoteOn(freqHz: FreqHz): StoppableNote {
     const voice = this.getOrCreateFreeVoice_();
-    voice.isPlaying = true;
 
     const currentTime = audioContext.currentTime;
     voice.osc.frequency.setValueAtTime(freqHz, currentTime);
+    voice.ampEnv.gain.setValueAtTime(0.0, currentTime);
 
     const peakTime = currentTime + ATTACK_TIME_SECS;
     voice.ampEnv.gain.linearRampToValueAtTime(1.0, peakTime);
@@ -96,36 +103,58 @@ export class SynthService {
     const maxTrueEndTime = maxReleaseTime + RELEASE_TIME_SECS;
     voice.ampEnv.gain.linearRampToValueAtTime(0.0, maxTrueEndTime);
 
+    voice.stopTimeSecs = maxTrueEndTime;
+
     voice.osc.start();
 
     return {
       stop() {
         const actualReleaseTime = audioContext.currentTime;
-        const actualEndTime = actualReleaseTime + RELEASE_TIME_SECS;
-        voice.ampEnv.gain.linearRampToValueAtTime(0.0, actualEndTime);
+        voice.ampEnv.gain.cancelScheduledValues(actualReleaseTime);
 
-        setTimeout(() => {
-          voice.osc.stop();
-          voice.isPlaying = false;  // Make available for future notes.
-        }, 1000 * 1.05 * RELEASE_TIME_SECS);
+        voice.ampEnv.gain.setValueAtTime(voice.ampEnv.gain.value, actualReleaseTime);
+
+        const actualEndTime = actualReleaseTime + RELEASE_TIME_SECS;
+        voice.ampEnv.gain.exponentialRampToValueAtTime(0.0001, actualEndTime);
+
+        const safeStopTime = actualEndTime + STOP_TIME_SECS;
+        voice.ampEnv.gain.linearRampToValueAtTime(0.0, safeStopTime);
+
+        voice.osc.stop(safeStopTime);
+        voice.stopTimeSecs = safeStopTime;
       }
     };
   }
 
+  waveform(): Observable<OscWaveform> {
+    return this.waveform_;
+  }
+
+  setOscWaveform(waveform: OscWaveform): void {
+    // Update existing voice oscillators.
+    for (const voice of this.voices_) {
+      voice.osc.type = waveform;
+    }
+
+    this.waveform_.next(waveform);
+  }
+
   private getOrCreateFreeVoice_(): Voice {
+    const currentTime = audioContext.currentTime;
+
     // Reuse a free voice, if available.
-    const freeVoice = this.voices_.find(voice => !voice.isPlaying);
+    const freeVoice = this.voices_.find(voice => voice.stopTimeSecs < currentTime);
     if (freeVoice) {
       return freeVoice;
     }
 
     // No free voices; dynamically add another one.
-    const osc = newOscillator();
+    const osc = newOscillator(this.waveform_.value);
     const ampEnv = newAmplitudeEnvelope();
 
     osc.connect(ampEnv);
     ampEnv.connect(this.globalVol_);
 
-    return {osc, ampEnv, isPlaying: false};
+    return {osc, ampEnv, stopTimeSecs: currentTime};
   }
 }
