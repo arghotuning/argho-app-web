@@ -24,7 +24,8 @@
   text-align: center;
 }
 
-.mat-column-cents {
+.mat-column-cents,
+.mat-column-12tetCents {
   padding-left: 1em;
   padding-right: 1em;
   text-align: right;
@@ -34,6 +35,13 @@
   padding-left: 1em;
   padding-right: 1em;
   text-align: right;
+}
+
+.mat-column-12tetPitch {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  border-left: 1px solid #eee;
+  text-align: center;
 }
 
 .scale-table-wrapper {
@@ -66,12 +74,16 @@
   .scale-measure-from,
   .scale-ratio,
   .scale-cents,
-  .scale-freq {
+  .scale-freq,
+  .scale-12tet-offset {
     font-family: $font-monospace;
   }
 
   .scale-in-key {
     font-size: 0.65rem;
+  }
+  .scale-nearest-pitch {
+    font-size: 0.8rem;
   }
 }
 

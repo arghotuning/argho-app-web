@@ -26,6 +26,7 @@ import {
 } from '@arghotuning/argho-editor';
 import {
   ArghoTuningLimits,
+  Cents,
   FreqHz,
   TunedInterval,
   TunedIntervalSpecType,
@@ -44,8 +45,8 @@ function toRatioString(tunedInterval: TunedInterval): string {
   return `${numStr}\xa0/\xa0${den}`;  // '\xa0' is &nbsp; non-breaking space.
 }
 
-function toCentsString(tunedInterval: TunedInterval): string {
-  return toFixedClean(tunedInterval.getCents(), 4);
+function toCentsString(cents: Cents): string {
+  return toFixedClean(cents, 4);
 }
 
 function toFreqString(freqHz: FreqHz): string {
@@ -60,7 +61,8 @@ enum ScaleTableCol {
   RATIO = 'ratio',
   CENTS = 'cents',
   FREQ = 'freq',
-  // TODO: Add support for 12TET comparison.
+  NEAREST_12TET_PITCH = '12tetPitch',
+  CENTS_FROM_12TET = '12tetCents',
 }
 
 function colForCell(cellEl: Element): ScaleTableCol {
@@ -84,12 +86,14 @@ function popupLabelForCol(col: ScaleTableCol): string {
 
 export interface TuningTableRow {
   editable: boolean;
-  firstMappedPitch?: DisplayedMidiPitch | null,
+  firstMappedPitch?: DisplayedMidiPitch | null;
   deg: DisplayedIndex;
-  measureFrom?: DisplayedIndex,
+  measureFrom?: DisplayedIndex;
   ratio?: string;
   cents?: string;
   freqHz: string;
+  nearest12tetPitch: DisplayedMidiPitch;
+  centsFrom12tet: string;
 }
 
 /** Type of action to take when popup editor is dismissed. */
@@ -191,6 +195,10 @@ export class ScaleTableComponent {
     if (uiConfig.colGroups.contains(ScaleTableColGroup.FREQ)) {
       cols.push(ScaleTableCol.FREQ);
     }
+    if (uiConfig.colGroups.contains(ScaleTableColGroup.COMPARE_12TET)) {
+      cols.push(ScaleTableCol.NEAREST_12TET_PITCH);
+      cols.push(ScaleTableCol.CENTS_FROM_12TET);
+    }
     this.displayedColumns = cols;
   }
 
@@ -207,6 +215,8 @@ export class ScaleTableComponent {
       firstMappedPitch: this.scaleRoot.firstMappedPitch,
       deg: new DisplayedIndex(0),
       freqHz: toFreqString(this.scaleRoot.rootFreqHz),
+      nearest12tetPitch: this.scaleRoot.nearestMidiPitch,
+      centsFrom12tet: toCentsString(this.scaleRoot.centsFrom12tet),
     });
 
     // Upper degrees.
@@ -217,8 +227,10 @@ export class ScaleTableComponent {
         deg: upperDeg.deg,
         measureFrom: upperDeg.measureFrom,
         ratio: toRatioString(upperDeg.tunedInterval),
-        cents: toCentsString(upperDeg.tunedInterval),
+        cents: toCentsString(upperDeg.tunedInterval.getCents()),
         freqHz: toFreqString(upperDeg.freqHz),
+        nearest12tetPitch: upperDeg.nearestMidiPitch,
+        centsFrom12tet: toCentsString(upperDeg.centsFrom12tet),
       });
     }
   }
@@ -312,6 +324,19 @@ export class ScaleTableComponent {
           correctionWarning = freqResult.getCorrectionWarning();
         }
         break;
+
+      case ScaleTableCol.CENTS_FROM_12TET:
+        const nearestMidiPitch = this.upperDegrees.get(degIndex).nearestMidiPitch;
+        const centsFrom12tetResult =
+            inputParser.parseCentsFrom12tet(nearestMidiPitch.midiPitch, valueStr);
+        if (centsFrom12tetResult.hasValidValue()) {
+          await this.model.setUpperDegreeCents(
+              degIndex, centsFrom12tetResult.getValue().getCents());
+        }
+        if (centsFrom12tetResult.hasCorrectionWarning()) {
+          correctionWarning = centsFrom12tetResult.getCorrectionWarning();
+        }
+        break;
     }
 
     if (correctionWarning) {
@@ -357,10 +382,13 @@ export class ScaleTableComponent {
         return toRatioString(upperDeg.tunedInterval);
 
       case ScaleTableCol.CENTS:
-        return toCentsString(upperDeg.tunedInterval);
+        return toCentsString(upperDeg.tunedInterval.getCents());
 
       case ScaleTableCol.FREQ:
         return toFreqString(upperDeg.freqHz);
+
+      case ScaleTableCol.CENTS_FROM_12TET:
+        return toCentsString(upperDeg.centsFrom12tet);
 
       default:
         return '';
@@ -378,6 +406,7 @@ export class ScaleTableComponent {
         break;
 
       case ScaleTableCol.CENTS:
+      case ScaleTableCol.CENTS_FROM_12TET:
         minValue = ArghoTuningLimits.CENTS_MIN;
         maxValue = ArghoTuningLimits.CENTS_MAX;
         break;

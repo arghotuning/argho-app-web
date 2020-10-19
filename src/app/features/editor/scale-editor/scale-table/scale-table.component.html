@@ -72,6 +72,21 @@
     </td>
   </ng-container>
 
+  <ng-container [matColumnDef]="ScaleTableCol.NEAREST_12TET_PITCH">
+    <th mat-header-cell *matHeaderCellDef><span>Nearest<br>12TET</span></th>
+    <td mat-cell *matCellDef="let element">
+      <app-spelled-pitch class="scale-nearest-pitch" [pitch]="element.nearest12tetPitch"></app-spelled-pitch>
+      <!-- TODO: Also add frequency + play button. -->
+    </td>
+  </ng-container>
+
+  <ng-container [matColumnDef]="ScaleTableCol.CENTS_FROM_12TET">
+    <th mat-header-cell *matHeaderCellDef>Δ&nbsp;Cents</th>
+    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
+      <span class="scale-12tet-offset">{{element.centsFrom12tet}}</span>
+    </td>
+  </ng-container>
+
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;" [attr.data-deg-idx]="row.deg.index"></tr>
 </table>
