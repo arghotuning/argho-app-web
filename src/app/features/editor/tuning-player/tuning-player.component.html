@@ -1,1 +1,38 @@
-<p>tuning-player works!</p>
+<p>Play mapped scale degrees using a MIDI keyboard device, the on-screen piano keyboard, or your
+  computer QWERTY keyboard.</p>
+
+<p>
+  <span class="web-midi-label">WebMIDI</span>:
+  <ng-container [ngSwitch]="accessState">
+    <ng-container *ngSwitchCase="WebMidiAccessState.UNSUPPORTED">
+      Unsupported (see <a href="https://caniuse.com/midi">current browser support</a>).
+    </ng-container>
+
+    <ng-container *ngSwitchCase="WebMidiAccessState.UNREQUESTED">
+      <button mat-raised-button class="enable-button" color="accent" (click)="enableMidiInput()">
+        Enable MIDI Input
+      </button>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="WebMidiAccessState.GRANTED">
+      Enabled.
+      <ng-container *ngIf="allInputPorts.length === 0">No MIDI inputs available.</ng-container>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="WebMidiAccessState.DENIED">
+      Disabled. You did not grant permission.
+    </ng-container>
+  </ng-container>
+</p>
+
+<div class="midi-input-block">
+  <mat-form-field *ngIf="allInputPorts.length >= 1"
+                  class="midi-inputs" appearance="fill" backgroundColor="primary">
+    <mat-label>MIDI Input Port</mat-label>
+    <mat-select [value]="activeInput?.id" (selectionChange)="handleMidiInputChange($event.value)">
+      <mat-option *ngFor="let inputPort of allInputPorts" [value]="inputPort.id">{{inputPort.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <p *ngIf="this.activeInput?.connectionStatus === 'pending'" class="input-status">Connecting&hellip;</p>
+</div>

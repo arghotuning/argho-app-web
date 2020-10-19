@@ -1,0 +1,30 @@
+.web-midi-label {
+  font-weight: 500;
+}
+
+.enable-button {
+  margin-left: 1em;
+}
+
+$field-gap: 1em;
+
+.midi-input-block {
+  display: inline-flex;
+  flex-wrap: wrap;
+  margin-left: -1 * $field-gap;
+  width: calc(100% + #{$field-gap});
+
+  .midi-inputs,
+  .input-status {
+    margin-left: $field-gap;
+  }
+
+  .midi-inputs {
+    width: 12em;
+  }
+
+  .input-status {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
