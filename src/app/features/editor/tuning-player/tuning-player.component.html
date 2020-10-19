@@ -25,14 +25,38 @@
   </ng-container>
 </p>
 
-<div class="midi-input-block">
-  <mat-form-field *ngIf="allInputPorts.length >= 1"
-                  class="midi-inputs" appearance="fill" backgroundColor="primary">
+<div *ngIf="allInputPorts.length >= 1" class="midi-input-block">
+  <mat-form-field class="midi-inputs" appearance="fill" backgroundColor="primary">
     <mat-label>MIDI Input Port</mat-label>
     <mat-select [value]="activeInput?.id" (selectionChange)="handleMidiInputChange($event.value)">
       <mat-option *ngFor="let inputPort of allInputPorts" [value]="inputPort.id">{{inputPort.name}}</mat-option>
     </mat-select>
+    <mat-hint>
+      <ng-container *ngIf="activeInput?.connectionStatus === 'pending'">Connecting&hellip;</ng-container>
+      <ng-container *ngIf="activeInput?.connectionStatus === 'open'">Connected</ng-container>
+    </mat-hint>
   </mat-form-field>
 
-  <p *ngIf="this.activeInput?.connectionStatus === 'pending'" class="input-status">Connecting&hellip;</p>
+  <mat-form-field class="midi-channel" appearance="fill" backgroundColor="primary">
+    <mat-label>Channel</mat-label>
+    <mat-select [value]="channel" (selectionChange)="handleChannelChange($event.value)">
+      <mat-option value="omni">Omni</mat-option>
+      <mat-option value="1">1</mat-option>
+      <mat-option value="2">2</mat-option>
+      <mat-option value="3">3</mat-option>
+      <mat-option value="4">4</mat-option>
+      <mat-option value="5">5</mat-option>
+      <mat-option value="6">6</mat-option>
+      <mat-option value="7">7</mat-option>
+      <mat-option value="8">8</mat-option>
+      <mat-option value="9">9</mat-option>
+      <mat-option value="10">10</mat-option>
+      <mat-option value="11">11</mat-option>
+      <mat-option value="12">12</mat-option>
+      <mat-option value="13">13</mat-option>
+      <mat-option value="14">14</mat-option>
+      <mat-option value="15">15</mat-option>
+      <mat-option value="16">16</mat-option>
+    </mat-select>
+  </mat-form-field>
 </div>

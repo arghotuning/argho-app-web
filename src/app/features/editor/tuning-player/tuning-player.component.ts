@@ -10,6 +10,7 @@ import {
   ChangeDetectorRef,
   Component,
 } from '@angular/core';
+import {DisplayedIndex} from '@arghotuning/argho-editor';
 
 @Component({
   selector: 'app-tuning-player',
@@ -23,6 +24,7 @@ export class TuningPlayerComponent {
   accessState!: WebMidiAccessState;
   allInputPorts: WebMidiInputPort[] = [];
   activeInput: OpenedMidiInput | null = null;
+  channel = 'omni';
 
   constructor(
     private readonly midiService: MidiService,
@@ -48,6 +50,14 @@ export class TuningPlayerComponent {
     });
 
     this.midiService.activeInput().subscribe(activeInput => {
+      if (activeInput) {
+        if (activeInput.channel === 'omni') {
+          this.channel = 'omni';
+        } else {
+          this.channel = activeInput.channel.displayNumber.toString();
+        }
+      }
+
       this.activeInput = activeInput;
       this.changeDetector.markForCheck();
     });
@@ -55,5 +65,13 @@ export class TuningPlayerComponent {
 
   handleMidiInputChange(id: string): void {
     this.midiService.openInput(id);
+  }
+
+  handleChannelChange(chanStr: string): void {
+    let ch: 'omni' | DisplayedIndex = 'omni';
+    if (chanStr !== 'omni') {
+      ch = new DisplayedIndex(parseInt(chanStr) - 1);
+    }
+    this.midiService.setMidiChannel(ch);
   }
 }

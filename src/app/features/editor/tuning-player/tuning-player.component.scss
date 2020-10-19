@@ -14,17 +14,16 @@ $field-gap: 1em;
   margin-left: -1 * $field-gap;
   width: calc(100% + #{$field-gap});
 
-  .midi-inputs,
-  .input-status {
+  mat-form-field {
     margin-left: $field-gap;
+    margin-bottom: $field-gap;
   }
 
   .midi-inputs {
     width: 12em;
   }
 
-  .input-status {
-    margin-top: 0;
-    margin-bottom: 0;
+  .midi-channel {
+    width: 6em;
   }
 }
