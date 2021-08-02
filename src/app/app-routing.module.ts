@@ -8,7 +8,7 @@ import {SimplePagesModule} from './features/simple-pages/simple-pages.module';
 
 const routes: Routes = [
   {
-    path: 'editor',
+    path: 'edit',
     component: EditorComponent,
   },
   {
