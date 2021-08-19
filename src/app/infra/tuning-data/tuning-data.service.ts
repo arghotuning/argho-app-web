@@ -1,11 +1,10 @@
-import {Engine, MidiFreqMap} from 'src/app/infra/engine/engine';
-
 import {Injectable} from '@angular/core';
 import {
   ArghoEditorContext,
   ArghoEditorModel,
   defaultArghoEditorTranslations,
 } from '@arghotuning/argho-editor';
+import {KeyToSoundMap} from '@arghotuning/arghotun';
 
 /** Manages shared tuning editor data model. */
 @Injectable({providedIn: 'root'})
@@ -15,10 +14,9 @@ export class TuningDataService {
   /** Tuning editor data model. */
   public readonly model: ArghoEditorModel;
 
-  /** Engine for WebMIDI/WebAudio playback. */
-  private readonly engine_: Engine
-
-  private engineNeedsUpdate_ = false;
+  /** Output frequencies computed for WebMIDI/WebAudio playback. */
+  private keyToSoundMap_: KeyToSoundMap;
+  private keyToSoundMapNeedsUpdate_ = false;
 
   constructor() {
     this.context = new ArghoEditorContext({
@@ -26,19 +24,19 @@ export class TuningDataService {
     });
     this.model = ArghoEditorModel.default12tet(this.context);
 
-    this.engine_ = new Engine(this.model.getTuningSnapshot());
+    this.keyToSoundMap_ = KeyToSoundMap.calcFor(this.context, this.model.getTuningSnapshot());
 
-    // Update engine whenever tuning changes.
+    // Re-calculate output frequencies whenever tuning changes.
     const updateTuning = () => {
-      this.engineNeedsUpdate_ = true;
+      this.keyToSoundMapNeedsUpdate_ = true;
 
       // Don't actually update until stack unwinds, to avoid unnecessary
       // re-calculation for multiple subscription callbacks about the same
       // change.
       setTimeout(() => {
-        if (this.engineNeedsUpdate_) {
-          this.engine_.updateTuning(this.model.getTuningSnapshot());
-          this.engineNeedsUpdate_ = false;
+        if (this.keyToSoundMapNeedsUpdate_) {
+          this.keyToSoundMap_ = KeyToSoundMap.calcFor(this.context, this.model.getTuningSnapshot());
+          this.keyToSoundMapNeedsUpdate_ = false;
         }
       }, 0);
     };
@@ -49,7 +47,7 @@ export class TuningDataService {
     this.model.mappedKeys().subscribe(updateTuning);
   }
 
-  frequencies(): MidiFreqMap {
-    return this.engine_.frequencies();
+  keyToSoundMap(): KeyToSoundMap {
+    return this.keyToSoundMap_;
   }
 }

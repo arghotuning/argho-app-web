@@ -226,11 +226,12 @@ export class MidiService {
       cmd = MIDI_CMD_NOTE_OFF;
     }
 
-    const freqHz = this.data.frequencies()[pitch];
-    if (!freqHz) {
+    const keyToSoundMap = this.data.keyToSoundMap();
+    if (!keyToSoundMap.isMapped(pitch)) {
       return;  // Unmapped.
     }
 
+    const freqHz = keyToSoundMap.mappedSoundFor(pitch).freqHz;
     const currentlyPlayingNote = this.playingNotes_[pitch];
 
     switch (cmd) {
