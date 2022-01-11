@@ -1,5 +1,5 @@
-<p>Play mapped scale degrees using a MIDI keyboard device, the on-screen piano keyboard, or your
-  computer QWERTY keyboard.</p>
+<p>Play mapped scale degrees using the on-screen piano keyboard or a MIDI
+keyboard device (if your browser supports it).</p>
 
 <p>
   <span class="web-midi-label">WebMIDI</span>:
@@ -16,7 +16,8 @@
 
     <ng-container *ngSwitchCase="WebMidiAccessState.GRANTED">
       Enabled.
-      <ng-container *ngIf="allInputPorts.length === 0">No MIDI inputs available.</ng-container>
+      <ng-container *ngIf="allInputPorts.length === 0">No MIDI inputs available.
+      Have you plugged in a MIDI keyboard?</ng-container>
     </ng-container>
 
     <ng-container *ngSwitchCase="WebMidiAccessState.DENIED">
