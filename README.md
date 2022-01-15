@@ -1,6 +1,8 @@
 # argho-app-web
 
-Web application for [arghotuning.org](https://arghotuning.org).
+<!-- TODO: Replace with production arghotuning.org URL for beta. -->
+Web application for
+[arghotuningdemo.barndollarmusic.com](https://arghotuningdemo.barndollarmusic.com).
 
 This project was generated with
 [Angular CLI](https://github.com/angular/angular-cli) version 10.0.8.
