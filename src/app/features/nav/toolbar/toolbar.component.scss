@@ -18,3 +18,12 @@
     text-decoration: none;
   }
 }
+
+.beta-label {
+  color: $color-text-label;
+  font-family: $font-body;
+  font-size: 1rem;
+  margin-left: 0.6em;
+  position: relative;
+  top: -0.25em;
+}
