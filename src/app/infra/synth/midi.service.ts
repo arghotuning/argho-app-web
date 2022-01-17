@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
+//
+// SPDX-License-Identifier: Apache-2.0
+
 ///  <reference types="@types/webmidi"/>
 
 import {BehaviorSubject, Observable} from 'rxjs';

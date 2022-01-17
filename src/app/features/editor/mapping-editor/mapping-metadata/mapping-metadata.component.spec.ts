@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import {UiInfraModule} from 'src/app/infra/ui/ui.module';
 
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';

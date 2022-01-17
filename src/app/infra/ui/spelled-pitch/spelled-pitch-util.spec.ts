@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import {SimpleAccidental} from '@arghotuning/argho-editor';
 
 import {simpleAccidentalStr} from './spelled-pitch-util';

@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
+//
+// SPDX-License-Identifier: Apache-2.0
+
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
 import {
