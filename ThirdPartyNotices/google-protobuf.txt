@@ -2,7 +2,7 @@ SPDX-FileCopyrightText: Copyright 2008 Google Inc.  All rights reserved.
 SPDX-License-Identifier: BSD-3-Clause
 
 https://www.npmjs.com/package/google-protobuf
-https://github.com/protocolbuffers/protobuf/tree/master
+https://github.com/protocolbuffers/protobuf/tree/master/js
 
 ================================================================================
 
