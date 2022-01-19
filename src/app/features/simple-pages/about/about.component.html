@@ -1,0 +1,71 @@
+<!--
+SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
+<h2>About the project</h2>
+<p>We’re a research project supported by Carnegie Mellon University’s
+  <a href="https://studioforcreativeinquiry.org">STUDIO for Creative Inquiry
+    <fa-icon class="ext-link-symbol" [icon]="faExternalLinkAlt"></fa-icon></a>
+  <!-- TODO: The CFIM website really needs to be updated to support https. -->
+  and <a href="http://centerforiranianmusic.org">Center for Iranian Music
+    <fa-icon class="ext-link-symbol" [icon]="faExternalLinkAlt"></fa-icon></a>.</p>
+<!-- TODO: More background about the project, origins, and goals. -->
+
+<h2>Get in touch</h2>
+<p>For users, please email us at <a href="mailto:info@arghotuning.org">info@arghotuning.org</a>. For developers, please
+  file an issue in the appropriate <a href="/projects">GitHub project</a>.</p>
+
+<h2>Open source</h2>
+<p>This is free open source software, made possible by many other open source
+  projects. For the latest list, including full license texts, see the
+  <a href="https://github.com/arghotuning/argho-app-web/tree/main/ThirdPartyNotices">ThirdPartyMaterials
+    folder <fa-icon class="ext-link-symbol" [icon]="faExternalLinkAlt"></fa-icon></a>
+  within this project's source code.</p>
+
+<p>The <a href="/downloads">Argho Re-Tuner plugin</a> is currently availble in
+the VST3 and AU formats.</p>
+
+<div>
+  <!-- TODO: Ensure these logos are also included on the downloads page. -->
+  <img class="plugin-logo" src="assets/vst_compatible_logo.svg" alt="VST Compatible">
+  <!--
+    TODO: Add Audio Units logo after signing and submitting Apple's logo agreement:
+    https://developer.apple.com/licensing-trademarks/audio-units/
+  -->
+</div>
+
+<mat-expansion-panel class="third-party-info">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Third party projects &amp; trademark information
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <mat-list>
+    <ng-container *ngFor="let project of projects">
+      <mat-list-item>
+        <mat-icon mat-list-icon>code</mat-icon>
+        <div mat-line><a href="{{project.url}}">{{project.name}}</a></div>
+        <div mat-line>License: {{project.licenseType}}</div>
+        <div mat-line>Copyright: {{project.copyright}}</div>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+    </ng-container>
+    <mat-list-item>
+      <mat-icon mat-list-icon>info</mat-icon>
+      <div class="tm-info">VST is a trademark of Steinberg Media Technologies GmbH, registered in Europe and other countries.</div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item>
+      <mat-icon mat-list-icon>info</mat-icon>
+      <div class="tm-info">The Audio Units logo is a trademark of Apple Computer, Inc.</div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item>
+      <mat-icon mat-list-icon>info</mat-icon>
+      <div class="tm-info">All other trademarks are the property of their respective owners.</div>
+    </mat-list-item>
+  </mat-list>
+</mat-expansion-panel>

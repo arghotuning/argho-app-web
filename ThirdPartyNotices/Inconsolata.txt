@@ -1,16 +1,16 @@
-SPDX-FileCopyrightText: Copyright © 2019, Steinberg Media Technologies GmbH (http://www.steinberg.net/), with Reserved Font Name "Bravura".
-SPDX-License-Identifier: OFL-1.1-RFN
+SPDX-FileCopyrightText: Copyright 2006 The Inconsolata Project Authors (https://github.com/cyrealtype/Inconsolata)
+SPDX-License-Identifier: OFL-1.1-no-RFN
 
-https://github.com/steinbergmedia/bravura
+https://github.com/googlefonts/Inconsolata
 
 ================================================================================
 
-Copyright © 2019, Steinberg Media Technologies GmbH (http://www.steinberg.net/),
-with Reserved Font Name "Bravura".
+Copyright 2006 The Inconsolata Project Authors (https://github.com/cyrealtype/Inconsolata)
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
 http://scripts.sil.org/OFL
+
 
 -----------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
@@ -51,7 +51,7 @@ new environment.
 "Author" refers to any designer, engineer, programmer, technical
 writer or other person who contributed to the Font Software.
 
-PERMISSION AND CONDITIONS
+PERMISSION & CONDITIONS
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of the Font Software, to use, study, copy, merge, embed, modify,
 redistribute, and sell modified and unmodified copies of the Font

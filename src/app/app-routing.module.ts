@@ -7,6 +7,7 @@ import {RouterModule, Routes} from '@angular/router';
 
 import {EditorComponent} from './features/editor/editor.component';
 import {EditorModule} from './features/editor/editor.module';
+import {AboutComponent} from './features/simple-pages/about/about.component';
 import {OverviewComponent} from './features/simple-pages/overview/overview.component';
 import {SimplePagesModule} from './features/simple-pages/simple-pages.module';
 
@@ -14,6 +15,10 @@ const routes: Routes = [
   {
     path: 'edit',
     component: EditorComponent,
+  },
+  {
+    path: 'about',
+    component: AboutComponent,
   },
   {
     path: '',
