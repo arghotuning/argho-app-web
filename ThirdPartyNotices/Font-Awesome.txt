@@ -1,4 +1,4 @@
-SPDX-FileCopyrightText: Copyright 2008 Google Inc.  All rights reserved.
+SPDX-FileCopyrightText: Fonticons, Inc.
 SPDX-License-Identifier: MIT AND CC-BY-4.0
 
 https://github.com/FortAwesome/Font-Awesome
