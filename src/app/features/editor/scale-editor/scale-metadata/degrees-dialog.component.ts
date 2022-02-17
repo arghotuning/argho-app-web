@@ -12,7 +12,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
-import {ArghoEditorModel} from '@arghotuning/argho-editor';
+import {ArghoEditorModel, TuningEditMode} from '@arghotuning/argho-editor';
 import {ArghoTuningLimits} from '@arghotuning/arghotun';
 
 @Component({
@@ -64,8 +64,14 @@ export class DegreesDialogComponent {
     }
   }
 
-  commit(): void {
-    this.model.resetNumDegrees(this.newNumDegrees);
+  async commit(): Promise<void> {
+    // TODO: Rework this dialog to handle basic/advanced mode. For now, ensure
+    // we're in advanced mode.
+    await this.model.setEditMode(TuningEditMode.ADVANCED);
+
+    await this.model
+      .editAdvanced()
+      .resetTuningSize(this.model.resize().toDegrees(this.newNumDegrees));
     this.dialogRef.close();
   }
 

@@ -128,7 +128,7 @@ export class FileButtonsComponent {
     reader.addEventListener('error', errorEvent => {
       const dialogData: ErrorDialogData = {
         title: 'Error opening file',
-        msgs: [reader.error!.message],
+        msgs: [reader.error?.message || ''],
       };
       this.dialog.open(ErrorDialogComponent, {data: dialogData});
 

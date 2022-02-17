@@ -96,7 +96,7 @@ export interface TuningTableRow {
   ratio?: string;
   cents?: string;
   freqHz: string;
-  nearest12tetPitch: DisplayedMidiPitch;
+  ref12tetPitch: DisplayedMidiPitch;
   centsFrom12tet: string;
 }
 
@@ -219,7 +219,7 @@ export class ScaleTableComponent {
       firstMappedPitch: this.scaleRoot.firstMappedPitch,
       deg: new DisplayedIndex(0),
       freqHz: toFreqString(this.scaleRoot.rootFreqHz),
-      nearest12tetPitch: this.scaleRoot.nearestMidiPitch,
+      ref12tetPitch: this.scaleRoot.nearestMidiPitch,
       centsFrom12tet: toCentsString(this.scaleRoot.centsFrom12tet),
     });
 
@@ -233,7 +233,7 @@ export class ScaleTableComponent {
         ratio: toRatioString(upperDeg.tunedInterval),
         cents: toCentsString(upperDeg.tunedInterval.getCents()),
         freqHz: toFreqString(upperDeg.freqHz),
-        nearest12tetPitch: upperDeg.nearestMidiPitch,
+        ref12tetPitch: upperDeg.refMidiPitch,
         centsFrom12tet: toCentsString(upperDeg.centsFrom12tet),
       });
     }
@@ -282,7 +282,7 @@ export class ScaleTableComponent {
       case ScaleTableCol.MEASURE_FROM:
         const measureFromResult = inputParser.parseMeasureFrom(valueStr);
         if (measureFromResult.hasValidValue()) {
-          await this.model.setUpperDegreeMeasureFrom(
+          await this.model.edit().setUpperDegreeMeasureFrom(
               degIndex, measureFromResult.getValue().index);
         }
         if (measureFromResult.hasCorrectionWarning()) {
@@ -294,7 +294,7 @@ export class ScaleTableComponent {
         const ratioResult = inputParser.parseRatio(valueStr);
         if (ratioResult.hasValidValue()) {
           const ratio = ratioResult.getValue();
-          await this.model.setUpperDegreeRatio(
+          await this.model.edit().setUpperDegreeRatio(
               degIndex, ratio.getRatioNumerator(), ratio.getRatioDenominator());
         }
         if (ratioResult.hasCorrectionWarning()) {
@@ -306,7 +306,7 @@ export class ScaleTableComponent {
         const centsResult = inputParser.parseCents(valueStr);
         if (centsResult.hasValidValue()) {
           const cents = centsResult.getValue();
-          await this.model.setUpperDegreeCents(degIndex, cents.getCents());
+          await this.model.edit().setUpperDegreeCents(degIndex, cents.getCents());
         }
         if (centsResult.hasCorrectionWarning()) {
           correctionWarning = centsResult.getCorrectionWarning();
@@ -318,9 +318,9 @@ export class ScaleTableComponent {
         if (freqResult.hasValidValue()) {
           const freqInterval = freqResult.getValue();
           if (freqInterval.getSpecType() === TunedIntervalSpecType.CENTS) {
-            await this.model.setUpperDegreeCents(degIndex, freqInterval.getCents());
+            await this.model.edit().setUpperDegreeCents(degIndex, freqInterval.getCents());
           } else {
-            await this.model.setUpperDegreeRatio(
+            await this.model.edit().setUpperDegreeRatio(
               degIndex, freqInterval.getRatioNumerator(), freqInterval.getRatioDenominator());
           }
         }
@@ -330,11 +330,11 @@ export class ScaleTableComponent {
         break;
 
       case ScaleTableCol.CENTS_FROM_12TET:
-        const nearestMidiPitch = this.upperDegrees.get(degIndex).nearestMidiPitch;
+        const refMidiPitch = this.upperDegrees.get(degIndex).refMidiPitch;
         const centsFrom12tetResult =
-            inputParser.parseCentsFrom12tet(nearestMidiPitch.midiPitch, valueStr);
+            inputParser.parseCentsFrom12tet(refMidiPitch.midiPitch, valueStr);
         if (centsFrom12tetResult.hasValidValue()) {
-          await this.model.setUpperDegreeCents(
+          await this.model.edit().setUpperDegreeCents(
               degIndex, centsFrom12tetResult.getValue().getCents());
         }
         if (centsFrom12tetResult.hasCorrectionWarning()) {
@@ -497,11 +497,11 @@ export class ScaleTableComponent {
   }
 
   async setMeasureFromScaleRoot(): Promise<void> {
-    await this.model.setMeasureFromPreset(MeasureFromPreset.SCALE_ROOT);
+    await this.model.edit().setMeasureFromPreset(MeasureFromPreset.SCALE_ROOT);
   }
 
   async setMeasureFromDegBelow(): Promise<void> {
-    await this.model.setMeasureFromPreset(MeasureFromPreset.DEGREE_BELOW);
+    await this.model.edit().setMeasureFromPreset(MeasureFromPreset.DEGREE_BELOW);
   }
 
   playDegree(degIndex: number): void {

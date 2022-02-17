@@ -12,7 +12,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
-import {ArghoEditorModel} from '@arghotuning/argho-editor';
+import {ArghoEditorModel, TuningEditMode} from '@arghotuning/argho-editor';
 import {ArghoTuningLimits} from '@arghotuning/arghotun';
 
 @Component({
@@ -64,8 +64,10 @@ export class OctavesDialogComponent {
     }
   }
 
-  commit(): void {
-    this.model.setOctavesSpanned(this.newNumOctaves);
+  async commit(): Promise<void> {
+    // TODO: Rework. For now ensure we're in advanced mode.
+    await this.model.setEditMode(TuningEditMode.ADVANCED);
+    this.model.editAdvanced().resetTuningSize(this.model.resize().toOctaves(this.newNumOctaves));
     this.dialogRef.close();
   }
 

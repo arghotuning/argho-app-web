@@ -20,6 +20,7 @@ import {
   DisplayedMidiPitch,
   MappedKeys,
   ScaleRoot,
+  TuningEditMode,
   UpperDegrees,
 } from '@arghotuning/argho-editor';
 import {faPlayCircle} from '@fortawesome/free-solid-svg-icons';
@@ -176,7 +177,12 @@ export class MappingTableComponent {
     const parseResult = inputParser.parseScaleDegree(valueStr);
     if (parseResult.hasValidValue()) {
       const degOrNull = parseResult.getValue().degreeOrNull;
-      await this.model.setMappedScaleDegree(
+
+      // TODO: Make sure this component is only shown in advanced editing mode.
+      // For now, ensure we're in advanced mode.
+      await this.model.setEditMode(TuningEditMode.ADVANCED);
+
+      await this.model.editAdvanced().setMappedScaleDegree(
           keyIndex, degOrNull ? degOrNull!.index : null);
     }
 

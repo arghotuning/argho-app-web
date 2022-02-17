@@ -85,7 +85,7 @@ export class TuningMetadataComponent {
   }
 
   handleNameChange(): void {
-    this.model.setTuningName(this.getAndMaybeCorrectName_());
+    this.model.edit().setTuningName(this.getAndMaybeCorrectName_());
   }
 
   private getAndMaybeCorrectDesc_(): string {
@@ -108,11 +108,11 @@ export class TuningMetadataComponent {
   }
 
   handleDescChange(): void {
-    this.model.setDescription(this.getAndMaybeCorrectDesc_());
+    this.model.edit().setDescription(this.getAndMaybeCorrectDesc_());
   }
 
   handleAccidentalChange(value: string): void {
-    this.model.setDisplayAccidentalsAs(
+    this.model.edit().setDisplayAccidentalsAs(
       value === 'SHARPS' ?
         AccidentalDisplayPref.SHARPS :
         AccidentalDisplayPref.FLATS);

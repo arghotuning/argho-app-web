@@ -18,6 +18,7 @@ import {
   ArghoEditorSettings,
   DisplayedMidiPitch,
   ScaleRoot,
+  TuningEditMode,
   TuningMetadataSnapshot,
 } from '@arghotuning/argho-editor';
 import {
@@ -96,20 +97,26 @@ export class ScaleRootComponent {
     const parseResult = this.model.inputParser().forScaleRoot()
       .parseGlobalTuneA4Hz(this.globalTuneInput.nativeElement.value);
     if (parseResult.hasValidValue()) {
-      await this.model.setGlobalTuneA4Hz(parseResult.getValue());
+      await this.model.edit().setGlobalTuneA4Hz(parseResult.getValue());
     }
 
     this.globalTuneInput.nativeElement.value = this.globalTuneStrValue();
   }
 
   async handleSpecTypeChanged(specType: RootScaleDegreeSpecType): Promise<void> {
+    // TODO: Rework to ensure this is only available in advanced mode. For
+    // now ensure.
+    await this.model.setEditMode(TuningEditMode.ADVANCED);
+
     switch (specType) {
       case RootScaleDegreeSpecType.EXACT_FREQ:
-        return this.model.setScaleRootExactFreqHz(this.scaleRoot.rootFreqHz);
+        return this.model
+          .editAdvanced()
+          .setScaleRootExactFreqHz(this.scaleRoot.rootFreqHz);
 
       case RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH:
         const pitch = this.scaleRoot.nearestMidiPitch;
-        return this.model.setScaleRoot12tetRelative(
+        return this.model.editAdvanced().setScaleRoot12tetRelative(
           pitch.midiPitch, this.scaleRoot.centsFrom12tet,
           this.tuningMetadata.accidentalDisplayPref);
     }
@@ -124,10 +131,14 @@ export class ScaleRootComponent {
       return;
     }
 
+    // TODO: Rework to ensure this is only available in advanced mode. For
+    // now ensure.
+    await this.model.setEditMode(TuningEditMode.ADVANCED);
+
     const parseResult = this.model.inputParser().forScaleRoot()
       .parseExactFreqHz(this.exactFreqInput.nativeElement.value);
     if (parseResult.hasValidValue()) {
-      await this.model.setScaleRootExactFreqHz(parseResult.getValue());
+      await this.model.editAdvanced().setScaleRootExactFreqHz(parseResult.getValue());
     }
 
     this.exactFreqInput.nativeElement.value = this.exactFreqStrValue();
@@ -143,11 +154,15 @@ export class ScaleRootComponent {
       return;
     }
 
+    // TODO: Rework to ensure this is only available in advanced mode. For
+    // now ensure.
+    await this.model.setEditMode(TuningEditMode.ADVANCED);
+
     const parseResult = this.model.inputParser().forScaleRoot()
       .parseNearestMidiPitch(this.nearestPitchInput.nativeElement.value);
     if (parseResult.hasValidValue()) {
       const update = parseResult.getValue();
-      await this.model.setScaleRoot12tetRelative(
+      await this.model.editAdvanced().setScaleRoot12tetRelative(
         update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
     }
 
@@ -163,11 +178,15 @@ export class ScaleRootComponent {
       return;
     }
 
+    // TODO: Rework to ensure this is only available in advanced mode. For
+    // now ensure.
+    await this.model.setEditMode(TuningEditMode.ADVANCED);
+
     const parseResult = this.model.inputParser().forScaleRoot()
       .parseCentsFrom12tet(this.centsOffsetInput.nativeElement.value);
     if (parseResult.hasValidValue()) {
       const update = parseResult.getValue();
-      await this.model.setScaleRoot12tetRelative(
+      await this.model.editAdvanced().setScaleRoot12tetRelative(
         update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
     }
 

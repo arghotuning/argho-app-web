@@ -12,7 +12,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
-import {ArghoEditorModel} from '@arghotuning/argho-editor';
+import {ArghoEditorModel, TuningEditMode} from '@arghotuning/argho-editor';
+import {TuningResize} from '@arghotuning/argho-editor/out/lib/entities/tuning-resize';
 import {ArghoTuningLimits} from '@arghotuning/arghotun';
 
 @Component({
@@ -64,8 +65,10 @@ export class KeySpanDialogComponent {
     }
   }
 
-  commit(): void {
-    this.model.setMappingKeySpan(this.newKeySpan);
+  async commit(): Promise<void> {
+    // TODO: Refactor this dialog. Ensure advanced mode for now.
+    await this.model.setEditMode(TuningEditMode.ADVANCED);
+    await this.model.editAdvanced().resetTuningSize(this.model.resize().toKeySpan(this.newKeySpan));
     this.dialogRef.close();
   }
 

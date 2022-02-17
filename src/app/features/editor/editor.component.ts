@@ -7,7 +7,7 @@ import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {ArghoEditorContext, ArghoEditorModel} from '@arghotuning/argho-editor';
-import {Converter} from '@arghotuning/arghotun-proto';
+import {TuningConverter} from '@arghotuning/arghotun-proto';
 
 @Component({
   selector: 'app-editor',
@@ -27,15 +27,16 @@ export class EditorComponent implements OnInit {
     this.context = data.context;
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       // If a tuning was passed via URL, load it now.
+      // tslint:disable-next-line: no-string-literal
       const encodedTuning = params['t'];
       if (!encodedTuning) {
         return;
       }
 
-      const converter = new Converter(this.context);
+      const converter = new TuningConverter(this.context);
 
       try {
         const tuningProto = converter.fromBase64UrlEncoding(encodedTuning);
