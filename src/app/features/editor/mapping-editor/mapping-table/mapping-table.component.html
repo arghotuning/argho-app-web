@@ -10,14 +10,14 @@ SPDX-License-Identifier: Apache-2.0
        (click)="handleTableClick($event)">
   <ng-container [matColumnDef]="MappingTableCol.NUM">
     <th mat-header-cell *matHeaderCellDef>#</th>
-    <td mat-cell *matCellDef="let element">
+    <td mat-cell *matCellDef="let element" [class.black-key]="element.blackKey">
       <span class="mapping-num">{{element.key.displayNumber}}</span>
     </td>
   </ng-container>
 
   <ng-container [matColumnDef]="MappingTableCol.KEY">
     <th mat-header-cell *matHeaderCellDef><span class="mapping-key">Key</span></th>
-    <td mat-cell *matCellDef="let element">
+    <td mat-cell *matCellDef="let element" [class.black-key]="element.blackKey">
       <app-spelled-pitch *ngIf="element.pitch" [pitch]="element.pitch"></app-spelled-pitch>
       <ng-container *ngIf="!element.pitch">-</ng-container>
     </td>

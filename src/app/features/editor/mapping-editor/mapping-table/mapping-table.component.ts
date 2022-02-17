@@ -20,6 +20,7 @@ import {
   DisplayedMidiPitch,
   MappedKeys,
   ScaleRoot,
+  SimpleAccidental,
   TuningEditMode,
   UpperDegrees,
 } from '@arghotuning/argho-editor';
@@ -29,6 +30,7 @@ export interface MappingTableRow {
   editable: boolean;
   key: DisplayedIndex,
   pitch?: DisplayedMidiPitch | null,
+  blackKey: boolean,
   mappedDeg: DisplayedIndex | null,
 }
 
@@ -130,6 +132,7 @@ export class MappingTableComponent {
         editable: mappedKey.key.index !== 0,
         key: mappedKey.key,
         pitch: mappedKey.inputPitch,
+        blackKey: (mappedKey.inputPitch?.accidental || '') !== SimpleAccidental.NATURAL,
         mappedDeg: mappedKey.mappedDegree,
       };
     });

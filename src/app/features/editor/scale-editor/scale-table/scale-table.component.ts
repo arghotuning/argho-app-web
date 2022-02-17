@@ -26,6 +26,7 @@ import {
   DisplayedMidiPitch,
   MeasureFromPreset,
   ScaleRoot,
+  SimpleAccidental,
   UpperDegrees,
 } from '@arghotuning/argho-editor';
 import {
@@ -91,6 +92,7 @@ function popupLabelForCol(col: ScaleTableCol): string {
 export interface TuningTableRow {
   editable: boolean;
   firstMappedPitch?: DisplayedMidiPitch | null;
+  blackKey: boolean;
   deg: DisplayedIndex;
   measureFrom?: DisplayedIndex;
   ratio?: string;
@@ -217,6 +219,7 @@ export class ScaleTableComponent {
     this.dataSource.push({
       editable: false,
       firstMappedPitch: this.scaleRoot.firstMappedPitch,
+      blackKey: this.scaleRoot.firstMappedPitch.accidental !== SimpleAccidental.NATURAL,
       deg: new DisplayedIndex(0),
       freqHz: toFreqString(this.scaleRoot.rootFreqHz),
       ref12tetPitch: this.scaleRoot.nearestMidiPitch,
@@ -228,6 +231,7 @@ export class ScaleTableComponent {
       this.dataSource.push({
         editable: true,
         firstMappedPitch: upperDeg.firstMappedPitch,
+        blackKey: (upperDeg.firstMappedPitch?.accidental || '') !== SimpleAccidental.NATURAL,
         deg: upperDeg.deg,
         measureFrom: upperDeg.measureFrom,
         ratio: toRatioString(upperDeg.tunedInterval),
