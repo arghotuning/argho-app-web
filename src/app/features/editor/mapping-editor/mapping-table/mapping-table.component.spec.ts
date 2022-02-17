@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {UiInfraModule} from 'src/app/infra/ui/ui.module';
+
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {MappingTableComponent} from './mapping-table.component';
@@ -12,6 +14,7 @@ describe('MappingTableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [UiInfraModule],
       declarations: [MappingTableComponent],
     }).compileComponents();
   }));

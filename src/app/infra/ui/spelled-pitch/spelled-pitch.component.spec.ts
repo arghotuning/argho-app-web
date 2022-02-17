@@ -37,7 +37,7 @@ describe('SpelledPitchComponent', () => {
     fixture.detectChanges();
 
     const el = fixture.debugElement.nativeElement as Element;
-    expect(el.textContent).toEqual('D♭4');
+    expect(el.textContent!.trim()).toEqual('D♭4');
   });
 
   it('should render sharp pitch', () => {
@@ -46,7 +46,7 @@ describe('SpelledPitchComponent', () => {
     fixture.detectChanges();
 
     const el = fixture.debugElement.nativeElement as Element;
-    expect(el.textContent).toEqual('C♯5');
+    expect(el.textContent!.trim()).toEqual('C♯5');
   });
 
   it('should render natural pitch', () => {
@@ -55,6 +55,6 @@ describe('SpelledPitchComponent', () => {
     fixture.detectChanges();
 
     const el = fixture.debugElement.nativeElement as Element;
-    expect(el.textContent).toEqual('C-1');
+    expect(el.textContent!.trim()).toEqual('C-1');
   });
 });
