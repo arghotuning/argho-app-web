@@ -50,7 +50,7 @@ $argho-app-web-theme: mat-light-theme((
 @font-face {
   font-family: 'Bravura Text';
   font-style: normal;
-  font-weight: 400;
+  font-weight: $font-body-normal-weight;
   font-display: swap;
   src: local('Bravura Text'), url(../assets/bravura-text-flat-sharp.woff2) format('woff2');
   unicode-range: U+266D, U+266F;

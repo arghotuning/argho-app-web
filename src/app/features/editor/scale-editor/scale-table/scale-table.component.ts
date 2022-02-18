@@ -66,7 +66,7 @@ enum ScaleTableCol {
   RATIO = 'ratio',
   CENTS = 'cents',
   FREQ = 'freq',
-  NEAREST_12TET_PITCH = '12tetPitch',
+  REF_12TET_PITCH = '12tetPitch',
   CENTS_FROM_12TET = '12tetCents',
 }
 
@@ -202,7 +202,7 @@ export class ScaleTableComponent {
       cols.push(ScaleTableCol.FREQ);
     }
     if (uiConfig.colGroups.contains(ScaleTableColGroup.COMPARE_12TET)) {
-      cols.push(ScaleTableCol.NEAREST_12TET_PITCH);
+      cols.push(ScaleTableCol.REF_12TET_PITCH);
       cols.push(ScaleTableCol.CENTS_FROM_12TET);
     }
     this.displayedColumns = cols;

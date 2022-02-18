@@ -1,0 +1,19 @@
+<!--
+SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
+<button mat-button (click)="openResizeDialog()">
+  <fa-icon [icon]="faEdit"></fa-icon>
+  <span class="edit-mode-label">
+    <ng-container *ngIf="isBasic">Basic Mode</ng-container>
+    <ng-container *ngIf="!isBasic">Advanced Mode</ng-container>
+  </span>
+  
+  <span class="tuning-size-details">
+    {{scaleMetadata.octavesSpanned}} {{scaleMetadata.octavesSpanned === 1 ? 'octave' : 'octaves'}},
+    {{scaleMetadata.numDegrees}} degrees,
+    {{keySpan}} keys
+  </span>
+</button>

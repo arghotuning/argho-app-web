@@ -90,7 +90,7 @@
 
 .mat-cell {
   .scale-deg {
-    font-weight: bold;
+    font-weight: $font-body-med-weight;
   }
 
   .scale-deg,
@@ -105,7 +105,7 @@
   .scale-in-key {
     font-size: 0.65rem;
   }
-  .scale-nearest-pitch {
+  .scale-ref-pitch {
     font-size: 0.8rem;
   }
 }

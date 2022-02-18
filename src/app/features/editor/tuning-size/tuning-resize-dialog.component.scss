@@ -1,0 +1,47 @@
+/*
+ * SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+@import '_colors';
+
+.resize-btn { order: 1; }
+.cancel-btn { order: 0; }
+
+.mat-dialog-content {
+  max-width: 80vw;
+  width: 26em;
+}
+
+.mode-explanation {
+  color: $color-text-label;
+  font-size: 0.8rem;
+  margin-top: 0.5em;
+  margin-bottom: 0.75em;
+}
+
+.explanation-top-label {
+  margin-bottom: 0.5em;
+}
+
+$field-gap: 1em;
+
+.tuning-size-fields {
+  display: inline-flex;
+  flex-wrap: wrap;
+  margin-left: -1 * $field-gap;
+  width: calc(100% + #{$field-gap});
+
+  mat-form-field {
+    margin-left: $field-gap;
+  }
+
+  .scale-num-octaves { width: 5em; }
+  .scale-num-degrees, .mapping-num-keys { width: 7em; }
+}
+
+.mat-dialog-actions {
+  justify-content: flex-end;
+}
+

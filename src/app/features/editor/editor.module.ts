@@ -24,6 +24,8 @@ import {ScaleTableComponent} from './scale-editor/scale-table/scale-table.compon
 import {TuningAnalysisComponent} from './tuning-analysis/tuning-analysis.component';
 import {TuningMetadataComponent} from './tuning-metadata/tuning-metadata.component';
 import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
+import {TuningResizeDialogComponent} from './tuning-size/tuning-resize-dialog.component';
+import {TuningSizeComponent} from './tuning-size/tuning-size.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +46,8 @@ import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
     TuningAnalysisComponent,
     TuningMetadataComponent,
     TuningPlayerComponent,
+    TuningResizeDialogComponent,
+    TuningSizeComponent,
   ],
   imports: [
     CommonModule,

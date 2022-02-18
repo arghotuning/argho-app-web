@@ -33,6 +33,7 @@ $color-text: #111;
 
 $color-text-secondary: #212121;
 $color-text-label: rgba-to-rgb(rgba(0, 0, 0, 0.6));
+$color-text-tinted-label: rgba-to-rgb(rgba(0, 0, 0, 0.4), $color-primary);
 $color-icon-secondary: #666;
 
 $color-field-bg: rgba-to-rgb(color.change(mat-color($palette-primary, 300), $alpha: 0.15));
