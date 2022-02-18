@@ -8,6 +8,14 @@
 
 @import '~@angular/material/theming';
 
+/* https://makandracards.com/makandra/42500-sass-how-to-convert-an-rgba-color-to-its-rgb-look-alike */
+@function rgba-to-rgb($rgba, $background: #fff) {
+  @return color.mix(
+      rgb(color.red($rgba), color.green($rgba), color.blue($rgba)),
+      $background,
+      color.alpha($rgba) * 100%)
+}
+
 $palette-primary: mat-palette($mat-teal, 600);
 $palette-secondary: mat-palette($mat-deep-purple, 700);
 $palette-warn: mat-palette($mat-red);
@@ -24,9 +32,13 @@ $color-bg: #fdffff;
 $color-text: #111;
 
 $color-text-secondary: #212121;
-$color-text-label: rgba(0, 0, 0, 0.6);
+$color-text-label: rgba-to-rgb(rgba(0, 0, 0, 0.6));
 $color-icon-secondary: #666;
 
-$color-field-bg: color.change(mat-color($palette-primary, 300), $alpha: 0.15);
+$color-field-bg: rgba-to-rgb(color.change(mat-color($palette-primary, 300), $alpha: 0.15));
+$color-hover-row-bg: rgba-to-rgb(color.change(mat-color($palette-primary, 300), $alpha: 0.05));
 $color-editor-bg: color.change(mat-color($palette-secondary, 300), $lightness: 96%);
-$color-checked-button: color.change(mat-color($palette-primary, 600), $alpha: 0.5);
+$color-checked-button: rgba-to-rgb(color.change(mat-color($palette-primary, 600), $alpha: 0.5));
+
+$color-black-key-bg: #eee;
+$color-hover-black-key-bg: rgba-to-rgb(color.change($color-hover-row-bg, $saturation: 20%, $lightness: 80%));

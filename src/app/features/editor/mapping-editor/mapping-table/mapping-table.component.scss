@@ -36,9 +36,21 @@
   }
 }
 
-.mat-cell.editable:hover {
-  background-color: $color-field-bg;
-  cursor: pointer;
+.black-key {
+  background-color: $color-black-key-bg;
+}
+
+.mat-row:hover {
+  background-color: $color-hover-row-bg;
+
+  .mat-cell.editable:hover {
+    background-color: $color-field-bg;
+    cursor: pointer;
+  }
+
+  .black-key {
+    background-color: $color-hover-black-key-bg;
+  }
 }
 
 .mapping-field-editor {
@@ -60,8 +72,4 @@
     min-width: 0;
     padding: 0 0.75em;
   }
-}
-
-.black-key {
-  background-color: #eee;
 }

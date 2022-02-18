@@ -71,6 +71,23 @@
   padding: 0 1em;
 }
 
+.black-key {
+  background-color: $color-black-key-bg;
+}
+
+.mat-row:hover {
+  background-color: $color-hover-row-bg;
+
+  .mat-cell.editable:hover {
+    background-color: $color-field-bg;
+    cursor: pointer;
+  }
+
+  .black-key {
+    background-color: $color-hover-black-key-bg;
+  }
+}
+
 .mat-cell {
   .scale-deg {
     font-weight: bold;
@@ -91,11 +108,6 @@
   .scale-nearest-pitch {
     font-size: 0.8rem;
   }
-}
-
-.mat-cell.editable:hover {
-  background-color: $color-field-bg;
-  cursor: pointer;
 }
 
 .scale-field-editor {
@@ -121,8 +133,4 @@
   font-size: 0.65rem;
   min-width: 0;
   padding: 0.5em;
-}
-
-.black-key {
-  background-color: #eee;
 }
