@@ -57,6 +57,7 @@ export class MappingMetadataComponent {
   }
 
   openKeySpanDialog(): void {
+    // TODO: Clean up to remove obsolete dialog.
     this.dialog.open(KeySpanDialogComponent);
   }
 

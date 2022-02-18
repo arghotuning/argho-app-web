@@ -12,7 +12,7 @@ SPDX-License-Identifier: Apache-2.0
 
 <mat-tab-group dynamicHeight>
   <mat-tab label="Scale"><app-scale-editor></app-scale-editor></mat-tab>
-  <mat-tab label="Mapping"><app-mapping-editor></app-mapping-editor></mat-tab>
-  <mat-tab label="Analyze"><app-tuning-analysis></app-tuning-analysis></mat-tab>
+  <mat-tab label="Mapping" *ngIf="!isBasic"><app-mapping-editor></app-mapping-editor></mat-tab>
+  <!-- TODO: Restore Analyze tab. -->
   <mat-tab label="Play"><app-tuning-player></app-tuning-player></mat-tab>
 </mat-tab-group>

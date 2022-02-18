@@ -4,9 +4,18 @@
 
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
-import {ArghoEditorContext, ArghoEditorModel} from '@arghotuning/argho-editor';
+import {
+  ArghoEditorContext,
+  ArghoEditorModel,
+  TuningEditMode,
+} from '@arghotuning/argho-editor';
 import {TuningConverter} from '@arghotuning/arghotun-proto';
 
 @Component({
@@ -19,12 +28,21 @@ export class EditorComponent implements OnInit {
   private readonly context: ArghoEditorContext;
   private readonly model: ArghoEditorModel;
 
+  isBasic!: boolean;
+
   constructor(
     private readonly route: ActivatedRoute,
     data: TuningDataService,
+    changeDetector: ChangeDetectorRef,
   ) {
     this.model = data.model;
     this.context = data.context;
+
+    // NOTE: Always called synchronously first time.
+    this.model.tuningMetadata().subscribe(tuningMetadata => {
+      this.isBasic = (tuningMetadata.editMode === TuningEditMode.BASIC);
+      changeDetector.markForCheck();
+    });
   }
 
   ngOnInit(): void {

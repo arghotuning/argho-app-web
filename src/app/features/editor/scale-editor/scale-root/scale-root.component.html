@@ -14,7 +14,8 @@ SPDX-License-Identifier: Apache-2.0
 
 <mat-form-field class="root-spec" appearance="fill" backgroundColor="primary">
   <mat-label>Specify Root As</mat-label>
-  <mat-select [value]="scaleRoot.specType" (selectionChange)="handleSpecTypeChanged($event.value)">
+  <mat-select [value]="scaleRoot.specType" (selectionChange)="handleSpecTypeChanged($event.value)"
+      [disabled]="isBasic">
     <mat-option [value]="RootScaleDegreeSpecType.EXACT_FREQ">exact freq</mat-option>
     <mat-option [value]="RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH">12TET relative</mat-option>
   </mat-select>

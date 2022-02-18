@@ -43,6 +43,7 @@ export class ScaleRootComponent {
   globalTunePitch!: DisplayedMidiPitch;
 
   tuningMetadata!: TuningMetadataSnapshot;
+  isBasic!: boolean;
 
   @ViewChild('globalTuneInput')
   globalTuneInput: ElementRef<HTMLInputElement> | undefined;
@@ -72,9 +73,13 @@ export class ScaleRootComponent {
     let settings: ArghoEditorSettings;
     this.model.settings().subscribe(s => settings = s);
 
-    this.model.tuningMetadata().subscribe(tm => this.tuningMetadata = tm);
+    // Note: Below are always called back synchronously first time.
+    this.model.tuningMetadata().subscribe(tuningMetadata => {
+      this.tuningMetadata = tuningMetadata;
+      this.isBasic = (tuningMetadata.editMode === TuningEditMode.BASIC);
+      changeDetector.markForCheck();
+    });
 
-    // Note: Always called back synchronously.
     this.model.scaleRoot().subscribe(scaleRoot => {
       this.scaleRoot = scaleRoot;
 
@@ -154,16 +159,18 @@ export class ScaleRootComponent {
       return;
     }
 
-    // TODO: Rework to ensure this is only available in advanced mode. For
-    // now ensure.
-    await this.model.setEditMode(TuningEditMode.ADVANCED);
-
     const parseResult = this.model.inputParser().forScaleRoot()
       .parseNearestMidiPitch(this.nearestPitchInput.nativeElement.value);
     if (parseResult.hasValidValue()) {
       const update = parseResult.getValue();
-      await this.model.editAdvanced().setScaleRoot12tetRelative(
-        update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+
+      if (this.model.editMode() === TuningEditMode.BASIC) {
+        await this.model.editBasic().setBasicRoot(
+          update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+      } else {
+        await this.model.editAdvanced().setScaleRoot12tetRelative(
+          update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+      }
     }
 
     this.nearestPitchInput.nativeElement.value = this.nearestPitchStrValue();
@@ -178,16 +185,18 @@ export class ScaleRootComponent {
       return;
     }
 
-    // TODO: Rework to ensure this is only available in advanced mode. For
-    // now ensure.
-    await this.model.setEditMode(TuningEditMode.ADVANCED);
-
     const parseResult = this.model.inputParser().forScaleRoot()
       .parseCentsFrom12tet(this.centsOffsetInput.nativeElement.value);
     if (parseResult.hasValidValue()) {
+      // TODO: Refactor to share this logic.
       const update = parseResult.getValue();
-      await this.model.editAdvanced().setScaleRoot12tetRelative(
-        update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+      if (this.model.editMode() === TuningEditMode.BASIC) {
+        await this.model.editBasic().setBasicRoot(
+          update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+      } else {
+        await this.model.editAdvanced().setScaleRoot12tetRelative(
+          update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+      }
     }
 
     this.centsOffsetInput.nativeElement.value = this.centsOffsetStrValue();
