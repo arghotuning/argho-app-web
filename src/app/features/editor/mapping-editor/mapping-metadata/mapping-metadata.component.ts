@@ -13,14 +13,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {
-  ArghoEditorModel,
-  DisplayedMidiPitch,
-  TuningEditMode,
-} from '@arghotuning/argho-editor';
+import {ArghoEditorModel, DisplayedMidiPitch} from '@arghotuning/argho-editor';
 import {faEdit} from '@fortawesome/free-solid-svg-icons';
-
-import {KeySpanDialogComponent} from './key-span-dialog.component';
 
 @Component({
   selector: 'app-mapping-metadata',
@@ -56,11 +50,6 @@ export class MappingMetadataComponent {
     });
   }
 
-  openKeySpanDialog(): void {
-    // TODO: Clean up to remove obsolete dialog.
-    this.dialog.open(KeySpanDialogComponent);
-  }
-
   mappingRootPitchStrValue(): string {
     const pitch = this.mappingRoot;
     return pitch.letter + simpleAccidentalStr(pitch.accidental) + pitch.octaveNumber;
@@ -75,11 +64,6 @@ export class MappingMetadataComponent {
         .parseRootMidiPitch(this.mappingRootInput.nativeElement.value);
     if (parseResult.hasValidValue()) {
       const update = parseResult.getValue();
-
-      // TODO: Refactor to ensure this is only available in advanced mode. For
-      // now, ensure we're in advanced edit mode.
-      await this.model.setEditMode(TuningEditMode.ADVANCED);
-
       await this.model.editAdvanced().setMappingRootPitch(
           update.rootMidiPitch, update.displayPref);
     }

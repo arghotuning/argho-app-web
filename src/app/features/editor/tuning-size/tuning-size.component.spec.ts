@@ -2,8 +2,12 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {UiInfraModule} from 'src/app/infra/ui/ui.module';
 
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
+
+import {TuningResizeDialogComponent} from './tuning-resize-dialog.component';
 import {TuningSizeComponent} from './tuning-size.component';
 
 describe('TuningSizeComponent', () => {
@@ -11,8 +15,18 @@ describe('TuningSizeComponent', () => {
   let fixture: ComponentFixture<TuningSizeComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [TuningSizeComponent],
+    TestBed.configureTestingModule({
+      declarations: [
+        TuningSizeComponent,
+        TuningResizeDialogComponent,
+      ],
+      imports: [UiInfraModule],
+    }).overrideModule(BrowserDynamicTestingModule, {
+      set: {
+        entryComponents: [
+          TuningResizeDialogComponent,
+        ],
+      },
     }).compileComponents();
   });
 

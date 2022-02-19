@@ -17,6 +17,7 @@ import {
   ArghoEditorModel,
   ArghoEditorSettings,
   DisplayedMidiPitch,
+  RelativeScaleRootUpdate,
   ScaleRoot,
   TuningEditMode,
   TuningMetadataSnapshot,
@@ -109,10 +110,6 @@ export class ScaleRootComponent {
   }
 
   async handleSpecTypeChanged(specType: RootScaleDegreeSpecType): Promise<void> {
-    // TODO: Rework to ensure this is only available in advanced mode. For
-    // now ensure.
-    await this.model.setEditMode(TuningEditMode.ADVANCED);
-
     switch (specType) {
       case RootScaleDegreeSpecType.EXACT_FREQ:
         return this.model
@@ -121,9 +118,11 @@ export class ScaleRootComponent {
 
       case RootScaleDegreeSpecType.RELATIVE_TO_12TET_MIDI_PITCH:
         const pitch = this.scaleRoot.nearestMidiPitch;
-        return this.model.editAdvanced().setScaleRoot12tetRelative(
-          pitch.midiPitch, this.scaleRoot.centsFrom12tet,
-          this.tuningMetadata.accidentalDisplayPref);
+        this.updateRelativeRoot_({
+          nearestMidiPitch: pitch.midiPitch,
+          centsFrom12tet: this.scaleRoot.centsFrom12tet,
+          displayPref: this.tuningMetadata.accidentalDisplayPref,
+        });
     }
   }
 
@@ -135,10 +134,6 @@ export class ScaleRootComponent {
     if (!this.exactFreqInput) {
       return;
     }
-
-    // TODO: Rework to ensure this is only available in advanced mode. For
-    // now ensure.
-    await this.model.setEditMode(TuningEditMode.ADVANCED);
 
     const parseResult = this.model.inputParser().forScaleRoot()
       .parseExactFreqHz(this.exactFreqInput.nativeElement.value);
@@ -162,15 +157,7 @@ export class ScaleRootComponent {
     const parseResult = this.model.inputParser().forScaleRoot()
       .parseNearestMidiPitch(this.nearestPitchInput.nativeElement.value);
     if (parseResult.hasValidValue()) {
-      const update = parseResult.getValue();
-
-      if (this.model.editMode() === TuningEditMode.BASIC) {
-        await this.model.editBasic().setBasicRoot(
-          update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
-      } else {
-        await this.model.editAdvanced().setScaleRoot12tetRelative(
-          update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
-      }
+      this.updateRelativeRoot_(parseResult.getValue());
     }
 
     this.nearestPitchInput.nativeElement.value = this.nearestPitchStrValue();
@@ -188,18 +175,20 @@ export class ScaleRootComponent {
     const parseResult = this.model.inputParser().forScaleRoot()
       .parseCentsFrom12tet(this.centsOffsetInput.nativeElement.value);
     if (parseResult.hasValidValue()) {
-      // TODO: Refactor to share this logic.
-      const update = parseResult.getValue();
-      if (this.model.editMode() === TuningEditMode.BASIC) {
-        await this.model.editBasic().setBasicRoot(
-          update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
-      } else {
-        await this.model.editAdvanced().setScaleRoot12tetRelative(
-          update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
-      }
+      this.updateRelativeRoot_(parseResult.getValue());
     }
 
     this.centsOffsetInput.nativeElement.value = this.centsOffsetStrValue();
+  }
+
+  private async updateRelativeRoot_(update: RelativeScaleRootUpdate): Promise<void> {
+    if (this.model.editMode() === TuningEditMode.BASIC) {
+      await this.model.editBasic().setBasicRoot(
+        update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+    } else {
+      await this.model.editAdvanced().setScaleRoot12tetRelative(
+        update.nearestMidiPitch, update.centsFrom12tet, update.displayPref);
+    }
   }
 
   blurTarget(eventTarget: EventTarget | null): void {

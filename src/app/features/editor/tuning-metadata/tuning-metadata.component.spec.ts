@@ -60,7 +60,7 @@ describe('TuningMetadataComponent', () => {
 
     // If data model name is changed...
     const data: TuningDataService = TestBed.get(TuningDataService);
-    await data.model.setTuningName('Updated Tuning Name');
+    await data.model.edit().setTuningName('Updated Tuning Name');
     fixture.detectChanges();
 
     // ...the UI should reflect that update.
@@ -88,7 +88,7 @@ describe('TuningMetadataComponent', () => {
 
     // If data model description is changed...
     const data: TuningDataService = TestBed.get(TuningDataService);
-    await data.model.setDescription('Updated description for tuning');
+    await data.model.edit().setDescription('Updated description for tuning');
     fixture.detectChanges();
 
     // ...the UI should reflect that update.
@@ -118,7 +118,7 @@ describe('TuningMetadataComponent', () => {
 
     // If data model accidental pref is changed...
     const data: TuningDataService = TestBed.get(TuningDataService);
-    await data.model.setDisplayAccidentalsAs(AccidentalDisplayPref.FLATS);
+    await data.model.edit().setDisplayAccidentalsAs(AccidentalDisplayPref.FLATS);
     fixture.detectChanges();
 
     // ...the UI should reflect that update.

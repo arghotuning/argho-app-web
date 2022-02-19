@@ -2,7 +2,10 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {UiInfraModule} from 'src/app/infra/ui/ui.module';
+
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MatDialogRef} from '@angular/material/dialog';
 
 import {TuningResizeDialogComponent} from './tuning-resize-dialog.component';
 
@@ -13,6 +16,13 @@ describe('TuningResizeDialogComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [TuningResizeDialogComponent],
+      imports: [UiInfraModule],
+      providers: [
+        {
+          provide: MatDialogRef,
+          useValue: {},
+        },
+      ],
     }).compileComponents();
   });
 

@@ -180,13 +180,8 @@ export class MappingTableComponent {
     const parseResult = inputParser.parseScaleDegree(valueStr);
     if (parseResult.hasValidValue()) {
       const degOrNull = parseResult.getValue().degreeOrNull;
-
-      // TODO: Make sure this component is only shown in advanced editing mode.
-      // For now, ensure we're in advanced mode.
-      await this.model.setEditMode(TuningEditMode.ADVANCED);
-
       await this.model.editAdvanced().setMappedScaleDegree(
-          keyIndex, degOrNull ? degOrNull!.index : null);
+        keyIndex, degOrNull ? degOrNull!.index : null);
     }
 
     if (parseResult.hasCorrectionWarning()) {
@@ -205,7 +200,7 @@ export class MappingTableComponent {
 
     const rowEl = cellEl.parentElement as Element;
     this.popupEditorKeyIndex_ =
-        parseInt(rowEl.getAttribute('data-key-idx') as string);
+      parseInt(rowEl.getAttribute('data-key-idx') as string);
     this.popupInput.nativeElement.value = this.getPopupFieldValue_();
     this.setPopupPosition_(rowEl, cellEl);
 
@@ -288,7 +283,7 @@ export class MappingTableComponent {
     this.stopDegree(degIndex);
 
     const freqHz = (degIndex === 0) ?
-        this.scaleRoot.rootFreqHz : this.upperDegrees.get(degIndex).freqHz;
+      this.scaleRoot.rootFreqHz : this.upperDegrees.get(degIndex).freqHz;
     this.playingNotes_[degIndex] = {
       note: this.synth.playNoteOn(freqHz),
       startTimeMs: Date.now(),
