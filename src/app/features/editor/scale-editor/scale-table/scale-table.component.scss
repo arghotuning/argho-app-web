@@ -38,6 +38,7 @@
 }
 
 .mat-column-freq {
+  min-width: 9em;  /* Avoid wrapping of play button on mobile. */
   padding-left: 1em;
   padding-right: 1em;
   text-align: right;
