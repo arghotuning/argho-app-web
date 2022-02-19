@@ -34,6 +34,7 @@ $field-gap: 1em;
   width: calc(100% + #{$field-gap});
 
   mat-form-field {
+    margin-bottom: $field-gap;
     margin-left: $field-gap;
   }
 
@@ -44,4 +45,3 @@ $field-gap: 1em;
 .mat-dialog-actions {
   justify-content: flex-end;
 }
-

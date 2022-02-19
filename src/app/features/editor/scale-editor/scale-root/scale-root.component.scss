@@ -17,17 +17,14 @@ mat-form-field {
   margin-left: $field-gap;
 }
 
-.global-tune {
-  margin-bottom: $field-gap;
-  width: 7em;
-}
-
 .root-spec {
+  margin-bottom: $field-gap;
   width: 10em;
 }
 
 .cents-offset,
 .exact-freq,
+.global-tune,
 .nearest-midi-pitch {
   margin-bottom: $field-gap;
   width: 7em;
