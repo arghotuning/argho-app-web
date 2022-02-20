@@ -4,7 +4,7 @@
 
 import {UiInfraModule} from 'src/app/infra/ui/ui.module';
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
 import {MappingMetadataComponent} from './mapping-metadata.component';
 
@@ -12,7 +12,7 @@ describe('MappingMetadataComponent', () => {
   let component: MappingMetadataComponent;
   let fixture: ComponentFixture<MappingMetadataComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         MappingMetadataComponent,

@@ -4,30 +4,30 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-@import '~@angular/material/theming';
+@use '@angular/material' as mat;
 
 @import '_colors';
 @import '_fonts';
 
 // Custom typography; use a different font for headings.
 // Size and letter spacing values taken from @angular/material/theming.
-$argho-typography: mat-typography-config(
+$argho-typography: mat.define-typography-config(
   $font-family:  $font-body,
-  $display-4:    mat-typography-level(112px, 112px, 500, $font-family: $font-title, $letter-spacing: -0.05em),
-  $display-3:    mat-typography-level(56px, 56px, 500, $font-family: $font-title, $letter-spacing: -0.02em),
-  $display-2:    mat-typography-level(45px, 48px, 500, $font-family: $font-title, $letter-spacing: -0.005em),
-  $display-1:    mat-typography-level(34px, 40px, 500, $font-family: $font-title),
-  $headline:     mat-typography-level(24px, 32px, 500, $font-family: $font-title),
-  $title:        mat-typography-level(20px, 32px, 500, $font-family: $font-title),
-  $subheading-2: mat-typography-level(16px, 28px, 500, $font-family: $font-title),
-  $subheading-1: mat-typography-level(15px, 24px, 500, $font-family: $font-title),
+  $display-4:    mat.define-typography-level(112px, 112px, 500, $font-family: $font-title, $letter-spacing: -0.05em),
+  $display-3:    mat.define-typography-level(56px, 56px, 500, $font-family: $font-title, $letter-spacing: -0.02em),
+  $display-2:    mat.define-typography-level(45px, 48px, 500, $font-family: $font-title, $letter-spacing: -0.005em),
+  $display-1:    mat.define-typography-level(34px, 40px, 500, $font-family: $font-title),
+  $headline:     mat.define-typography-level(24px, 32px, 500, $font-family: $font-title),
+  $title:        mat.define-typography-level(20px, 32px, 500, $font-family: $font-title),
+  $subheading-2: mat.define-typography-level(16px, 28px, 500, $font-family: $font-title),
+  $subheading-1: mat.define-typography-level(15px, 24px, 500, $font-family: $font-title),
 );
 
 // Common styles for Angular Material. Should only be included one time.
-@include mat-core($argho-typography);
+@include mat.core($argho-typography);
 
 // Angular material theme colors.
-$argho-app-web-theme: mat-light-theme((
+$argho-app-web-theme: mat.define-light-theme((
   color: (
     primary: $palette-primary,
     accent: $palette-secondary,
@@ -35,7 +35,7 @@ $argho-app-web-theme: mat-light-theme((
   )
 ));
 
-@include angular-material-theme($argho-app-web-theme);
+@include mat.all-component-themes($argho-app-web-theme);
 
 // Customize filled form field background color:
 .mat-form-field-appearance-fill .mat-form-field-flex {

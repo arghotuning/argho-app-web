@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
 import {ScaleEditorComponent} from './scale-editor.component';
 
@@ -10,7 +10,7 @@ describe('ScaleEditorComponent', () => {
   let component: ScaleEditorComponent;
   let fixture: ComponentFixture<ScaleEditorComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ScaleEditorComponent],
     }).compileComponents();

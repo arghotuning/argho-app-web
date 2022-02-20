@@ -4,7 +4,7 @@
 
 import {UiInfraModule} from 'src/app/infra/ui/ui.module';
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 
 import {ErrorDialogComponent} from './error-dialog.component';
@@ -14,7 +14,7 @@ describe('FileButtonsComponent', () => {
   let component: FileButtonsComponent;
   let fixture: ComponentFixture<FileButtonsComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [FileButtonsComponent],
       imports: [UiInfraModule],

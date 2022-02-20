@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {
   ArghoEditorSettings,
   DisplayedMidiPitch,
@@ -15,7 +15,7 @@ describe('SpelledPitchComponent', () => {
   let component: SpelledPitchComponent;
   let fixture: ComponentFixture<SpelledPitchComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [SpelledPitchComponent],
     }).compileComponents();

@@ -4,7 +4,7 @@
 
 import {UiInfraModule} from 'src/app/infra/ui/ui.module';
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
 import {ScaleTableComponent} from './scale-table.component';
 
@@ -12,7 +12,7 @@ describe('ScaleTableComponent', () => {
   let component: ScaleTableComponent;
   let fixture: ComponentFixture<ScaleTableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ScaleTableComponent],
       imports: [UiInfraModule],

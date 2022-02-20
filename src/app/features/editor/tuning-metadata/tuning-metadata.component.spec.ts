@@ -6,7 +6,7 @@ import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 import {UiInfraModule} from 'src/app/infra/ui/ui.module';
 
 import {DebugElement} from '@angular/core';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {AccidentalDisplayPref} from '@arghotuning/arghotun';
 
@@ -16,7 +16,7 @@ describe('TuningMetadataComponent', () => {
   let component: TuningMetadataComponent;
   let fixture: ComponentFixture<TuningMetadataComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TuningMetadataComponent],
       imports: [UiInfraModule],

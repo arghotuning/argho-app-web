@@ -4,7 +4,7 @@
 
 import {UiInfraModule} from 'src/app/infra/ui/ui.module';
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
 import {MappingTableComponent} from './mapping-table.component';
 
@@ -12,7 +12,7 @@ describe('MappingTableComponent', () => {
   let component: MappingTableComponent;
   let fixture: ComponentFixture<MappingTableComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [UiInfraModule],
       declarations: [MappingTableComponent],

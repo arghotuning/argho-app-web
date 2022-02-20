@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
 import {TuningAnalysisComponent} from './tuning-analysis.component';
 
@@ -10,7 +10,7 @@ describe('TuningAnalysisComponent', () => {
   let component: TuningAnalysisComponent;
   let fixture: ComponentFixture<TuningAnalysisComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [TuningAnalysisComponent],
     }).compileComponents();
