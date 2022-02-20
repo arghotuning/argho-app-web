@@ -21,6 +21,7 @@ import {TuningAnalysisComponent} from './tuning-analysis/tuning-analysis.compone
 import {TuningMetadataComponent} from './tuning-metadata/tuning-metadata.component';
 import {SynthControlsComponent} from './tuning-player/synth-controls.component';
 import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
+import {WebMidiInputComponent} from './tuning-player/web-midi-input.component';
 import {TuningResizeDialogComponent} from './tuning-size/tuning-resize-dialog.component';
 import {TuningSizeComponent} from './tuning-size/tuning-size.component';
 
@@ -42,6 +43,7 @@ import {TuningSizeComponent} from './tuning-size/tuning-size.component';
     TuningPlayerComponent,
     TuningResizeDialogComponent,
     TuningSizeComponent,
+    WebMidiInputComponent,
   ],
   imports: [
     CommonModule,
