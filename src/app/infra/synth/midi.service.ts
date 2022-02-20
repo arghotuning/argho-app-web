@@ -100,6 +100,10 @@ export class MidiService {
 
   private initInputs_(): void {
     this.allInputs_ = new BehaviorSubject<WebMidiInputPorts>(this.getAllCurrentInputs_());
+    if (this.allInputs_.value.inputs.length >= 1) {
+      // Auto open the first input.
+      this.openInput(this.allInputs_.value.inputs[0].id);
+    }
 
     this.access_!.addEventListener('statechange', () => {
       this.allInputs_!.next(this.getAllCurrentInputs_());

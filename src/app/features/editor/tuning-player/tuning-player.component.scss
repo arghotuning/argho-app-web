@@ -20,7 +20,8 @@ $field-gap: 1em;
   margin-left: -1 * $field-gap;
   width: calc(100% + #{$field-gap});
 
-  mat-form-field {
+  mat-form-field,
+  .volume-control {
     margin-left: $field-gap;
     margin-bottom: $field-gap;
   }
@@ -28,4 +29,18 @@ $field-gap: 1em;
   .midi-inputs { width: 12em; }
   .midi-channel { width: 6em; }
   .waveform { width: 8em; }
+
+  .volume-control {
+    .volume-slider {
+      margin-left: 0.25em;
+      margin-right: 0.25em;
+      width: 9em;
+    }
+
+    /* Nudge volume icons slightly down to align with slider track. */
+    fa-icon {
+      position: relative;
+      top: 0.1em;
+    }
+  }
 }

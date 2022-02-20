@@ -16,6 +16,7 @@ import {
   Component,
 } from '@angular/core';
 import {DisplayedIndex} from '@arghotuning/argho-editor';
+import {faVolumeHigh, faVolumeOff} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-tuning-player',
@@ -24,12 +25,17 @@ import {DisplayedIndex} from '@arghotuning/argho-editor';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuningPlayerComponent {
+  // Icons:
+  faVolumeOff = faVolumeOff;
+  faVolumeHigh = faVolumeHigh;
+
   WebMidiAccessState = WebMidiAccessState;
 
   accessState!: WebMidiAccessState;
   allInputPorts: WebMidiInputPort[] = [];
   activeInput: OpenedMidiInput | null = null;
   channel = 'omni';
+  volume!: number;
   waveform!: OscWaveform;
 
   constructor(
@@ -42,6 +48,11 @@ export class TuningPlayerComponent {
       if (this.accessState === WebMidiAccessState.GRANTED) {
         this.initInputs_();
       }
+      this.changeDetector.markForCheck();
+    });
+
+    this.synth.volume().subscribe(volume => {
+      this.volume = volume;
       this.changeDetector.markForCheck();
     });
 
@@ -82,9 +93,13 @@ export class TuningPlayerComponent {
   handleChannelChange(chanStr: string): void {
     let ch: 'omni' | DisplayedIndex = 'omni';
     if (chanStr !== 'omni') {
-      ch = new DisplayedIndex(parseInt(chanStr) - 1);
+      ch = new DisplayedIndex(parseInt(chanStr, 10) - 1);
     }
     this.midiService.setMidiChannel(ch);
+  }
+
+  handleVolumeChange(normalizedVolume: number): void {
+    this.synth.setVolume(normalizedVolume);
   }
 
   handleWaveformChange(waveform: OscWaveform): void {

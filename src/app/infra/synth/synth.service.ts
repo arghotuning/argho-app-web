@@ -16,24 +16,36 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
 const audioContext = new window.AudioContext();
 
+/** Converts [0.0, 1.0] volume slider value to nicer gain. */
+function scaledVol(normalizedVolume: number): number {
+  // Anything less than 0.1: volume off.
+  if (normalizedVolume < 0.1) {
+    return 0.0;
+  }
+
+  // Scale [0.0, 1.0] to [-36 dB, -3 dB].
+  const db = -36.0 + 33.0 * normalizedVolume;
+  return Math.pow(10.0, db / 20.0);
+}
+
 const ATTACK_TIME_SECS = 0.04;
 const DECAY_TIME_SECS = 10.0;
 const RELEASE_TIME_SECS = 0.3;
 const STOP_TIME_SECS = 0.2;
 
-function newGlobalVolume(): GainNode {
+function newGlobalVolume(normalizedVolume: number): GainNode {
   const globalVol = audioContext.createGain();
-  globalVol.gain.setValueAtTime(0.35, audioContext.currentTime);  // About -9 dB.
+  globalVol.gain.setValueAtTime(scaledVol(normalizedVolume), audioContext.currentTime);
   return globalVol;
 }
 
 function newLimiter(): DynamicsCompressorNode {
   // Best currently available in WebAudio API is a 20:1 compressor.
-  // Ideally, this would be a lookahead brickwall limiter.
+  // Ideally, this would be a brickwall limiter.
   const limiter = audioContext.createDynamicsCompressor();
 
   const currentTime = audioContext.currentTime;
-  limiter.threshold.setValueAtTime(-3 /* dB */, currentTime);
+  limiter.threshold.setValueAtTime(-1 /* dB */, currentTime);
   limiter.ratio.setValueAtTime(20 /* 20:1 */, currentTime);
   limiter.attack.setValueAtTime(0 /* s */, currentTime);
   limiter.release.setValueAtTime(0.1 /* s */, currentTime);
@@ -50,9 +62,20 @@ function newOscillator(waveform: OscWaveform): OscillatorNode {
   return osc;
 }
 
+function gainCompensation(waveform: OscWaveform): number {
+  // Compensate to make each oscillator waveform similar in loudness.
+  if (waveform === 'sine' || waveform === 'triangle') {
+    return 0.8;
+  } else if (waveform === 'sawtooth') {
+    return 0.45;
+  } else {
+    return 0.35;
+  }
+}
+
 function newAmplitudeEnvelope(): GainNode {
   const ampEnv = audioContext.createGain();
-  ampEnv.gain.setValueAtTime(0, audioContext.currentTime);
+  ampEnv.gain.setValueAtTime(0.0, audioContext.currentTime);
   return ampEnv;
 }
 
@@ -75,10 +98,11 @@ export class SynthService {
   private readonly globalVol_: GainNode;
   private readonly limiter_: DynamicsCompressorNode;
 
+  private volume_ = new BehaviorSubject<number>(0.8);  // Init to about -9 dB.
   private waveform_ = new BehaviorSubject<OscWaveform>('square');
 
   constructor() {
-    this.globalVol_ = newGlobalVolume();
+    this.globalVol_ = newGlobalVolume(this.volume_.value);
     this.limiter_ = newLimiter();
 
     this.globalVol_.connect(this.limiter_);
@@ -96,11 +120,13 @@ export class SynthService {
     voice.osc.frequency.setValueAtTime(freqHz, currentTime);
     voice.ampEnv.gain.setValueAtTime(0.0, currentTime);
 
+    const gainComp = gainCompensation(voice.osc.type as OscWaveform);
+
     const peakTime = currentTime + ATTACK_TIME_SECS;
-    voice.ampEnv.gain.linearRampToValueAtTime(1.0, peakTime);
+    voice.ampEnv.gain.linearRampToValueAtTime(1.0 * gainComp, peakTime);
 
     const maxReleaseTime = peakTime + DECAY_TIME_SECS;
-    voice.ampEnv.gain.linearRampToValueAtTime(0.2, maxReleaseTime);
+    voice.ampEnv.gain.linearRampToValueAtTime(0.2 * gainComp, maxReleaseTime);
 
     // Guard against note not being stopped sooner by always releasing after a
     // certain maximum duration (the decay time).
@@ -112,7 +138,7 @@ export class SynthService {
     voice.osc.start();
 
     return {
-      stop() {
+      stop(): void {
         const actualReleaseTime = audioContext.currentTime;
         voice.ampEnv.gain.cancelScheduledValues(actualReleaseTime);
 
@@ -128,6 +154,22 @@ export class SynthService {
         voice.stopTimeSecs = safeStopTime;
       }
     };
+  }
+
+  volume(): Observable<number> {
+    return this.volume_;
+  }
+
+  setVolume(volume: number): void {
+    if ((volume < 0.0) || (1.0 < volume)) {
+      throw Error('SynthService: volume must be in [0.0, 1.0]');
+    }
+
+    // Ramp to new volume quickly, but avoid clicks.
+    this.globalVol_.gain.linearRampToValueAtTime(
+      scaledVol(volume),
+      audioContext.currentTime + ATTACK_TIME_SECS);
+    this.volume_.next(volume);
   }
 
   waveform(): Observable<OscWaveform> {
