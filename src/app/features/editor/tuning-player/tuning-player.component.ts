@@ -8,7 +8,7 @@ import {
   WebMidiAccessState,
   WebMidiInputPort,
 } from 'src/app/infra/synth/midi.service';
-import {OscWaveform, SynthService} from 'src/app/infra/synth/synth.service';
+import {OscWaveform} from 'src/app/infra/synth/synth.service';
 
 import {
   ChangeDetectionStrategy,
@@ -16,7 +16,6 @@ import {
   Component,
 } from '@angular/core';
 import {DisplayedIndex} from '@arghotuning/argho-editor';
-import {faVolumeHigh, faVolumeOff} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-tuning-player',
@@ -25,22 +24,15 @@ import {faVolumeHigh, faVolumeOff} from '@fortawesome/free-solid-svg-icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TuningPlayerComponent {
-  // Icons:
-  faVolumeOff = faVolumeOff;
-  faVolumeHigh = faVolumeHigh;
-
   WebMidiAccessState = WebMidiAccessState;
 
   accessState!: WebMidiAccessState;
   allInputPorts: WebMidiInputPort[] = [];
   activeInput: OpenedMidiInput | null = null;
   channel = 'omni';
-  volume!: number;
-  waveform!: OscWaveform;
 
   constructor(
     private readonly midiService: MidiService,
-    private readonly synth: SynthService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {
     this.midiService.accessState().subscribe(accessState => {
@@ -48,16 +40,6 @@ export class TuningPlayerComponent {
       if (this.accessState === WebMidiAccessState.GRANTED) {
         this.initInputs_();
       }
-      this.changeDetector.markForCheck();
-    });
-
-    this.synth.volume().subscribe(volume => {
-      this.volume = volume;
-      this.changeDetector.markForCheck();
-    });
-
-    this.synth.waveform().subscribe(waveform => {
-      this.waveform = waveform;
       this.changeDetector.markForCheck();
     });
   }
@@ -96,13 +78,5 @@ export class TuningPlayerComponent {
       ch = new DisplayedIndex(parseInt(chanStr, 10) - 1);
     }
     this.midiService.setMidiChannel(ch);
-  }
-
-  handleVolumeChange(normalizedVolume: number): void {
-    this.synth.setVolume(normalizedVolume);
-  }
-
-  handleWaveformChange(waveform: OscWaveform): void {
-    this.synth.setOscWaveform(waveform);
   }
 }

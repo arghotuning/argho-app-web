@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+@import '_fonts';
+
 .web-midi-label {
-  font-weight: 500;
+  font-weight: $font-body-med-weight;
 }
 
 .enable-button {
@@ -20,27 +22,11 @@ $field-gap: 1em;
   margin-left: -1 * $field-gap;
   width: calc(100% + #{$field-gap});
 
-  mat-form-field,
-  .volume-control {
+  mat-form-field {
     margin-left: $field-gap;
     margin-bottom: $field-gap;
   }
 
   .midi-inputs { width: 12em; }
   .midi-channel { width: 6em; }
-  .waveform { width: 8em; }
-
-  .volume-control {
-    .volume-slider {
-      margin-left: 0.25em;
-      margin-right: 0.25em;
-      width: 9em;
-    }
-
-    /* Nudge volume icons slightly down to align with slider track. */
-    fa-icon {
-      position: relative;
-      top: 0.1em;
-    }
-  }
 }

@@ -7,6 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 <p>Play mapped scale degrees using the on-screen piano keyboard or a MIDI
 keyboard device (if your browser supports it).</p>
 
+<app-synth-controls></app-synth-controls>
+
 <p>
   <span class="web-midi-label">WebMIDI</span>:
   <ng-container [ngSwitch]="accessState">
@@ -66,24 +68,4 @@ keyboard device (if your browser supports it).</p>
       <mat-option value="16">16</mat-option>
     </mat-select>
   </mat-form-field>
-
-  <mat-form-field class="waveform" appearance="fill" backgroundColor="primary">
-    <mat-label>Waveform</mat-label>
-    <mat-select [value]="waveform" (selectionChange)="handleWaveformChange($event.value)">
-      <mat-option value="sine">Sine</mat-option>
-      <mat-option value="triangle">Triangle</mat-option>
-      <mat-option value="square">Square</mat-option>
-      <mat-option value="sawtooth">Sawtooth</mat-option>
-    </mat-select>
-  </mat-form-field>
-
-  <div class="volume-control">
-    <fa-icon [icon]="faVolumeOff"></fa-icon>
-    <mat-slider class="volume-slider"
-        aria-label="Volume"
-        min="0.0" max="1.0" step="0.05"
-        [value]="volume"
-        (input)="handleVolumeChange($event.value || 0.0)"></mat-slider>
-    <fa-icon [icon]="faVolumeHigh"></fa-icon>
-  </div>
 </div>

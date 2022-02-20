@@ -19,6 +19,7 @@ import {ScaleTableConfigComponent} from './scale-editor/scale-table/scale-table-
 import {ScaleTableComponent} from './scale-editor/scale-table/scale-table.component';
 import {TuningAnalysisComponent} from './tuning-analysis/tuning-analysis.component';
 import {TuningMetadataComponent} from './tuning-metadata/tuning-metadata.component';
+import {SynthControlsComponent} from './tuning-player/synth-controls.component';
 import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
 import {TuningResizeDialogComponent} from './tuning-size/tuning-resize-dialog.component';
 import {TuningSizeComponent} from './tuning-size/tuning-size.component';
@@ -35,6 +36,7 @@ import {TuningSizeComponent} from './tuning-size/tuning-size.component';
     ScaleRootComponent,
     ScaleTableComponent,
     ScaleTableConfigComponent,
+    SynthControlsComponent,
     TuningAnalysisComponent,
     TuningMetadataComponent,
     TuningPlayerComponent,
