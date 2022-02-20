@@ -19,6 +19,7 @@ import {ScaleTableConfigComponent} from './scale-editor/scale-table/scale-table-
 import {ScaleTableComponent} from './scale-editor/scale-table/scale-table.component';
 import {TuningAnalysisComponent} from './tuning-analysis/tuning-analysis.component';
 import {TuningMetadataComponent} from './tuning-metadata/tuning-metadata.component';
+import {PianoKeyboardComponent} from './tuning-player/piano-keyboard.component';
 import {SynthControlsComponent} from './tuning-player/synth-controls.component';
 import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
 import {WebMidiInputComponent} from './tuning-player/web-midi-input.component';
@@ -33,6 +34,7 @@ import {TuningSizeComponent} from './tuning-size/tuning-size.component';
     MappingEditorComponent,
     MappingMetadataComponent,
     MappingTableComponent,
+    PianoKeyboardComponent,
     ScaleEditorComponent,
     ScaleRootComponent,
     ScaleTableComponent,

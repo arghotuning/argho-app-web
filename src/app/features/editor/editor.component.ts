@@ -9,7 +9,9 @@ import {
   ChangeDetectorRef,
   Component,
   OnInit,
+  ViewChild,
 } from '@angular/core';
+import {MatTabChangeEvent} from '@angular/material/tabs';
 import {ActivatedRoute} from '@angular/router';
 import {
   ArghoEditorContext,
@@ -17,6 +19,8 @@ import {
   TuningEditMode,
 } from '@arghotuning/argho-editor';
 import {TuningConverter} from '@arghotuning/arghotun-proto';
+
+import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
 
 @Component({
   selector: 'app-editor',
@@ -29,6 +33,9 @@ export class EditorComponent implements OnInit {
   private readonly model: ArghoEditorModel;
 
   isBasic!: boolean;
+
+  @ViewChild('player')
+  player: TuningPlayerComponent | undefined;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -65,9 +72,13 @@ export class EditorComponent implements OnInit {
 
         this.model.replaceTuning(parseResult.tuning);
       } catch (e) {
-        // TODO: Display error dialog about invalid Tuning data.
-        console.log('Error paring t= Tuning data:  ' + e);
+        // TODO: Display error dialog about invalid Tuning data (likely URL too long).
+        console.log('Error parsing t= Tuning data:  ' + e);
       }
     });
+  }
+
+  handleTabChange(event: MatTabChangeEvent): void {
+    this.player?.handleTabChange();
   }
 }

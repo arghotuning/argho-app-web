@@ -1,0 +1,44 @@
+/*
+ * SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+@import '_fonts';
+
+$white-key-width: 24px;
+
+.piano-keys {
+  margin-bottom: 0.5em;
+  min-width: calc(8 * $white-key-width);
+}
+
+.white-key {
+  background-color: #fff;  /* TODO: Style. */
+  border: 1px solid #000;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-block;
+  height: 100px;
+  position: relative;
+  width: $white-key-width;
+
+  .pitch-label {
+    bottom: 0.125em;
+    font-size: 0.8rem;
+    overflow: hidden;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+  }
+
+  .black-key {
+    background-color: #111;  /* TODO: Style. */
+    height: 60px;
+    right: -9px;  /* Slide over so it also overlaps next white key. */
+    position: absolute;
+    top: 0;
+    width: 16px;
+    z-index: 100;  /* TODO: Centrally managed constants. */
+  }
+}
