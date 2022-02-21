@@ -4,11 +4,12 @@
 
 ///  <reference types="@types/webmidi"/>
 
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
 import {Injectable} from '@angular/core';
 import {DisplayedIndex} from '@arghotuning/argho-editor';
+import {MidiPitch} from '@arghotuning/arghotun';
 
 import {StoppableNote, SynthService} from './synth.service';
 
@@ -70,12 +71,22 @@ export class MidiService {
   private activeInput_ = new BehaviorSubject<OpenedMidiInput | null>(null);
   private midiChannel_: 'omni' | DisplayedIndex = 'omni';
 
-  private readonly playingNotes_: {[midiPitch: number]: StoppableNote | null} = {};
+  private readonly playingNotes_: {[midiPitch: number]: StoppableNote} = {};
+  private noteOns_ = new Subject<MidiPitch>();
+  private noteOffs_ = new Subject<MidiPitch>();
 
   constructor(
     private readonly data: TuningDataService,
     private readonly synth: SynthService,
   ) {}
+
+  noteOns(): Observable<MidiPitch> {
+    return this.noteOns_;
+  }
+
+  noteOffs(): Observable<MidiPitch> {
+    return this.noteOffs_;
+  }
 
   accessState(): Observable<WebMidiAccessState> {
     return this.accessState_;
@@ -234,6 +245,20 @@ export class MidiService {
       cmd = MIDI_CMD_NOTE_OFF;
     }
 
+    this.handleNote_(pitch, cmd);
+  }
+
+  /** Plays note on from on-screen piano. */
+  playNoteOn(pitch: MidiPitch): void {
+    this.handleNote_(pitch, MIDI_CMD_NOTE_ON);
+  }
+
+  /** Stops note from on-screen piano. */
+  stopNote(pitch: MidiPitch): void {
+    this.handleNote_(pitch, MIDI_CMD_NOTE_OFF);
+  }
+
+  handleNote_(pitch: MidiPitch, cmd: number): void {
     const keyToSoundMap = this.data.keyToSoundMap();
     if (!keyToSoundMap.isMapped(pitch)) {
       return;  // Unmapped.
@@ -248,17 +273,20 @@ export class MidiService {
           currentlyPlayingNote.stop();
         }
         this.playingNotes_[pitch] = this.synth.playNoteOn(freqHz);
+        this.noteOns_.next(pitch);
         break;
 
       case MIDI_CMD_NOTE_OFF:
         if (currentlyPlayingNote) {
           currentlyPlayingNote.stop();
+          delete this.playingNotes_[pitch];
         }
+        this.noteOffs_.next(pitch);
         break;
     }
   }
 
-  setMidiChannel(ch: 'omni' | DisplayedIndex) {
+  setMidiChannel(ch: 'omni' | DisplayedIndex): void {
     if (this.midiChannel_ === ch) {
       return;
     }

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {MidiService} from 'src/app/infra/synth/midi.service';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
 import {
@@ -54,6 +55,7 @@ export class PianoKeyboardComponent implements AfterViewInit {
 
   constructor(
     data: TuningDataService,
+    private readonly midi: MidiService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {
     // NOTE: Always called back synchronously to start.
@@ -66,6 +68,16 @@ export class PianoKeyboardComponent implements AfterViewInit {
     data.model.tuningMetadata().subscribe(metadata => {
       this.displayPref = metadata.accidentalDisplayPref;
       this.updatePianoKeys_();
+      this.changeDetector.markForCheck();
+    });
+
+    this.midi.noteOns().subscribe(pitch => {
+      this.displayNoteOn_(pitch);
+      this.changeDetector.markForCheck();
+    });
+
+    this.midi.noteOffs().subscribe(pitch => {
+      this.displayNoteOff_(pitch);
       this.changeDetector.markForCheck();
     });
   }
@@ -154,7 +166,7 @@ export class PianoKeyboardComponent implements AfterViewInit {
     }
 
     this.activePoints[event.pointerId] = key;
-    this.noteOn_(key);
+    this.midi.playNoteOn(key);
   }
 
   keyForTarget_(targetEl: HTMLElement): MidiPitch | null {
@@ -183,19 +195,15 @@ export class PianoKeyboardComponent implements AfterViewInit {
     }
 
     delete this.activePoints[event.pointerId];
-    this.noteOff_(key);
+    this.midi.stopNote(key);
   }
 
-  private noteOn_(key: MidiPitch): void {
+  private displayNoteOn_(key: MidiPitch): void {
     this.keyElement_(key)?.classList.add('playing');
-
-    // TODO: Play with synth/MIDI service.
   }
 
-  private noteOff_(key: MidiPitch): void {
+  private displayNoteOff_(key: MidiPitch): void {
     this.keyElement_(key)?.classList.remove('playing');
-
-    // TODO: Stop with synth/MIDI service.
   }
 
   private keyElement_(key: MidiPitch): Element | null {
