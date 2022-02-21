@@ -4,9 +4,14 @@ SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-<div #pianoKeys class="piano-keys" (window:resize)="handleResize()">
-  <div *ngFor="let whiteKey of whiteKeys" class="white-key">
-    <div *ngIf="whiteKey.precedesBlackKey" class="black-key"></div>
+<div #pianoKeys class="piano-keys" (window:resize)="handleResize()"
+    (pointerdown)="handlePianoKeyDown($event)"
+    (pointerup)="handlePianoKeyUp($event)"
+    (pointerleave)="handlePianoKeyUp($event)">
+  <div *ngFor="let whiteKey of whiteKeys"
+      class="white-key" [attr.data-key]="whiteKey.pitch.midiPitch">
+    <div *ngIf="whiteKey.precedesBlackKey"
+        class="black-key" [attr.data-key]="whiteKey.precedesBlackKey.midiPitch"></div>
     <div *ngIf="whiteKey.pitch.letter == 'C'" class="pitch-label">
       <app-spelled-pitch [pitch]="whiteKey.pitch"></app-spelled-pitch>
     </div>

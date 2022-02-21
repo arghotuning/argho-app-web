@@ -41,4 +41,12 @@ $white-key-width: 24px;
     width: 16px;
     z-index: 100;  /* TODO: Centrally managed constants. */
   }
+
+  .black-key.playing {
+    background-color: #33c;  /* TODO: Style. */
+  }
+}
+
+.white-key.playing {
+  background-color: #66f;  /* TODO: Style. */
 }

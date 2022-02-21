@@ -50,6 +50,8 @@ export class PianoKeyboardComponent implements AfterViewInit {
 
   whiteKeys: PianoWhiteKey[] = [];
 
+  activePoints: {[pointerId: number]: MidiPitch} = {};
+
   constructor(
     data: TuningDataService,
     private readonly changeDetector: ChangeDetectorRef,
@@ -123,8 +125,9 @@ export class PianoKeyboardComponent implements AfterViewInit {
     }
 
     // Always end with a top C (no following C#).
-    const endPitch = this.startPitch + MIDI_PITCHES_PER_OCTAVE * this.numOctaves;
-    this.whiteKeys.push({pitch: new DisplayedMidiPitch(endPitch, this.displayPref, this.settings)});
+    this.whiteKeys.push({
+      pitch: new DisplayedMidiPitch(this.endPitch_(), this.displayPref, this.settings),
+    });
   }
 
   private maxStartPitch_(): MidiPitch {
@@ -142,5 +145,97 @@ export class PianoKeyboardComponent implements AfterViewInit {
     }
 
     return new DisplayedMidiPitch(pitch.midiPitch + 1, this.displayPref, this.settings);
+  }
+
+  handlePianoKeyDown(event: PointerEvent): void {
+    const key = this.keyForTarget_(event.target as HTMLElement);
+    if (key === null) {
+      return;
+    }
+
+    this.activePoints[event.pointerId] = key;
+    this.noteOn_(key);
+  }
+
+  keyForTarget_(targetEl: HTMLElement): MidiPitch | null {
+    // Find first parent <div> (or self).
+    let keyEl = targetEl;
+    while (!keyEl.classList.contains('piano-keys')
+        && !keyEl.hasAttribute('data-key')) {
+      if (!keyEl.parentElement) {
+        break;
+      }
+      keyEl = keyEl.parentElement;
+    }
+
+    const keyStr = keyEl.getAttribute('data-key');
+    if (!keyStr) {
+      return null;
+    }
+
+    return parseInt(keyStr, 10);
+  }
+
+  handlePianoKeyUp(event: PointerEvent): void {
+    const key = this.activePoints[event.pointerId];
+    if (!key) {
+      return;
+    }
+
+    delete this.activePoints[event.pointerId];
+    this.noteOff_(key);
+  }
+
+  private noteOn_(key: MidiPitch): void {
+    this.keyElement_(key)?.classList.add('playing');
+
+    // TODO: Play with synth/MIDI service.
+  }
+
+  private noteOff_(key: MidiPitch): void {
+    this.keyElement_(key)?.classList.remove('playing');
+
+    // TODO: Stop with synth/MIDI service.
+  }
+
+  private keyElement_(key: MidiPitch): Element | null {
+    if (!this.startPitch || !this.pianoKeys) {
+      return null;
+    }
+
+    const endPitch = this.endPitch_();
+    if ((key < this.startPitch) || (endPitch < key)) {
+      return null;
+    }
+
+    // Element for key should be present. Find it.
+    let whiteKeyIndex = 0;
+    let isSharp = false;
+    while (whiteKeyIndex < this.whiteKeys.length) {
+      const whiteKey = this.whiteKeys[whiteKeyIndex];
+      if (whiteKey.pitch.midiPitch === key) {
+        break;
+      } else if (whiteKey.precedesBlackKey?.midiPitch === key) {
+        isSharp = true;
+        break;
+      }
+
+      whiteKeyIndex++;
+    }
+
+    const whiteKeyEls = this.pianoKeys.nativeElement.children;
+    if (whiteKeyEls.length <= whiteKeyIndex) {
+      return null;  // Shouldn't happen, but guard to be safe.
+    }
+
+    const whiteKeyEl = whiteKeyEls[whiteKeyIndex];
+    return isSharp ? whiteKeyEl.firstElementChild : whiteKeyEl;
+  }
+
+  private endPitch_(): MidiPitch {
+    if (!this.startPitch) {
+      throw Error('Missing startPitch');
+    }
+    return this.startPitch + MIDI_PITCHES_PER_OCTAVE * this.numOctaves;
   }
 }
