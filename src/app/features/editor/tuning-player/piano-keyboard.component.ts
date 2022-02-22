@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import fscreen from 'fscreen';
 import {MidiService} from 'src/app/infra/synth/midi.service';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
@@ -11,6 +12,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  OnDestroy,
   ViewChild,
 } from '@angular/core';
 import {
@@ -20,23 +22,30 @@ import {
   SimpleAccidental,
 } from '@arghotuning/argho-editor';
 import {AccidentalDisplayPref, MidiPitch} from '@arghotuning/arghotun';
+import {SizeProp} from '@fortawesome/fontawesome-svg-core';
 import {
   faCircleArrowLeft,
   faCircleArrowRight,
+  faDownLeftAndUpRightToCenter,
+  faExpand,
 } from '@fortawesome/free-solid-svg-icons';
 
-const CONTROLS_WIDTH_PX = 32;
-
-const WHITE_KEY_WIDTH_PX = 24;
+const BASE_WHITE_KEY_WIDTH_PX = 24;
+const BASE_WHITE_KEY_HEIGHT_PX = 100;
+const BASE_CONTROLS_WIDTH_PX = 32;
 
 const WHITE_KEYS_PER_OCTAVE = 7;
-const TWO_OCTAVE_WIDTH_PX = (1 + 2 * WHITE_KEYS_PER_OCTAVE) * WHITE_KEY_WIDTH_PX;
-const THREE_OCTAVE_WIDTH_PX = (1 + 3 * WHITE_KEYS_PER_OCTAVE) * WHITE_KEY_WIDTH_PX;
+const NUM_WHITE_KEYS_3OCT = 1 + 3 * WHITE_KEYS_PER_OCTAVE;
+const NUM_WHITE_KEYS_2OCT = 1 + 2 * WHITE_KEYS_PER_OCTAVE;
+const NUM_WHITE_KEYS_1OCT = 1 + 1 * WHITE_KEYS_PER_OCTAVE;
 
 const MIDI_PITCH_MIN = 0;
 const MIDI_PITCHES_PER_OCTAVE = 12;
 const MIDI_PITCH_C3 = 48;
 const MIDI_PITCH_C9 = 120;
+
+const MAX_SCALE_RATIO = 2.5;
+const MIN_AREA_RATIO_TO_PREFER_2OCT = 0.45;
 
 export interface PianoWhiteKey {
   pitch: DisplayedMidiPitch;
@@ -49,7 +58,7 @@ export interface PianoWhiteKey {
   styleUrls: ['./piano-keyboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PianoKeyboardComponent implements AfterViewInit {
+export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
   settings!: ArghoEditorSettings;
   displayPref!: AccidentalDisplayPref;
 
@@ -60,9 +69,23 @@ export class PianoKeyboardComponent implements AfterViewInit {
 
   activePoints: {[pointerId: number]: MidiPitch} = {};
 
+  supportsFullScreen = fscreen.fullscreenEnabled;
+  isFullScreen = false;
+  fullScreenHandler: (() => void) | undefined;
+
+  controlIconSize: SizeProp = '1x';
+
+  @ViewChild('pianoContainer')
+  pianoContainer: ElementRef<HTMLElement> | undefined;
+
+  @ViewChild('pianoKeys')
+  pianoKeys: ElementRef<HTMLElement> | undefined;
+
   // Icons:
   faCircleArrowLeft = faCircleArrowLeft;
   faCircleArrowRight = faCircleArrowRight;
+  faExpand = faExpand;
+  faDownLeftAndUpRightToCenter = faDownLeftAndUpRightToCenter;
 
   constructor(
     data: TuningDataService,
@@ -91,19 +114,25 @@ export class PianoKeyboardComponent implements AfterViewInit {
       this.displayNoteOff_(pitch);
       this.changeDetector.markForCheck();
     });
-  }
 
-  @ViewChild('pianoKeys')
-  pianoKeys: ElementRef<HTMLElement> | undefined;
+    this.fullScreenHandler = () => { this.handleResize(); };
+    fscreen.addEventListener('fullscreenchange', this.fullScreenHandler);
+  }
 
   ngAfterViewInit(): void {
     this.handleResize();
   }
 
+  ngOnDestroy(): void {
+    if (this.fullScreenHandler) {
+      fscreen.removeEventListener('fullscreenchange', this.fullScreenHandler);
+    }
+  }
+
   handleResize(): void {
     const oldNumOctaves = this.numOctaves;
 
-    this.numOctaves = this.numVisibleOctaves_();
+    this.maybeResize_();
     if (this.numOctaves !== oldNumOctaves) {
       this.updatePianoKeys_();
     }
@@ -111,20 +140,90 @@ export class PianoKeyboardComponent implements AfterViewInit {
     this.changeDetector.markForCheck();
   }
 
-  private numVisibleOctaves_(): number {
-    if (!this.pianoKeys) {
-      return 0;
+  private maybeResize_(): void {
+    if (!this.pianoContainer) {
+      return;
     }
 
-    const pianoContainerEl = this.pianoKeys.nativeElement.parentElement;
-    if (!pianoContainerEl) {
-      return 0;
+    const isTrulyFullScreen = this.isFullScreen
+      && (fscreen.fullscreenElement === this.pianoContainer.nativeElement);
+    const containerWidthPx = this.pianoContainer.nativeElement.clientWidth;
+
+    let keyScaleFactor = 1.0;
+    if (isTrulyFullScreen) {
+      const containerHeightPx = this.pianoContainer.nativeElement.clientHeight;
+      const containerArea = containerWidthPx * containerHeightPx;
+
+      // Don't scale keys to be taller than screen height.
+      const maxHeightScaleFactor =
+        Math.min(containerHeightPx / BASE_WHITE_KEY_HEIGHT_PX, MAX_SCALE_RATIO);
+
+      // Figure out max scale factor for 1, 2, and 3 octave widths.
+      const baseWidth1OctPx = BASE_CONTROLS_WIDTH_PX
+        + NUM_WHITE_KEYS_1OCT * BASE_WHITE_KEY_WIDTH_PX;
+      const scaleFactor1Oct =
+        Math.min(containerWidthPx / baseWidth1OctPx, maxHeightScaleFactor, MAX_SCALE_RATIO);
+      const area1Oct = (scaleFactor1Oct * baseWidth1OctPx)
+        * (scaleFactor1Oct * BASE_WHITE_KEY_HEIGHT_PX);
+
+      const baseWidth2OctPx = BASE_CONTROLS_WIDTH_PX
+        + NUM_WHITE_KEYS_2OCT * BASE_WHITE_KEY_WIDTH_PX;
+      const scaleFactor2Oct =
+        Math.min(containerWidthPx / baseWidth2OctPx, maxHeightScaleFactor, MAX_SCALE_RATIO);
+      const area2Oct = (scaleFactor2Oct * baseWidth2OctPx)
+        * (scaleFactor2Oct * BASE_WHITE_KEY_HEIGHT_PX);
+
+      const baseWidth3OctPx = BASE_CONTROLS_WIDTH_PX
+        + NUM_WHITE_KEYS_3OCT * BASE_WHITE_KEY_WIDTH_PX;
+      const scaleFactor3Oct =
+        Math.min(containerWidthPx / baseWidth3OctPx, maxHeightScaleFactor, MAX_SCALE_RATIO);
+      const area3Oct = (scaleFactor3Oct * baseWidth3OctPx)
+        * (scaleFactor3Oct * BASE_WHITE_KEY_HEIGHT_PX);
+
+      // Chose scaling that fills max area of screen, but only choose 1 octave
+      // if 2 octaves would be too small.
+      const maxArea = Math.max(area3Oct, area2Oct, area1Oct);
+      if (maxArea === area3Oct) {
+        keyScaleFactor = scaleFactor3Oct;
+      } else if ((maxArea === area2Oct)
+          || (area2Oct / containerArea >= MIN_AREA_RATIO_TO_PREFER_2OCT)) {
+        keyScaleFactor = scaleFactor2Oct;
+      } else {
+        keyScaleFactor = scaleFactor1Oct;
+      }
     }
 
-    const keyboardWidth = pianoContainerEl.clientWidth - CONTROLS_WIDTH_PX;
-    return (keyboardWidth >= THREE_OCTAVE_WIDTH_PX)
+    // With scale factor chosen, fit as many octaves as possible.
+    const controlsWidthPx = Math.floor(keyScaleFactor * BASE_CONTROLS_WIDTH_PX);
+    const whiteKeyWidthPx = Math.floor(keyScaleFactor * BASE_WHITE_KEY_WIDTH_PX);
+    const whiteKeyHeightPx = Math.floor(keyScaleFactor * BASE_WHITE_KEY_HEIGHT_PX);
+    this.scaleKeys_(controlsWidthPx, whiteKeyWidthPx, whiteKeyHeightPx);
+    this.scaleControls_(keyScaleFactor);
+
+    const keyboardWidth = containerWidthPx - controlsWidthPx;
+    const maxNumWhiteKeys = Math.floor(keyboardWidth / whiteKeyWidthPx);
+    this.numOctaves = (maxNumWhiteKeys >= NUM_WHITE_KEYS_3OCT)
       ? 3
-      : (keyboardWidth >= TWO_OCTAVE_WIDTH_PX) ? 2 : 1;
+      : (maxNumWhiteKeys >= NUM_WHITE_KEYS_2OCT) ? 2 : 1;
+  }
+
+  private scaleKeys_(
+    controlsWidthPx: number,
+    whiteKeyWidthPx: number,
+    whiteKeyHeightPx: number,
+  ): void {
+    if (!this.pianoContainer) {
+      return;
+    }
+
+    const style = this.pianoContainer.nativeElement.style;
+    style.setProperty('--piano-controls-width', controlsWidthPx + 'px');
+    style.setProperty('--white-key-width', whiteKeyWidthPx + 'px');
+    style.setProperty('--white-key-height', whiteKeyHeightPx + 'px');
+  }
+
+  private scaleControls_(keyScaleFactor: number): void {
+    this.controlIconSize = (keyScaleFactor >= 1.5) ? '2x' : '1x';
   }
 
   private updatePianoKeys_(): void {
@@ -286,5 +385,21 @@ export class PianoKeyboardComponent implements AfterViewInit {
 
     this.startPitch += numOctaves * MIDI_PITCHES_PER_OCTAVE;
     this.updatePianoKeys_();
+  }
+
+  toggleFullScreen(): void {
+    if (!this.pianoContainer) {
+      return;
+    }
+
+    if (this.isFullScreen) {
+      fscreen.exitFullscreen();
+      this.pianoContainer.nativeElement.classList.remove('fullscreen');
+    } else {
+      fscreen.requestFullscreen(this.pianoContainer.nativeElement);
+      this.pianoContainer.nativeElement.classList.add('fullscreen');
+    }
+
+    this.isFullScreen = !this.isFullScreen;
   }
 }

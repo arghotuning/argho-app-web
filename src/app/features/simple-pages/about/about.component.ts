@@ -80,6 +80,12 @@ export class AboutComponent {
       licenseType: 'OFL-1.1-RFN',
     },
     {
+      name: 'fscreen',
+      url: 'https://github.com/rafgraph/fscreen',
+      copyright: 'Copyright (c) 2017 Rafael Pedicini',
+      licenseType: 'MIT',
+    },
+    {
       name: 'google-protobuf',
       url: 'https://www.npmjs.com/package/google-protobuf',
       copyright: 'Copyright 2008 Google Inc.  All rights reserved.',
@@ -120,6 +126,12 @@ export class AboutComponent {
       url: 'https://github.com/Microsoft/tslib',
       copyright: 'Copyright (c) Microsoft Corporation.',
       licenseType: '0BSD',
+    },
+    {
+      name: '@types/fscreen',
+      url: 'https://www.npmjs.com/package/@types/fscreen',
+      copyright: 'Joscha Feth <https://github.com/joscha>, Terry Mun <https://github.com/terrymun>',
+      licenseType: 'MIT',
     },
     {
       name: '@types/google-protobuf',

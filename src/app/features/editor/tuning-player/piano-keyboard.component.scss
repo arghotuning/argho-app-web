@@ -6,16 +6,31 @@
 
 @import '_fonts';
 
-$controls-width: 32px;
-$white-key-width: 24px;
-$white-key-height: 100px;
-
 $key-border: 1px solid #000;
 
 .piano-container {
+  /* CSS variables are JS controlled. */
+  --piano-controls-width: 0;
+  --white-key-width: 0;
+  --white-key-height: 0;
+
+  margin-bottom: 0.5em;
+}
+
+.piano-container.fullscreen {
+  align-items: center;
+  background-color: #555;
+  display: flex;
+  height: 100% !important;
+  justify-content: center;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+.piano-inner-container {
   display: flex;
   flex-direction: row;
-  margin-bottom: 0.5em;
 
   .piano-controls {
     background-color: #ccc;
@@ -23,11 +38,13 @@ $key-border: 1px solid #000;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    height: $white-key-height;
-    width: $controls-width;
+    justify-content: center;
+    height: var(--white-key-height);
+    width: var(--piano-controls-width);
 
     button {
-      min-width: $controls-width;
+      line-height: calc(0.3 * var(--white-key-height));
+      min-width: var(--piano-controls-width);
       padding: 0;
     }
   }
@@ -36,7 +53,7 @@ $key-border: 1px solid #000;
 .piano-keys {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;  /* Prevent popup context menu on longpress. */
-  min-width: calc(8 * $white-key-width);
+  min-width: calc(8 * var(--white-key-width));
   touch-action: none;  /* Manage touches manually. */
 }
 
@@ -46,9 +63,9 @@ $key-border: 1px solid #000;
   box-sizing: border-box;
   cursor: pointer;
   display: inline-block;
-  height: $white-key-height;
+  height: var(--white-key-height);
   position: relative;
-  width: $white-key-width;
+  width: var(--white-key-width);
 
   .pitch-label {
     bottom: 0.125em;
@@ -63,11 +80,11 @@ $key-border: 1px solid #000;
 
   .black-key {
     background-color: #111;  /* TODO: Style. */
-    height: 60px;
-    right: -9px;  /* Slide over so it also overlaps next white key. */
+    height: calc(0.6 * var(--white-key-height));
+    right: calc(-0.375 * var(--white-key-width));
     position: absolute;
     top: 0;
-    width: 16px;
+    width: calc(0.75 * var(--white-key-width));
     z-index: 100;  /* TODO: Centrally managed constants. */
   }
 
