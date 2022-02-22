@@ -9,6 +9,8 @@
 $white-key-width: 24px;
 
 .piano-keys {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;  /* Prevent popup context menu on longpress. */
   margin-bottom: 0.5em;
   min-width: calc(8 * $white-key-width);
 }
@@ -29,6 +31,7 @@ $white-key-width: 24px;
     overflow: hidden;
     position: absolute;
     text-align: center;
+    user-select: none;
     width: 100%;
   }
 
