@@ -88,9 +88,19 @@ $key-border: 1px solid #000;
     z-index: 100;  /* TODO: Centrally managed constants. */
   }
 
+  .black-key.unmapped {
+    background-color: #666;  /* TODO: Style. */
+    cursor: default;
+  }
+
   .black-key.playing {
     background-color: #33c;  /* TODO: Style. */
   }
+}
+
+.white-key.unmapped {
+  background-color: #ddd;  /* TODO: Style. */
+  cursor: default;
 }
 
 .white-key.playing {

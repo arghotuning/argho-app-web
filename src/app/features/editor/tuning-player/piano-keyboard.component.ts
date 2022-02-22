@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import fscreen from 'fscreen';
+import {Subscription} from 'rxjs';
 import {MidiService} from 'src/app/infra/synth/midi.service';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 
@@ -49,7 +50,9 @@ const MIN_AREA_RATIO_TO_PREFER_2OCT = 0.45;
 
 export interface PianoWhiteKey {
   pitch: DisplayedMidiPitch;
+  isMapped: boolean;
   precedesBlackKey?: DisplayedMidiPitch;
+  blackKeyIsMapped?: boolean;
 }
 
 @Component({
@@ -81,6 +84,8 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
   @ViewChild('pianoKeys')
   pianoKeys: ElementRef<HTMLElement> | undefined;
 
+  subscriptions: Subscription[] = [];
+
   // Icons:
   faCircleArrowLeft = faCircleArrowLeft;
   faCircleArrowRight = faCircleArrowRight;
@@ -88,32 +93,42 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
   faDownLeftAndUpRightToCenter = faDownLeftAndUpRightToCenter;
 
   constructor(
-    data: TuningDataService,
+    private readonly data: TuningDataService,
     private readonly midi: MidiService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {
     // NOTE: Always called back synchronously to start.
-    data.model.settings().subscribe(settings => {
+    this.subscriptions.push(this.data.model.settings().subscribe(settings => {
       this.settings = settings;
       this.updatePianoKeys_();
       this.changeDetector.markForCheck();
-    });
+    }));
 
-    data.model.tuningMetadata().subscribe(metadata => {
+    this.subscriptions.push(this.data.model.tuningMetadata().subscribe(metadata => {
       this.displayPref = metadata.accidentalDisplayPref;
       this.updatePianoKeys_();
       this.changeDetector.markForCheck();
-    });
+    }));
 
-    this.midi.noteOns().subscribe(pitch => {
+    this.subscriptions.push(this.data.model.mappedKeys().subscribe(_ => {
+      // Whenever mapping changes (e.g. new tuning loaded), redraw keyboard.
+      // TODO: Unsure why setTimeout() hack is required here but not in similar
+      // cases elsewhere... Change detection not properly triggered without it.
+      setTimeout(() => {
+        this.updatePianoKeys_();
+        this.changeDetector.markForCheck();
+      }, 0);
+    }));
+
+    this.subscriptions.push(this.midi.noteOns().subscribe(pitch => {
       this.displayNoteOn_(pitch);
       this.changeDetector.markForCheck();
-    });
+    }));
 
-    this.midi.noteOffs().subscribe(pitch => {
+    this.subscriptions.push(this.midi.noteOffs().subscribe(pitch => {
       this.displayNoteOff_(pitch);
       this.changeDetector.markForCheck();
-    });
+    }));
 
     this.fullScreenHandler = () => { this.handleResize(); };
     fscreen.addEventListener('fullscreenchange', this.fullScreenHandler);
@@ -126,6 +141,11 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.fullScreenHandler) {
       fscreen.removeEventListener('fullscreenchange', this.fullScreenHandler);
+    }
+
+    // TODO: Use library or generalize support for rxjs subscription cleanup.
+    for (const sub of this.subscriptions) {
+      sub.unsubscribe();
     }
   }
 
@@ -237,23 +257,33 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
     }
     this.startPitch = Math.min(this.startPitch, this.maxStartPitch_());
 
+    const keyToSoundMap = this.data.keyToSoundMap();
+
     for (let octIndex = 0; octIndex < this.numOctaves; octIndex++) {
       const octStartPitch = this.startPitch + octIndex * MIDI_PITCHES_PER_OCTAVE;
 
       for (let pc = 0; pc < MIDI_PITCHES_PER_OCTAVE; pc++) {
         const pitch = new DisplayedMidiPitch(octStartPitch + pc, this.displayPref, this.settings);
         if (pitch.accidental === SimpleAccidental.NATURAL) {
+          const blackKey = this.sharpKeyAfter_(pitch);
+          const blackKeyIsMapped = (blackKey !== undefined)
+            && keyToSoundMap.isMapped(blackKey.midiPitch);
+
           this.whiteKeys.push({
             pitch,
-            precedesBlackKey: this.sharpKeyAfter_(pitch),
+            isMapped: keyToSoundMap.isMapped(pitch.midiPitch),
+            precedesBlackKey: blackKey,
+            blackKeyIsMapped,
           });
         }
       }
     }
 
     // Always end with a top C (no following C#).
+    const endPitch = this.endPitch_();
     this.whiteKeys.push({
-      pitch: new DisplayedMidiPitch(this.endPitch_(), this.displayPref, this.settings),
+      pitch: new DisplayedMidiPitch(endPitch, this.displayPref, this.settings),
+      isMapped: keyToSoundMap.isMapped(endPitch),
     });
   }
 
