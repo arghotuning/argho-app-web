@@ -4,33 +4,35 @@ SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-<div #pianoKeys class="piano-keys" (window:resize)="handleResize()"
-    (pointerdown)="handlePianoKeyDown($event)"
-    (pointerup)="handlePianoKeyUp($event)"
-    (pointerleave)="handlePianoKeyUp($event)"
-    (contextmenu)="$event.preventDefault()">
-  <div *ngFor="let whiteKey of whiteKeys"
-      class="white-key" [attr.data-key]="whiteKey.pitch.midiPitch">
-    <div *ngIf="whiteKey.precedesBlackKey"
-        class="black-key" [attr.data-key]="whiteKey.precedesBlackKey.midiPitch"></div>
-    <div *ngIf="whiteKey.pitch.letter == 'C'" class="pitch-label">
-      <app-spelled-pitch [pitch]="whiteKey.pitch"></app-spelled-pitch>
+<div class="piano-container" (window:resize)="handleResize()">
+  <div class="piano-controls">
+    <button mat-button
+        aria-label="Shift piano keyboard down by 1 octave"
+        [disabled]="!canShiftOctaveDown()"
+        (click)="shiftByOctaves(-1)">
+      <fa-icon [icon]="faCircleArrowLeft"></fa-icon>
+    </button>
+    <button mat-button
+        aria-label="Shift piano keyboard up by 1 octave"
+        [disabled]="!canShiftOctaveUp()"
+        (click)="shiftByOctaves(1)">
+      <fa-icon [icon]="faCircleArrowRight"></fa-icon>
+    </button>
+  </div>
+
+  <div #pianoKeys class="piano-keys"
+      (pointerdown)="handlePianoKeyDown($event)"
+      (pointerup)="handlePianoKeyUp($event)"
+      (pointerleave)="handlePianoKeyUp($event)"
+      (contextmenu)="$event.preventDefault()">
+    <div *ngFor="let whiteKey of whiteKeys"
+        class="white-key" [attr.data-key]="whiteKey.pitch.midiPitch">
+      <div *ngIf="whiteKey.precedesBlackKey"
+          class="black-key" [attr.data-key]="whiteKey.precedesBlackKey.midiPitch"></div>
+      <div *ngIf="whiteKey.pitch.letter == 'C'" class="pitch-label">
+        <app-spelled-pitch [pitch]="whiteKey.pitch"></app-spelled-pitch>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="oct-controls">
-  <button mat-button
-      aria-label="Shift piano keyboard down by 1 octave"
-      [disabled]="!canShiftOctaveDown()"
-      (click)="shiftByOctaves(-1)">
-    <fa-icon [icon]="faCircleArrowLeft"></fa-icon>
-  </button>
-  Octave Shift
-  <button mat-button
-      aria-label="Shift piano keyboard up by 1 octave"
-      [disabled]="!canShiftOctaveUp()"
-      (click)="shiftByOctaves(1)">
-    <fa-icon [icon]="faCircleArrowRight"></fa-icon>
-  </button>
-</div>

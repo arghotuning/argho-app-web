@@ -25,6 +25,8 @@ import {
   faCircleArrowRight,
 } from '@fortawesome/free-solid-svg-icons';
 
+const CONTROLS_WIDTH_PX = 32;
+
 const WHITE_KEY_WIDTH_PX = 24;
 
 const WHITE_KEYS_PER_OCTAVE = 7;
@@ -114,7 +116,12 @@ export class PianoKeyboardComponent implements AfterViewInit {
       return 0;
     }
 
-    const keyboardWidth = this.pianoKeys.nativeElement.clientWidth;
+    const pianoContainerEl = this.pianoKeys.nativeElement.parentElement;
+    if (!pianoContainerEl) {
+      return 0;
+    }
+
+    const keyboardWidth = pianoContainerEl.clientWidth - CONTROLS_WIDTH_PX;
     return (keyboardWidth >= THREE_OCTAVE_WIDTH_PX)
       ? 3
       : (keyboardWidth >= TWO_OCTAVE_WIDTH_PX) ? 2 : 1;

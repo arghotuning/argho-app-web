@@ -6,7 +6,32 @@
 
 @import '_fonts';
 
+$controls-width: 32px;
 $white-key-width: 24px;
+$white-key-height: 100px;
+
+$key-border: 1px solid #000;
+
+.piano-container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 0.5em;
+
+  .piano-controls {
+    background-color: #ccc;
+    border: $key-border;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: $white-key-height;
+    width: $controls-width;
+
+    button {
+      min-width: $controls-width;
+      padding: 0;
+    }
+  }
+}
 
 .piano-keys {
   -webkit-tap-highlight-color: transparent;
@@ -17,22 +42,23 @@ $white-key-width: 24px;
 
 .white-key {
   background-color: #fff;  /* TODO: Style. */
-  border: 1px solid #000;
+  border: $key-border;
   box-sizing: border-box;
   cursor: pointer;
   display: inline-block;
-  height: 100px;
+  height: $white-key-height;
   position: relative;
   width: $white-key-width;
 
   .pitch-label {
     bottom: 0.125em;
     font-size: 0.8rem;
+    left: 0;
     overflow: hidden;
     position: absolute;
+    right: 0;
     text-align: center;
     user-select: none;
-    width: 100%;
   }
 
   .black-key {
@@ -52,8 +78,4 @@ $white-key-width: 24px;
 
 .white-key.playing {
   background-color: #66f;  /* TODO: Style. */
-}
-
-.oct-controls {
-  margin-bottom: 0.5em;
 }
