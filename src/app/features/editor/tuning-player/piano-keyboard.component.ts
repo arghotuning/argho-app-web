@@ -20,6 +20,10 @@ import {
   SimpleAccidental,
 } from '@arghotuning/argho-editor';
 import {AccidentalDisplayPref, MidiPitch} from '@arghotuning/arghotun';
+import {
+  faCircleArrowLeft,
+  faCircleArrowRight,
+} from '@fortawesome/free-solid-svg-icons';
 
 const WHITE_KEY_WIDTH_PX = 24;
 
@@ -27,8 +31,9 @@ const WHITE_KEYS_PER_OCTAVE = 7;
 const TWO_OCTAVE_WIDTH_PX = (1 + 2 * WHITE_KEYS_PER_OCTAVE) * WHITE_KEY_WIDTH_PX;
 const THREE_OCTAVE_WIDTH_PX = (1 + 3 * WHITE_KEYS_PER_OCTAVE) * WHITE_KEY_WIDTH_PX;
 
+const MIDI_PITCH_MIN = 0;
 const MIDI_PITCHES_PER_OCTAVE = 12;
-const MIDI_PITCH_C4 = 60;
+const MIDI_PITCH_C3 = 48;
 const MIDI_PITCH_C9 = 120;
 
 export interface PianoWhiteKey {
@@ -52,6 +57,10 @@ export class PianoKeyboardComponent implements AfterViewInit {
   whiteKeys: PianoWhiteKey[] = [];
 
   activePoints: {[pointerId: number]: MidiPitch} = {};
+
+  // Icons:
+  faCircleArrowLeft = faCircleArrowLeft;
+  faCircleArrowRight = faCircleArrowRight;
 
   constructor(
     data: TuningDataService,
@@ -118,7 +127,7 @@ export class PianoKeyboardComponent implements AfterViewInit {
     }
 
     if (this.startPitch === undefined) {
-      this.startPitch = MIDI_PITCH_C4;
+      this.startPitch = MIDI_PITCH_C3;
     }
     this.startPitch = Math.min(this.startPitch, this.maxStartPitch_());
 
@@ -190,7 +199,7 @@ export class PianoKeyboardComponent implements AfterViewInit {
 
   handlePianoKeyUp(event: PointerEvent): void {
     const key = this.activePoints[event.pointerId];
-    if (!key) {
+    if (key === undefined) {
       return;
     }
 
@@ -207,7 +216,7 @@ export class PianoKeyboardComponent implements AfterViewInit {
   }
 
   private keyElement_(key: MidiPitch): Element | null {
-    if (!this.startPitch || !this.pianoKeys) {
+    if (this.startPitch === undefined || !this.pianoKeys) {
       return null;
     }
 
@@ -241,9 +250,34 @@ export class PianoKeyboardComponent implements AfterViewInit {
   }
 
   private endPitch_(): MidiPitch {
-    if (!this.startPitch) {
+    if (this.startPitch === undefined) {
       throw Error('Missing startPitch');
     }
     return this.startPitch + MIDI_PITCHES_PER_OCTAVE * this.numOctaves;
+  }
+
+  canShiftOctaveDown(): boolean {
+    if (this.startPitch === undefined) {
+      return false;
+    }
+
+    return (MIDI_PITCH_MIN <= this.startPitch - MIDI_PITCHES_PER_OCTAVE);
+  }
+
+  canShiftOctaveUp(): boolean {
+    if (this.startPitch === undefined) {
+      return false;
+    }
+
+    return (this.startPitch + MIDI_PITCHES_PER_OCTAVE <= this.maxStartPitch_());
+  }
+
+  shiftByOctaves(numOctaves: number): void {
+    if (this.startPitch === undefined) {
+      return;
+    }
+
+    this.startPitch += numOctaves * MIDI_PITCHES_PER_OCTAVE;
+    this.updatePianoKeys_();
   }
 }

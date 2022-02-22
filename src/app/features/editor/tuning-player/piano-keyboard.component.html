@@ -18,3 +18,19 @@ SPDX-License-Identifier: Apache-2.0
     </div>
   </div>
 </div>
+
+<div class="oct-controls">
+  <button mat-button
+      aria-label="Shift piano keyboard down by 1 octave"
+      [disabled]="!canShiftOctaveDown()"
+      (click)="shiftByOctaves(-1)">
+    <fa-icon [icon]="faCircleArrowLeft"></fa-icon>
+  </button>
+  Octave Shift
+  <button mat-button
+      aria-label="Shift piano keyboard up by 1 octave"
+      [disabled]="!canShiftOctaveUp()"
+      (click)="shiftByOctaves(1)">
+    <fa-icon [icon]="faCircleArrowRight"></fa-icon>
+  </button>
+</div>

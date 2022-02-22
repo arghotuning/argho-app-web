@@ -11,8 +11,8 @@ $white-key-width: 24px;
 .piano-keys {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;  /* Prevent popup context menu on longpress. */
-  margin-bottom: 0.5em;
   min-width: calc(8 * $white-key-width);
+  touch-action: none;  /* Manage touches manually. */
 }
 
 .white-key {
@@ -52,4 +52,8 @@ $white-key-width: 24px;
 
 .white-key.playing {
   background-color: #66f;  /* TODO: Style. */
+}
+
+.oct-controls {
+  margin-bottom: 0.5em;
 }
