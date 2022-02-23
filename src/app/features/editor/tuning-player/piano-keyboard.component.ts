@@ -130,7 +130,7 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
       this.changeDetector.markForCheck();
     }));
 
-    this.fullScreenHandler = () => { this.handleResize(); };
+    this.fullScreenHandler = () => { this.handleFullScreenChange_(); };
     fscreen.addEventListener('fullscreenchange', this.fullScreenHandler);
   }
 
@@ -149,10 +149,24 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
     }
   }
 
+  private handleFullScreenChange_(): void {
+    this.isFullScreen = !!fscreen.fullscreenElement;
+
+    if (this.pianoContainer) {
+      if (this.isFullScreen) {
+        this.pianoContainer.nativeElement.classList.add('fullscreen');
+      } else {
+        this.pianoContainer.nativeElement.classList.remove('fullscreen');
+      }
+    }
+
+    this.handleResize();
+  }
+
   handleResize(): void {
     const oldNumOctaves = this.numOctaves;
 
-    this.maybeResize_();
+    this.maybeRescale_();
     if (this.numOctaves !== oldNumOctaves) {
       this.updatePianoKeys_();
     }
@@ -160,17 +174,15 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
     this.changeDetector.markForCheck();
   }
 
-  private maybeResize_(): void {
+  private maybeRescale_(): void {
     if (!this.pianoContainer) {
       return;
     }
 
-    const isTrulyFullScreen = this.isFullScreen
-      && (fscreen.fullscreenElement === this.pianoContainer.nativeElement);
     const containerWidthPx = this.pianoContainer.nativeElement.clientWidth;
 
     let keyScaleFactor = 1.0;
-    if (isTrulyFullScreen) {
+    if (this.isFullScreen) {
       const containerHeightPx = this.pianoContainer.nativeElement.clientHeight;
       const containerArea = containerWidthPx * containerHeightPx;
 
@@ -424,12 +436,8 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
 
     if (this.isFullScreen) {
       fscreen.exitFullscreen();
-      this.pianoContainer.nativeElement.classList.remove('fullscreen');
     } else {
       fscreen.requestFullscreen(this.pianoContainer.nativeElement);
-      this.pianoContainer.nativeElement.classList.add('fullscreen');
     }
-
-    this.isFullScreen = !this.isFullScreen;
   }
 }
