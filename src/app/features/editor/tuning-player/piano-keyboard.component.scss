@@ -93,6 +93,10 @@ $key-border: 1px solid #000;
     cursor: default;
   }
 
+  .black-key.root {
+    background-color: #9c5900;  /* TODO: Style. */
+  }
+
   .black-key.playing {
     background-color: #33c;  /* TODO: Style. */
   }
@@ -101,6 +105,10 @@ $key-border: 1px solid #000;
 .white-key.unmapped {
   background-color: #ddd;  /* TODO: Style. */
   cursor: default;
+}
+
+.white-key.root {
+  background-color: #ffddb1;  /* TODO: Style. */
 }
 
 .white-key.playing {

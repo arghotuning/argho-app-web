@@ -32,17 +32,20 @@ SPDX-License-Identifier: Apache-2.0
         (pointerup)="handlePianoKeyUp($event)"
         (pointerleave)="handlePianoKeyUp($event)"
         (contextmenu)="$event.preventDefault()">
-      <div *ngFor="let whiteKey of whiteKeys"
-          class="white-key" [class.unmapped]="!whiteKey.isMapped"
-          [attr.data-key]="whiteKey.pitch.midiPitch">
-        <div *ngIf="whiteKey.precedesBlackKey"
-            class="black-key" [class.unmapped]="!whiteKey.blackKeyIsMapped"
-            [attr.data-key]="whiteKey.precedesBlackKey.midiPitch"></div>
-        <div *ngIf="whiteKey.pitch.letter == 'C'" class="pitch-label">
-          <app-spelled-pitch [pitch]="whiteKey.pitch"></app-spelled-pitch>
+      <div *ngFor="let keyBlock of keyBlocks"
+          class="white-key"
+          [class.unmapped]="keyBlock.whiteKey.color == KeyColor.UNMAPPED"
+          [class.root]="keyBlock.whiteKey.color == KeyColor.ROOT"
+          [attr.data-key]="keyBlock.whiteKey.pitch.midiPitch">
+        <div *ngIf="keyBlock.blackKey"
+            class="black-key"
+            [class.unmapped]="keyBlock.blackKey.color == KeyColor.UNMAPPED"
+            [class.root]="keyBlock.blackKey.color == KeyColor.ROOT"
+            [attr.data-key]="keyBlock.blackKey.pitch.midiPitch"></div>
+        <div *ngIf="keyBlock.whiteKey.pitch.letter == 'C'" class="pitch-label">
+          <app-spelled-pitch [pitch]="keyBlock.whiteKey.pitch"></app-spelled-pitch>
         </div>
       </div>
     </div>
   </div>
 </div>
-

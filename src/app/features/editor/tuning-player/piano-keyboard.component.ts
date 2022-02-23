@@ -22,7 +22,11 @@ import {
   PitchLetter,
   SimpleAccidental,
 } from '@arghotuning/argho-editor';
-import {AccidentalDisplayPref, MidiPitch} from '@arghotuning/arghotun';
+import {
+  AccidentalDisplayPref,
+  KeyToSoundMap,
+  MidiPitch,
+} from '@arghotuning/arghotun';
 import {SizeProp} from '@fortawesome/fontawesome-svg-core';
 import {
   faCircleArrowLeft,
@@ -48,11 +52,21 @@ const MIDI_PITCH_C9 = 120;
 const MAX_SCALE_RATIO = 2.5;
 const MIN_AREA_RATIO_TO_PREFER_2OCT = 0.45;
 
-export interface PianoWhiteKey {
+/** Key color based on its mapping. */
+export enum KeyColor {
+  UNMAPPED = 0,
+  ROOT = 1,
+  UPPER_DEG = 2,
+}
+
+export interface PianoKey {
   pitch: DisplayedMidiPitch;
-  isMapped: boolean;
-  precedesBlackKey?: DisplayedMidiPitch;
-  blackKeyIsMapped?: boolean;
+  color: KeyColor;
+}
+
+export interface PianoKeyBlock {
+  whiteKey: PianoKey;
+  blackKey?: PianoKey;
 }
 
 @Component({
@@ -69,7 +83,7 @@ export class PianoKeyboardComponent extends BaseComponent
   numOctaves = 0;
   startPitch: MidiPitch | undefined;
 
-  whiteKeys: PianoWhiteKey[] = [];
+  keyBlocks: PianoKeyBlock[] = [];
 
   activePoints: {[pointerId: number]: MidiPitch} = {};
 
@@ -84,6 +98,8 @@ export class PianoKeyboardComponent extends BaseComponent
 
   @ViewChild('pianoKeys')
   pianoKeys: ElementRef<HTMLElement> | undefined;
+
+  KeyColor = KeyColor;
 
   // Icons:
   faCircleArrowLeft = faCircleArrowLeft;
@@ -260,7 +276,7 @@ export class PianoKeyboardComponent extends BaseComponent
   }
 
   private updatePianoKeys_(): void {
-    this.whiteKeys = [];
+    this.keyBlocks = [];
     if (this.numOctaves === 0) {
       return;
     }
@@ -276,28 +292,43 @@ export class PianoKeyboardComponent extends BaseComponent
       const octStartPitch = this.startPitch + octIndex * MIDI_PITCHES_PER_OCTAVE;
 
       for (let pc = 0; pc < MIDI_PITCHES_PER_OCTAVE; pc++) {
-        const pitch = new DisplayedMidiPitch(octStartPitch + pc, this.displayPref, this.settings);
-        if (pitch.accidental === SimpleAccidental.NATURAL) {
-          const blackKey = this.sharpKeyAfter_(pitch);
-          const blackKeyIsMapped = (blackKey !== undefined)
-            && keyToSoundMap.isMapped(blackKey.midiPitch);
-
-          this.whiteKeys.push({
-            pitch,
-            isMapped: keyToSoundMap.isMapped(pitch.midiPitch),
-            precedesBlackKey: blackKey,
-            blackKeyIsMapped,
-          });
+        const keyBlock = this.keyBlockOrNull_(octStartPitch + pc, keyToSoundMap);
+        if (keyBlock) {
+          this.keyBlocks.push(keyBlock);
         }
       }
     }
 
     // Always end with a top C (no following C#).
-    const endPitch = this.endPitch_();
-    this.whiteKeys.push({
-      pitch: new DisplayedMidiPitch(endPitch, this.displayPref, this.settings),
-      isMapped: keyToSoundMap.isMapped(endPitch),
-    });
+    const topC = this.keyBlockOrNull_(this.endPitch_(), keyToSoundMap);
+    if (!topC) {
+      throw Error('Should end with top C');
+    }
+    this.keyBlocks.push(topC);
+  }
+
+  private keyBlockOrNull_(
+    pitch: MidiPitch,
+    keyToSoundMap: KeyToSoundMap,
+  ): PianoKeyBlock | null {
+    const whiteKeyPitch = new DisplayedMidiPitch(pitch, this.displayPref, this.settings);
+    if (whiteKeyPitch.accidental !== SimpleAccidental.NATURAL) {
+      return null;  // Not a white key.
+    }
+
+    const pianoKeyFor = (dp: DisplayedMidiPitch): PianoKey => {
+      const color = keyToSoundMap.isMapped(dp.midiPitch)
+          ? ((keyToSoundMap.mappedSoundFor(dp.midiPitch).scaleDegreeIndex === 0)
+            ? KeyColor.ROOT : KeyColor.UPPER_DEG)
+          : KeyColor.UNMAPPED;
+      return {pitch: dp, color};
+    };
+
+    const blackKeyPitch = this.sharpKeyAfter_(whiteKeyPitch);
+    return {
+      whiteKey: pianoKeyFor(whiteKeyPitch),
+      blackKey: blackKeyPitch ? pianoKeyFor(blackKeyPitch) : undefined,
+    };
   }
 
   private maxStartPitch_(): MidiPitch {
@@ -305,6 +336,10 @@ export class PianoKeyboardComponent extends BaseComponent
   }
 
   private sharpKeyAfter_(pitch: DisplayedMidiPitch): DisplayedMidiPitch | undefined {
+    if (pitch.midiPitch === this.endPitch_()) {
+      return undefined;
+    }
+
     if (pitch.accidental !== SimpleAccidental.NATURAL
       || (pitch.letter !== PitchLetter.C
         && pitch.letter !== PitchLetter.D
@@ -375,27 +410,27 @@ export class PianoKeyboardComponent extends BaseComponent
     }
 
     // Element for key should be present. Find it.
-    let whiteKeyIndex = 0;
+    let keyBlockIndex = 0;
     let isSharp = false;
-    while (whiteKeyIndex < this.whiteKeys.length) {
-      const whiteKey = this.whiteKeys[whiteKeyIndex];
-      if (whiteKey.pitch.midiPitch === key) {
+    while (keyBlockIndex < this.keyBlocks.length) {
+      const keyBlock = this.keyBlocks[keyBlockIndex];
+      if (keyBlock.whiteKey.pitch.midiPitch === key) {
         break;
-      } else if (whiteKey.precedesBlackKey?.midiPitch === key) {
+      } else if (keyBlock.blackKey?.pitch.midiPitch === key) {
         isSharp = true;
         break;
       }
 
-      whiteKeyIndex++;
+      keyBlockIndex++;
     }
 
-    const whiteKeyEls = this.pianoKeys.nativeElement.children;
-    if (whiteKeyEls.length <= whiteKeyIndex) {
+    const keyBlockEls = this.pianoKeys.nativeElement.children;
+    if (keyBlockEls.length <= keyBlockIndex) {
       return null;  // Shouldn't happen, but guard to be safe.
     }
 
-    const whiteKeyEl = whiteKeyEls[whiteKeyIndex];
-    return isSharp ? whiteKeyEl.firstElementChild : whiteKeyEl;
+    const keyBlockEl = keyBlockEls[keyBlockIndex];
+    return isSharp ? keyBlockEl.firstElementChild : keyBlockEl;
   }
 
   private endPitch_(): MidiPitch {
