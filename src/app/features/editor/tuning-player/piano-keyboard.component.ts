@@ -169,6 +169,8 @@ export class PianoKeyboardComponent extends BaseComponent
   private handleFullScreenChange_(): void {
     this.isFullScreen = !!fscreen.fullscreenElement;
 
+    // TODO: For mobile web, on supported browsers, force landscape orientation.
+
     if (this.pianoContainer) {
       if (this.isFullScreen) {
         this.pianoContainer.nativeElement.classList.add('fullscreen');
