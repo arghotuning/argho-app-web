@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 
 import {
   ChangeDetectionStrategy,
@@ -24,7 +25,7 @@ import {faEdit} from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./tuning-metadata.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TuningMetadataComponent {
+export class TuningMetadataComponent extends BaseComponent {
   tuningMetadata!: TuningMetadataSnapshot;
   isOpen = false;
 
@@ -40,13 +41,14 @@ export class TuningMetadataComponent {
   private readonly model: ArghoEditorModel;
 
   constructor(data: TuningDataService, changeDetector: ChangeDetectorRef) {
+    super();
     this.model = data.model;
 
     // Note: Always called back synchronously.
-    this.model.tuningMetadata().subscribe(metadata => {
+    this.track(this.model.tuningMetadata().subscribe(metadata => {
       this.tuningMetadata = metadata;
       changeDetector.markForCheck();
-    });
+    }));
   }
 
   handleOpened(): void {

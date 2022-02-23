@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 
 import {
   ChangeDetectionStrategy,
@@ -13,7 +14,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {ArghoEditorContext, ArghoEditorModel} from '@arghotuning/argho-editor';
 import {Tuning, TuningJsonSerializer} from '@arghotuning/arghotun';
 import {
@@ -42,7 +42,7 @@ function getDefaultDownloadFileName(tuning: Tuning): string {
   styleUrls: ['./file-buttons.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FileButtonsComponent {
+export class FileButtonsComponent extends BaseComponent {
   private readonly context: ArghoEditorContext;
   private readonly model: ArghoEditorModel;
 
@@ -62,20 +62,20 @@ export class FileButtonsComponent {
 
   constructor(
     data: TuningDataService,
-    private readonly snackBar: MatSnackBar,
     private readonly dialog: MatDialog,
     private readonly changeDetector: ChangeDetectorRef,
   ) {
+    super();
     this.context = data.context;
     this.model = data.model;
 
     // Listen for any unsaved changes.
     const subscriber = () => this.handleModelChange_();
-    this.model.tuningMetadata().subscribe(subscriber);
-    this.model.scaleMetadata().subscribe(subscriber);
-    this.model.scaleRoot().subscribe(subscriber);
-    this.model.upperDegrees().subscribe(subscriber);
-    this.model.mappedKeys().subscribe(subscriber);
+    this.track(this.model.tuningMetadata().subscribe(subscriber));
+    this.track(this.model.scaleMetadata().subscribe(subscriber));
+    this.track(this.model.scaleRoot().subscribe(subscriber));
+    this.track(this.model.upperDegrees().subscribe(subscriber));
+    this.track(this.model.mappedKeys().subscribe(subscriber));
 
     // (Must re-initialize this to ignore the first-time synchronous callbacks).
     this.hasUnsavedChanges = false;

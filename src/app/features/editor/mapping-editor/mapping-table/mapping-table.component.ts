@@ -4,6 +4,7 @@
 
 import {StoppableNote, SynthService} from 'src/app/infra/synth/synth.service';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 
 import {
   ChangeDetectionStrategy,
@@ -61,7 +62,7 @@ interface PlayingNote {
   styleUrls: ['./mapping-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MappingTableComponent {
+export class MappingTableComponent extends BaseComponent {
   MappingTableCol = MappingTableCol;
 
   // Font Awesome icons:
@@ -104,26 +105,27 @@ export class MappingTableComponent {
     changeDetector: ChangeDetectorRef,
     private readonly snackBar: MatSnackBar,
   ) {
+    super();
     this.model = data.model;
 
     // Note: Subscriptions are called back synchronously the first time.
-    this.model.mappedKeys().subscribe(mappedKeys => {
+    this.track(this.model.mappedKeys().subscribe(mappedKeys => {
       this.mappedKeys = mappedKeys;
       this.updateTableData_();
       changeDetector.markForCheck();
-    });
+    }));
 
-    this.model.scaleRoot().subscribe(scaleRoot => {
+    this.track(this.model.scaleRoot().subscribe(scaleRoot => {
       this.scaleRoot = scaleRoot;
       // Doesn't affect mapping table data, only playback...
       changeDetector.markForCheck();
-    });
+    }));
 
-    this.model.upperDegrees().subscribe(upperDegrees => {
+    this.track(this.model.upperDegrees().subscribe(upperDegrees => {
       this.upperDegrees = upperDegrees;
       // Doesn't affect mapping table data, only playback...
       changeDetector.markForCheck();
-    });
+    }));
   }
 
   private updateTableData_() {

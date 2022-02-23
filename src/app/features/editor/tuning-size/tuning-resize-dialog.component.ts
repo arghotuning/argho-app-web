@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 
 import {
   ChangeDetectionStrategy,
@@ -31,7 +32,7 @@ const BASIC_MODE_MAX_OCTAVES = 10;
   styleUrls: ['./tuning-resize-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TuningResizeDialogComponent {
+export class TuningResizeDialogComponent extends BaseComponent {
   private readonly model: ArghoEditorModel;
 
   minOctavesValue = ArghoTuningLimits.OCTAVES_SPANNED_MIN;
@@ -70,27 +71,28 @@ export class TuningResizeDialogComponent {
     changeDetector: ChangeDetectorRef,
     private readonly dialogRef: MatDialogRef<TuningResizeDialogComponent>,
   ) {
+    super();
     this.model = data.model;
 
     // Note: Below calls are always called back synchronously.
-    this.model.tuningMetadata().subscribe(tuningMetadata => {
+    this.track(this.model.tuningMetadata().subscribe(tuningMetadata => {
       this.isBasic = (tuningMetadata.editMode === TuningEditMode.BASIC);
       this.canSwitchToBasic = this.model.canSwitchToBasicMode();
       if (!this.canSwitchToBasic) {
         this.handleModeChange('advanced');
       }
       changeDetector.markForCheck();
-    });
+    }));
 
-    this.model.scaleMetadata().subscribe(scaleMetadata => {
+    this.track(this.model.scaleMetadata().subscribe(scaleMetadata => {
       this.scaleMetadata = scaleMetadata;
       changeDetector.markForCheck();
-    });
+    }));
 
-    this.model.mappedKeys().subscribe(mappedKeys => {
+    this.track(this.model.mappedKeys().subscribe(mappedKeys => {
       this.keySpan = mappedKeys.keySpan;
       changeDetector.markForCheck();
-    });
+    }));
 
     this.pendingNumOctaves = this.scaleMetadata.octavesSpanned;
     this.pendingNumDegrees = this.scaleMetadata.numDegrees;

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 import {
   ScaleTableColGroup,
   ScaleTableUiConfig,
@@ -21,7 +22,7 @@ import {faCheck, faChevronCircleDown} from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./scale-table-config.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScaleTableConfigComponent {
+export class ScaleTableConfigComponent extends BaseComponent {
   // Font Awesome icons:
   faCheck = faCheck;
   faChevronCircleDown = faChevronCircleDown;
@@ -35,11 +36,13 @@ export class ScaleTableConfigComponent {
     private readonly service: ScaleTableService,
     changeDetector: ChangeDetectorRef,
   ) {
+    super();
+
     // Note: Initial callback is always synchronous.
-    service.config().subscribe(config => {
+    this.track(service.config().subscribe(config => {
       this.config = config;
       changeDetector.markForCheck();
-    });
+    }));
   }
 
   toggle(colGroup: ScaleTableColGroup, event: MouseEvent) {

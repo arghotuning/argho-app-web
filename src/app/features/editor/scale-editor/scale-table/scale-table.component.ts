@@ -4,6 +4,7 @@
 
 import {StoppableNote, SynthService} from 'src/app/infra/synth/synth.service';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 import {toFixedClean} from 'src/app/infra/ui/numeric/numeric-util';
 import {
   ScaleTableColGroup,
@@ -122,7 +123,7 @@ interface PlayingNote {
   styleUrls: ['./scale-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScaleTableComponent {
+export class ScaleTableComponent extends BaseComponent {
   ScaleTableCol = ScaleTableCol;
 
   // Font Awesome icons:
@@ -163,26 +164,27 @@ export class ScaleTableComponent {
     changeDetector: ChangeDetectorRef,
     private readonly snackBar: MatSnackBar,
   ) {
+    super();
     this.model = data.model;
 
     // Note: All these subscriptions are called back synchronously the first time.
 
-    uiService.config().subscribe(uiConfig => {
+    this.track(uiService.config().subscribe(uiConfig => {
       this.updateDisplayedCols_(uiConfig);
       changeDetector.markForCheck();
-    });
+    }));
 
-    this.model.scaleRoot().subscribe(scaleRoot => {
+    this.track(this.model.scaleRoot().subscribe(scaleRoot => {
       this.scaleRoot = scaleRoot;
       this.updateTableData_();
       changeDetector.markForCheck();
-    });
+    }));
 
-    this.model.upperDegrees().subscribe(upperDegrees => {
+    this.track(this.model.upperDegrees().subscribe(upperDegrees => {
       this.upperDegrees = upperDegrees;
       this.updateTableData_();
       changeDetector.markForCheck();
-    });
+    }));
   }
 
   private updateDisplayedCols_(uiConfig: ScaleTableUiConfig) {

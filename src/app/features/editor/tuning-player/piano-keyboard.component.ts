@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import fscreen from 'fscreen';
-import {Subscription} from 'rxjs';
 import {MidiService} from 'src/app/infra/synth/midi.service';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 
 import {
   AfterViewInit,
@@ -61,7 +61,8 @@ export interface PianoWhiteKey {
   styleUrls: ['./piano-keyboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
+export class PianoKeyboardComponent extends BaseComponent
+    implements AfterViewInit, OnDestroy {
   settings!: ArghoEditorSettings;
   displayPref!: AccidentalDisplayPref;
 
@@ -84,8 +85,6 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
   @ViewChild('pianoKeys')
   pianoKeys: ElementRef<HTMLElement> | undefined;
 
-  subscriptions: Subscription[] = [];
-
   // Icons:
   faCircleArrowLeft = faCircleArrowLeft;
   faCircleArrowRight = faCircleArrowRight;
@@ -97,20 +96,22 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
     private readonly midi: MidiService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {
+    super();
+
     // NOTE: Always called back synchronously to start.
-    this.subscriptions.push(this.data.model.settings().subscribe(settings => {
+    this.track(this.data.model.settings().subscribe(settings => {
       this.settings = settings;
       this.updatePianoKeys_();
       this.changeDetector.markForCheck();
     }));
 
-    this.subscriptions.push(this.data.model.tuningMetadata().subscribe(metadata => {
+    this.track(this.data.model.tuningMetadata().subscribe(metadata => {
       this.displayPref = metadata.accidentalDisplayPref;
       this.updatePianoKeys_();
       this.changeDetector.markForCheck();
     }));
 
-    this.subscriptions.push(this.data.model.mappedKeys().subscribe(_ => {
+    this.track(this.data.model.mappedKeys().subscribe(_ => {
       // Whenever mapping changes (e.g. new tuning loaded), redraw keyboard.
       // TODO: Unsure why setTimeout() hack is required here but not in similar
       // cases elsewhere... Change detection not properly triggered without it.
@@ -120,12 +121,12 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
       }, 0);
     }));
 
-    this.subscriptions.push(this.midi.noteOns().subscribe(pitch => {
+    this.track(this.midi.noteOns().subscribe(pitch => {
       this.displayNoteOn_(pitch);
       this.changeDetector.markForCheck();
     }));
 
-    this.subscriptions.push(this.midi.noteOffs().subscribe(pitch => {
+    this.track(this.midi.noteOffs().subscribe(pitch => {
       this.displayNoteOff_(pitch);
       this.changeDetector.markForCheck();
     }));
@@ -135,7 +136,10 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.handleResize();
+    setTimeout(() => {
+      // Prevents ExpressionChangedAfterItHasBeenCheckedError.
+      this.handleResize();
+    }, 0);
   }
 
   ngOnDestroy(): void {
@@ -143,10 +147,7 @@ export class PianoKeyboardComponent implements AfterViewInit, OnDestroy {
       fscreen.removeEventListener('fullscreenchange', this.fullScreenHandler);
     }
 
-    // TODO: Use library or generalize support for rxjs subscription cleanup.
-    for (const sub of this.subscriptions) {
-      sub.unsubscribe();
-    }
+    super.ngOnDestroy();
   }
 
   private handleFullScreenChange_(): void {

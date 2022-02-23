@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 
 import {
   ChangeDetectionStrategy,
@@ -28,7 +29,7 @@ import {TuningPlayerComponent} from './tuning-player/tuning-player.component';
   styleUrls: ['./editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditorComponent implements OnInit {
+export class EditorComponent extends BaseComponent implements OnInit {
   private readonly context: ArghoEditorContext;
   private readonly model: ArghoEditorModel;
 
@@ -42,18 +43,19 @@ export class EditorComponent implements OnInit {
     data: TuningDataService,
     changeDetector: ChangeDetectorRef,
   ) {
+    super();
     this.model = data.model;
     this.context = data.context;
 
     // NOTE: Always called synchronously first time.
-    this.model.tuningMetadata().subscribe(tuningMetadata => {
+    this.track(this.model.tuningMetadata().subscribe(tuningMetadata => {
       this.isBasic = (tuningMetadata.editMode === TuningEditMode.BASIC);
       changeDetector.markForCheck();
-    });
+    }));
   }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.track(this.route.queryParams.subscribe(params => {
       // If a tuning was passed via URL, load it now.
       // tslint:disable-next-line: no-string-literal
       const encodedTuning = params['t'];
@@ -75,7 +77,7 @@ export class EditorComponent implements OnInit {
         // TODO: Display error dialog about invalid Tuning data (likely URL too long).
         console.log('Error parsing t= Tuning data:  ' + e);
       }
-    });
+    }));
   }
 
   handleTabChange(event: MatTabChangeEvent): void {

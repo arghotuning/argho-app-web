@@ -45,6 +45,7 @@ export class TuningDataService {
       }, 0);
     };
 
+    // NOTE: This service is a singleton, so no need to track and unsubscribe.
     this.model.scaleMetadata().subscribe(updateTuning);
     this.model.scaleRoot().subscribe(updateTuning);
     this.model.upperDegrees().subscribe(updateTuning);

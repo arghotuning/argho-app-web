@@ -25,10 +25,14 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 
+import {BaseComponent} from './base/base.component';
 import {SpelledPitchComponent} from './spelled-pitch/spelled-pitch.component';
 
 @NgModule({
-  declarations: [SpelledPitchComponent],
+  declarations: [
+    BaseComponent,
+    SpelledPitchComponent,
+  ],
   imports: [CommonModule],
   exports: [
     BrowserAnimationsModule,

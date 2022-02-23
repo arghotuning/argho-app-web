@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 import {simpleAccidentalStr} from 'src/app/infra/ui/spelled-pitch/spelled-pitch-util';
 
 import {
@@ -22,7 +23,7 @@ import {faEdit} from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./mapping-metadata.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MappingMetadataComponent {
+export class MappingMetadataComponent extends BaseComponent {
   private readonly model: ArghoEditorModel;
 
   keySpan!: number;
@@ -39,15 +40,16 @@ export class MappingMetadataComponent {
     changeDetector: ChangeDetectorRef,
     private readonly dialog: MatDialog,
   ) {
+    super();
     this.model = data.model;
 
     // Note: Subscriptions called by synchronously the first time.
-    this.model.mappedKeys().subscribe(mappedKeys => {
+    this.track(this.model.mappedKeys().subscribe(mappedKeys => {
       this.keySpan = mappedKeys.keySpan;
       this.mappingRoot = mappedKeys.get(0).inputPitch!;
 
       changeDetector.markForCheck();
-    });
+    }));
   }
 
   mappingRootPitchStrValue(): string {

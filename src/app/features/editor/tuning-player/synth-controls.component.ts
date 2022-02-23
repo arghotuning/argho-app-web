@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {OscWaveform, SynthService} from 'src/app/infra/synth/synth.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 
 import {
   ChangeDetectionStrategy,
@@ -17,7 +18,7 @@ import {faVolumeHigh, faVolumeOff} from '@fortawesome/free-solid-svg-icons';
   styleUrls: ['./synth-controls.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SynthControlsComponent {
+export class SynthControlsComponent extends BaseComponent {
   // Icons:
   faVolumeOff = faVolumeOff;
   faVolumeHigh = faVolumeHigh;
@@ -29,15 +30,17 @@ export class SynthControlsComponent {
     private readonly synth: SynthService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {
-    this.synth.volume().subscribe(volume => {
+    super();
+
+    this.track(this.synth.volume().subscribe(volume => {
       this.volume = volume;
       this.changeDetector.markForCheck();
-    });
+    }));
 
-    this.synth.waveform().subscribe(waveform => {
+    this.track(this.synth.waveform().subscribe(waveform => {
       this.waveform = waveform;
       this.changeDetector.markForCheck();
-    });
+    }));
   }
 
   handleWaveformChange(waveform: OscWaveform): void {

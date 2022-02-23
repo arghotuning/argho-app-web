@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 import {toFixedClean} from 'src/app/infra/ui/numeric/numeric-util';
 import {simpleAccidentalStr} from 'src/app/infra/ui/spelled-pitch/spelled-pitch-util';
 
@@ -35,7 +36,7 @@ const MIDI_PITCH_A4 = 69;
   styleUrls: ['./scale-root.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScaleRootComponent {
+export class ScaleRootComponent extends BaseComponent {
   RootScaleDegreeSpecType = RootScaleDegreeSpecType;
 
   private readonly model: ArghoEditorModel;
@@ -68,27 +69,28 @@ export class ScaleRootComponent {
   maxCentsOffset = ArghoTuningLimits.CENTS_FROM_NEAREST_12TET_MAX;
 
   constructor(data: TuningDataService, changeDetector: ChangeDetectorRef) {
+    super();
     this.model = data.model;
 
     // TODO: Add globalTunePitch to ArghoEditorModel directly.
     let settings: ArghoEditorSettings;
-    this.model.settings().subscribe(s => settings = s);
+    this.track(this.model.settings().subscribe(s => settings = s));
 
     // Note: Below are always called back synchronously first time.
-    this.model.tuningMetadata().subscribe(tuningMetadata => {
+    this.track(this.model.tuningMetadata().subscribe(tuningMetadata => {
       this.tuningMetadata = tuningMetadata;
       this.isBasic = (tuningMetadata.editMode === TuningEditMode.BASIC);
       changeDetector.markForCheck();
-    });
+    }));
 
-    this.model.scaleRoot().subscribe(scaleRoot => {
+    this.track(this.model.scaleRoot().subscribe(scaleRoot => {
       this.scaleRoot = scaleRoot;
 
       this.globalTunePitch = new DisplayedMidiPitch(
         MIDI_PITCH_A4, this.tuningMetadata.accidentalDisplayPref, settings);
 
       changeDetector.markForCheck();
-    });
+    }));
   }
 
   globalTuneStrValue(): string {

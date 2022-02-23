@@ -8,6 +8,7 @@ import {
   WebMidiAccessState,
   WebMidiInputPort,
 } from 'src/app/infra/synth/midi.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 
 import {
   ChangeDetectionStrategy,
@@ -22,7 +23,7 @@ import {DisplayedIndex} from '@arghotuning/argho-editor';
   styleUrls: ['./web-midi-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WebMidiInputComponent {
+export class WebMidiInputComponent extends BaseComponent {
   WebMidiAccessState = WebMidiAccessState;
 
   accessState!: WebMidiAccessState;
@@ -34,13 +35,15 @@ export class WebMidiInputComponent {
     private readonly midiService: MidiService,
     private readonly changeDetector: ChangeDetectorRef,
   ) {
-    this.midiService.accessState().subscribe(accessState => {
+    super();
+
+    this.track(this.midiService.accessState().subscribe(accessState => {
       this.accessState = accessState;
       if (this.accessState === WebMidiAccessState.GRANTED) {
         this.initInputs_();
       }
       this.changeDetector.markForCheck();
-    });
+    }));
   }
 
   enableMidiInput(): void {
@@ -48,12 +51,12 @@ export class WebMidiInputComponent {
   }
 
   private initInputs_(): void {
-    this.midiService.allAvailableInputs().subscribe(inputPorts => {
+    this.track(this.midiService.allAvailableInputs().subscribe(inputPorts => {
       this.allInputPorts = inputPorts.inputs;
       this.changeDetector.markForCheck();
-    });
+    }));
 
-    this.midiService.activeInput().subscribe(activeInput => {
+    this.track(this.midiService.activeInput().subscribe(activeInput => {
       if (activeInput) {
         if (activeInput.channel === 'omni') {
           this.channel = 'omni';
@@ -64,7 +67,7 @@ export class WebMidiInputComponent {
 
       this.activeInput = activeInput;
       this.changeDetector.markForCheck();
-    });
+    }));
   }
 
   handleMidiInputChange(id: string): void {

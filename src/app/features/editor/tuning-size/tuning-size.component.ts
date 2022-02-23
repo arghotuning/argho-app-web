@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import {BaseComponent} from 'src/app/infra/ui/base/base.component';
 
 import {
   ChangeDetectionStrategy,
@@ -25,7 +26,7 @@ import {TuningResizeDialogComponent} from './tuning-resize-dialog.component';
   styleUrls: ['./tuning-size.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TuningSizeComponent {
+export class TuningSizeComponent extends BaseComponent {
   private readonly model: ArghoEditorModel;
 
   isBasic = true;
@@ -40,23 +41,24 @@ export class TuningSizeComponent {
     changeDetector: ChangeDetectorRef,
     private readonly dialog: MatDialog,
   ) {
+    super();
     this.model = data.model;
 
     // Note: Below calls are always called back synchronously.
-    this.model.tuningMetadata().subscribe(tuningMetadata => {
+    this.track(this.model.tuningMetadata().subscribe(tuningMetadata => {
       this.isBasic = (tuningMetadata.editMode === TuningEditMode.BASIC);
       changeDetector.markForCheck();
-    });
+    }));
 
-    this.model.scaleMetadata().subscribe(scaleMetadata => {
+    this.track(this.model.scaleMetadata().subscribe(scaleMetadata => {
       this.scaleMetadata = scaleMetadata;
       changeDetector.markForCheck();
-    });
+    }));
 
-    this.model.mappedKeys().subscribe(mappedKeys => {
+    this.track(this.model.mappedKeys().subscribe(mappedKeys => {
       this.keySpan = mappedKeys.keySpan;
       changeDetector.markForCheck();
-    });
+    }));
   }
 
   openResizeDialog(): void {

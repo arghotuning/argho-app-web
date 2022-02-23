@@ -4,11 +4,37 @@
 
 import {Set} from 'immutable';
 import * as immutableMatchers from 'jasmine-immutable-matchers';
+import {Subscription} from 'rxjs';
 
 import {TestBed} from '@angular/core/testing';
 
 import {ScaleTableColGroup, ScaleTableUiConfig} from './scale-table-ui-config';
 import {ScaleTableService} from './scale-table.service';
+
+/** Holds on to rxjs subscriptions for cleanup. */
+class SubscriptionManager {
+  private readonly subs: Subscription[] = [];
+
+  add(sub: Subscription) {
+    this.subs.push(sub);
+  }
+
+  cleanup(): void {
+    for (const sub of this.subs) {
+      sub.unsubscribe();
+    }
+  }
+}
+
+let subs: SubscriptionManager;
+
+beforeEach(() => {
+  subs = new SubscriptionManager();
+});
+
+afterEach(() => {
+  subs.cleanup();
+});
 
 describe('ScaleTableService', () => {
   let service: ScaleTableService;
@@ -23,7 +49,7 @@ describe('ScaleTableService', () => {
 
   it('should default to all columns', () => {
     let gotConfig: ScaleTableUiConfig | null = null;
-    service.config().subscribe(config => gotConfig = config);
+    subs.add(service.config().subscribe(config => gotConfig = config));
 
     expect(gotConfig).not.toBeNull();
     expect(gotConfig!.colGroups).toEqualImmutable(
@@ -39,7 +65,7 @@ describe('ScaleTableService', () => {
 
   it('should hide columns and update observers', () => {
     let gotConfigs: ScaleTableUiConfig[] = [];
-    service.config().subscribe(config => gotConfigs.push(config));
+    subs.add(service.config().subscribe(config => gotConfigs.push(config)));
 
     // Should initially be called with defaults (all).
     expect(gotConfigs.length).toEqual(1);
@@ -79,7 +105,7 @@ describe('ScaleTableService', () => {
     service.hideColGroup(ScaleTableColGroup.COMPARE_12TET);
 
     let gotConfigs: ScaleTableUiConfig[] = [];
-    service.config().subscribe(config => gotConfigs.push(config));
+    subs.add(service.config().subscribe(config => gotConfigs.push(config)));
 
     // Should initially be called with the above columns hidden.
     expect(gotConfigs.length).toEqual(1);
