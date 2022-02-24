@@ -40,7 +40,6 @@ const PARSE_WARNINGS_MSG =
 })
 export class EditorComponent extends BaseComponent implements OnInit {
   private readonly converter: TuningConverter;
-  private isInitialLoad = true;
 
   isBasic!: boolean;
 

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {UiInfraModule} from 'src/app/infra/ui/ui.module';
+
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 
@@ -13,7 +15,10 @@ describe('EditorComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [
+        RouterTestingModule,
+        UiInfraModule,
+      ],
       declarations: [EditorComponent],
     }).compileComponents();
   }));

@@ -22,7 +22,6 @@ export class TuningDataService {
 
   /** Output frequencies computed for WebMIDI/WebAudio playback. */
   private keyToSoundMap_: KeyToSoundMap;
-  private keyToSoundMapNeedsUpdate_ = false;
 
   constructor() {
     this.context = new ArghoEditorContext({
@@ -39,18 +38,21 @@ export class TuningDataService {
   /** Returns stream that notifies whenever tuning is changed in any way. */
   anyTuningChange(): Observable<void> {
     // TODO: Consider providing this support from argho-editor-js library.
+
+    // Skip the first event for each source, since all emit a value immediately
+    // upon subscription. It's important that this skipping happens here and not
+    // after debounceTime(0), since other true updates could occur within the
+    // same event loop after this function returns.
     const merged = merge(
-      this.model.tuningMetadata(),
-      this.model.scaleMetadata(),
-      this.model.scaleRoot(),
-      this.model.upperDegrees(),
-      this.model.mappedKeys(),
+      this.model.tuningMetadata().pipe(skip(1)),
+      this.model.scaleMetadata().pipe(skip(1)),
+      this.model.scaleRoot().pipe(skip(1)),
+      this.model.upperDegrees().pipe(skip(1)),
+      this.model.mappedKeys().pipe(skip(1)),
     );
 
-    // Consolidate any updates that occur within the same event loop. Skip the
-    // first event, since all of the above emit a value immediately upon
-    // subscription.
-    return merged.pipe(debounceTime(0), skip(1), mapTo<void>(undefined));
+    // Consolidate any updates that occur within the same event loop.
+    return merged.pipe(debounceTime(0), mapTo<void>(undefined));
   }
 
   private updateKeyToSoundMap_(): void {

@@ -2,9 +2,16 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {UiInfraModule} from 'src/app/infra/ui/ui.module';
 
-import {ShareDialogComponent} from './share-dialog.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+
+import {ShareDialogComponent, ShareDialogData} from './share-dialog.component';
+
+const SHARE_DIALOG_DATA: ShareDialogData = {
+  url: 'https://fake.share/url',
+};
 
 describe('ShareDialogComponent', () => {
   let component: ShareDialogComponent;
@@ -13,6 +20,13 @@ describe('ShareDialogComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ShareDialogComponent],
+      imports: [UiInfraModule],
+      providers: [
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: SHARE_DIALOG_DATA,
+        },
+      ],
     }).compileComponents();
   });
 
