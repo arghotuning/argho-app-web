@@ -37,11 +37,7 @@ import {
   TunedInterval,
   TunedIntervalSpecType,
 } from '@arghotuning/arghotun';
-import {
-  faAngleDown,
-  faPlay,
-  faPlayCircle,
-} from '@fortawesome/free-solid-svg-icons';
+import {faAngleDown, faPlayCircle} from '@fortawesome/free-solid-svg-icons';
 
 function toRatioString(tunedInterval: TunedInterval): string {
   const num = tunedInterval.getRatioNumerator();

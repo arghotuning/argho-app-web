@@ -14,8 +14,6 @@ declare global {
 }
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-const audioContext = new window.AudioContext();
-
 /** Converts [0.0, 1.0] volume slider value to nicer gain. */
 function scaledVol(normalizedVolume: number): number {
   // Anything less than 0.1: volume off.
@@ -33,13 +31,13 @@ const DECAY_TIME_SECS = 10.0;
 const RELEASE_TIME_SECS = 0.3;
 const STOP_TIME_SECS = 0.2;
 
-function newGlobalVolume(normalizedVolume: number): GainNode {
+function newGlobalVolume(audioContext: AudioContext, normalizedVolume: number): GainNode {
   const globalVol = audioContext.createGain();
   globalVol.gain.setValueAtTime(scaledVol(normalizedVolume), audioContext.currentTime);
   return globalVol;
 }
 
-function newLimiter(): DynamicsCompressorNode {
+function newLimiter(audioContext: AudioContext): DynamicsCompressorNode {
   // Best currently available in WebAudio API is a 20:1 compressor.
   // Ideally, this would be a brickwall limiter.
   const limiter = audioContext.createDynamicsCompressor();
@@ -56,7 +54,7 @@ function newLimiter(): DynamicsCompressorNode {
 
 export type OscWaveform = 'sine' | 'triangle' | 'square' | 'sawtooth';
 
-function newOscillator(waveform: OscWaveform): OscillatorNode {
+function newOscillator(audioContext: AudioContext, waveform: OscWaveform): OscillatorNode {
   const osc = audioContext.createOscillator();
   osc.type = waveform;
   return osc;
@@ -73,7 +71,7 @@ function gainCompensation(waveform: OscWaveform): number {
   }
 }
 
-function newAmplitudeEnvelope(): GainNode {
+function newAmplitudeEnvelope(audioContext: AudioContext): GainNode {
   const ampEnv = audioContext.createGain();
   ampEnv.gain.setValueAtTime(0.0, audioContext.currentTime);
   return ampEnv;
@@ -91,22 +89,42 @@ export interface StoppableNote {
   stop(): void;
 }
 
+/**
+ * Holds AudioContext dependent state; initialization delayed until after user
+ * interaction.
+ */
+class AudioState {
+  readonly audioContext: AudioContext;
+
+  readonly voices: Voice[] = [];
+  readonly globalVol: GainNode;
+  readonly limiter: DynamicsCompressorNode;
+
+  constructor(vol: number) {
+    this.audioContext = new window.AudioContext();
+
+    this.globalVol = newGlobalVolume(this.audioContext, vol);
+    this.limiter = newLimiter(this.audioContext);
+
+    this.globalVol.connect(this.limiter);
+    this.limiter.connect(this.audioContext.destination);
+  }
+}
+
 /** A simple polyphonic WebAudio synthesizer. */
 @Injectable({providedIn: 'root'})
 export class SynthService {
-  private readonly voices_: Voice[] = [];
-  private readonly globalVol_: GainNode;
-  private readonly limiter_: DynamicsCompressorNode;
+  private stateValue_: AudioState | null = null;  // Delay until user interaction.
 
   private volume_ = new BehaviorSubject<number>(0.8);  // Init to about -9 dB.
   private waveform_ = new BehaviorSubject<OscWaveform>('square');
 
-  constructor() {
-    this.globalVol_ = newGlobalVolume(this.volume_.value);
-    this.limiter_ = newLimiter();
-
-    this.globalVol_.connect(this.limiter_);
-    this.limiter_.connect(audioContext.destination);
+  /** Lazily initializes audio state. */
+  private audioState(): AudioState {
+    if (this.stateValue_ === null) {
+      this.stateValue_ = new AudioState(this.volume_.value);
+    }
+    return this.stateValue_;
   }
 
   /**
@@ -114,9 +132,10 @@ export class SynthService {
    * on the returned result to halt playback (i.e. for the note off).
    */
   playNoteOn(freqHz: FreqHz): StoppableNote {
+    const state = this.audioState();
     const voice = this.getOrCreateFreeVoice_();
 
-    const currentTime = audioContext.currentTime;
+    const currentTime = state.audioContext.currentTime;
     voice.osc.frequency.setValueAtTime(freqHz, currentTime);
     voice.ampEnv.gain.setValueAtTime(0.0, currentTime);
 
@@ -139,7 +158,7 @@ export class SynthService {
 
     return {
       stop(): void {
-        const actualReleaseTime = audioContext.currentTime;
+        const actualReleaseTime = state.audioContext.currentTime;
         voice.ampEnv.gain.cancelScheduledValues(actualReleaseTime);
 
         voice.ampEnv.gain.setValueAtTime(voice.ampEnv.gain.value, actualReleaseTime);
@@ -166,9 +185,10 @@ export class SynthService {
     }
 
     // Ramp to new volume quickly, but avoid clicks.
-    this.globalVol_.gain.linearRampToValueAtTime(
+    const state = this.audioState();
+    state.globalVol.gain.linearRampToValueAtTime(
       scaledVol(volume),
-      audioContext.currentTime + ATTACK_TIME_SECS);
+      state.audioContext.currentTime + ATTACK_TIME_SECS);
     this.volume_.next(volume);
   }
 
@@ -178,7 +198,7 @@ export class SynthService {
 
   setOscWaveform(waveform: OscWaveform): void {
     // Update existing voice oscillators.
-    for (const voice of this.voices_) {
+    for (const voice of this.audioState().voices) {
       voice.osc.type = waveform;
     }
 
@@ -186,20 +206,22 @@ export class SynthService {
   }
 
   private getOrCreateFreeVoice_(): Voice {
-    const currentTime = audioContext.currentTime;
+    const state = this.audioState();
+
+    const currentTime = state.audioContext.currentTime;
 
     // Reuse a free voice, if available.
-    const freeVoice = this.voices_.find(voice => voice.stopTimeSecs < currentTime);
+    const freeVoice = state.voices.find(voice => voice.stopTimeSecs < currentTime);
     if (freeVoice) {
       return freeVoice;
     }
 
     // No free voices; dynamically add another one.
-    const osc = newOscillator(this.waveform_.value);
-    const ampEnv = newAmplitudeEnvelope();
+    const osc = newOscillator(state.audioContext, this.waveform_.value);
+    const ampEnv = newAmplitudeEnvelope(state.audioContext);
 
     osc.connect(ampEnv);
-    ampEnv.connect(this.globalVol_);
+    ampEnv.connect(state.globalVol);
 
     return {osc, ampEnv, stopTimeSecs: currentTime};
   }

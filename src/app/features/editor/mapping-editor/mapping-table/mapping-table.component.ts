@@ -22,7 +22,6 @@ import {
   MappedKeys,
   ScaleRoot,
   SimpleAccidental,
-  TuningEditMode,
   UpperDegrees,
 } from '@arghotuning/argho-editor';
 import {faPlayCircle} from '@fortawesome/free-solid-svg-icons';
