@@ -39,14 +39,14 @@ SPDX-License-Identifier: Apache-2.0
         </mat-menu>
       </div>
     </th>
-    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
+    <td mat-cell *matCellDef="let element" [class.editable]="element.editable">
       <span class="scale-measure-from">{{element.measureFrom?.displayNumber || '-'}}</span>
     </td>
   </ng-container>
 
   <ng-container [matColumnDef]="ScaleTableCol.RATIO">
     <th mat-header-cell *matHeaderCellDef><span class="scale-ratio">Ratio</span></th>
-    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
+    <td mat-cell *matCellDef="let element" [class.editable]="element.editable">
       <span class="scale-ratio">
         <ng-container *ngIf="element.ratio">{{element.ratio}}</ng-container>
         <ng-container *ngIf="!element.ratio">-</ng-container>
@@ -56,7 +56,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <ng-container [matColumnDef]="ScaleTableCol.CENTS">
     <th mat-header-cell *matHeaderCellDef><span class="scale-cents">Cents</span></th>
-    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
+    <td mat-cell *matCellDef="let element" [class.editable]="element.editable">
       <span class="scale-cents">
         <ng-container *ngIf="element.cents">{{element.cents}}</ng-container>
         <ng-container *ngIf="!element.cents">-</ng-container>
@@ -66,7 +66,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <ng-container [matColumnDef]="ScaleTableCol.FREQ">
     <th mat-header-cell *matHeaderCellDef><span class="scale-freq">Freq (Hz)</span></th>
-    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
+    <td mat-cell *matCellDef="let element" [class.editable]="element.editable">
       <span class="scale-freq">
         {{element.freqHz}}
         <button mat-button class="play-button" aria-label="Play"
@@ -87,7 +87,7 @@ SPDX-License-Identifier: Apache-2.0
 
   <ng-container [matColumnDef]="ScaleTableCol.CENTS_FROM_12TET">
     <th mat-header-cell *matHeaderCellDef>Δ&nbsp;Cents</th>
-    <td mat-cell *matCellDef="let element" [ngClass]="{'editable': element.editable}">
+    <td mat-cell *matCellDef="let element" [class.editable]="element.editable">
       <span class="scale-12tet-offset">{{element.centsFrom12tet}}</span>
     </td>
   </ng-container>
