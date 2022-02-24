@@ -23,6 +23,7 @@ $palette-warn: mat.define-palette(mat.$red-palette);
 $color-primary: mat.get-color-from-palette($palette-primary, 600);
 $color-secondary: mat.get-color-from-palette($palette-secondary, 700);
 $color-warning: mat.get-color-from-palette(mat.$amber-palette, 400);
+$color-success: mat.get-color-from-palette(mat.$green-palette, 400);
 
 $color-link: mat.get-color-from-palette($palette-secondary, 500);
 $color-link-visited: mat.get-color-from-palette($palette-secondary, 500);
@@ -37,6 +38,7 @@ $color-text-tinted-label: rgba-to-rgb(rgba(0, 0, 0, 0.4), $color-primary);
 $color-icon-secondary: #666;
 
 $color-field-bg: rgba-to-rgb(color.change(mat.get-color-from-palette($palette-primary, 300), $alpha: 0.15));
+$color-accent-field-bg: rgba-to-rgb(color.change(mat.get-color-from-palette($palette-secondary, 300), $alpha: 0.15));
 $color-hover-row-bg: rgba-to-rgb(color.change(mat.get-color-from-palette($palette-primary, 300), $alpha: 0.05));
 $color-editor-bg: color.change(mat.get-color-from-palette($palette-secondary, 300), $lightness: 96%);
 $color-checked-button: rgba-to-rgb(color.change(mat.get-color-from-palette($palette-primary, 600), $alpha: 0.5));

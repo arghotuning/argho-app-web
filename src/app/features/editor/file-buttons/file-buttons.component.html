@@ -17,5 +17,9 @@ SPDX-License-Identifier: Apache-2.0
   <fa-icon [icon]="faSave"></fa-icon> SAVE{{hasUnsavedChanges ? '*' : ''}}
 </a>
 
+<button mat-button color="primary" (click)="shareTuning()">
+  <fa-icon [icon]="faShare"></fa-icon> SHARE
+</button>
+
 <!-- TODO: Add Explore world tunings button back. -->
 <!-- <a mat-button color="accent" href="/explore"><fa-icon [icon]="faCompass"></fa-icon> Explore world tunings</a> -->

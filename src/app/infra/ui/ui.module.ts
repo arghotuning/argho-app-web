@@ -26,16 +26,24 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
 
 import {BaseComponent} from './base/base.component';
+import {ErrorDialogComponent} from './error-dialog/error-dialog.component';
 import {SpelledPitchComponent} from './spelled-pitch/spelled-pitch.component';
 
 @NgModule({
   declarations: [
     BaseComponent,
+    ErrorDialogComponent,
     SpelledPitchComponent,
   ],
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    MatButtonModule,
+    MatDialogModule,
+  ],
   exports: [
     BrowserAnimationsModule,
+    ErrorDialogComponent,
     FontAwesomeModule,
     MatButtonModule,
     MatButtonToggleModule,

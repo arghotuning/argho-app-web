@@ -13,13 +13,13 @@ SPDX-License-Identifier: Apache-2.0
   </mat-expansion-panel-header>
 
   <div class="tuning-metadata-fields">
-    <mat-form-field appearance="fill" backgroundColor="primary">
+    <mat-form-field appearance="fill" color="primary">
       <mat-label>Tuning Name</mat-label>
       <input #tuningNameInput matInput class="tuning-name" [value]="tuningMetadata.name"
             (change)="handleNameChange()" (keydown.enter)="blurTarget($event.target)" maxlength="100">
     </mat-form-field>
 
-    <mat-form-field appearance="fill" backgroundColor="primary">
+    <mat-form-field appearance="fill" color="primary">
       <mat-label>Description</mat-label>
       <textarea #tuningDescInput matInput class="tuning-desc" [value]="tuningMetadata.description"
                 rows="2" maxlength="1000" (change)="handleDescChange()"></textarea>

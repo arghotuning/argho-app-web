@@ -42,6 +42,10 @@ $argho-app-web-theme: mat.define-light-theme((
   background: $color-field-bg;
 }
 
+.mat-form-field-appearance-fill.mat-accent .mat-form-field-flex {
+  background: $color-accent-field-bg;
+}
+
 .mat-button-toggle-checked {
   background-color: $color-checked-button;
 }

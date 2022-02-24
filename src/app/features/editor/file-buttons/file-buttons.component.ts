@@ -4,6 +4,10 @@
 
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 import {BaseComponent} from 'src/app/infra/ui/base/base.component';
+import {
+  ErrorDialogComponent,
+  ErrorDialogData,
+} from 'src/app/infra/ui/error-dialog/error-dialog.component';
 
 import {
   ChangeDetectionStrategy,
@@ -20,10 +24,11 @@ import {
   faCompass,
   faFile,
   faSave,
+  faShare,
   faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 
-import {ErrorDialogComponent, ErrorDialogData} from './error-dialog.component';
+import {ShareDialogComponent, ShareDialogData} from './share-dialog.component';
 
 const NON_ALPHANUMERIC = /[^a-z0-9]/gi;
 
@@ -52,6 +57,7 @@ export class FileButtonsComponent extends BaseComponent {
   faFile = faFile;
   faUpload = faUpload;
   faSave = faSave;
+  faShare = faShare;
   faCompass = faCompass;
 
   @ViewChild('fileInput')
@@ -70,18 +76,13 @@ export class FileButtonsComponent extends BaseComponent {
     this.model = data.model;
 
     // Listen for any unsaved changes.
-    const subscriber = () => this.handleModelChange_();
-    this.track(this.model.tuningMetadata().subscribe(subscriber));
-    this.track(this.model.scaleMetadata().subscribe(subscriber));
-    this.track(this.model.scaleRoot().subscribe(subscriber));
-    this.track(this.model.upperDegrees().subscribe(subscriber));
-    this.track(this.model.mappedKeys().subscribe(subscriber));
+    this.track(data.anyTuningChange().subscribe(() => this.handleTuningChange_()));
 
     // (Must re-initialize this to ignore the first-time synchronous callbacks).
     this.hasUnsavedChanges = false;
   }
 
-  private handleModelChange_(): void {
+  private handleTuningChange_(): void {
     this.hasUnsavedChanges = true;
     this.changeDetector.markForCheck();
   }
@@ -95,8 +96,8 @@ export class FileButtonsComponent extends BaseComponent {
   }
 
   async resetTuning(): Promise<void> {
-    // TODO: Track pending changes and confirm before losing them.
-    // Also catch navigation away from page.
+    // TODO: Confirm before reset if there are any pending changes.
+    // TODO: Start a new history entry so that back button can undo.
     await this.model.resetToDefault12tet();
     this.clearUnsavedChanges_();
   }
@@ -182,6 +183,13 @@ export class FileButtonsComponent extends BaseComponent {
     this.saveButton.nativeElement.download = getDefaultDownloadFileName(tuningSnapshot);
 
     this.clearUnsavedChanges_();
+  }
+
+  shareTuning(): void {
+    const dialogData: ShareDialogData = {
+      url: window.location.href,
+    };
+    this.dialog.open(ShareDialogComponent, {data: dialogData});
   }
 
   @HostListener('window:beforeunload')

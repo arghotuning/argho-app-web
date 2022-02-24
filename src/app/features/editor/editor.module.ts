@@ -8,8 +8,8 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 
 import {EditorComponent} from './editor.component';
-import {ErrorDialogComponent} from './file-buttons/error-dialog.component';
 import {FileButtonsComponent} from './file-buttons/file-buttons.component';
+import {ShareDialogComponent} from './file-buttons/share-dialog.component';
 import {MappingEditorComponent} from './mapping-editor/mapping-editor.component';
 import {MappingMetadataComponent} from './mapping-editor/mapping-metadata/mapping-metadata.component';
 import {MappingTableComponent} from './mapping-editor/mapping-table/mapping-table.component';
@@ -29,7 +29,6 @@ import {TuningSizeComponent} from './tuning-size/tuning-size.component';
 @NgModule({
   declarations: [
     EditorComponent,
-    ErrorDialogComponent,
     FileButtonsComponent,
     MappingEditorComponent,
     MappingMetadataComponent,
@@ -39,6 +38,7 @@ import {TuningSizeComponent} from './tuning-size/tuning-size.component';
     ScaleRootComponent,
     ScaleTableComponent,
     ScaleTableConfigComponent,
+    ShareDialogComponent,
     SynthControlsComponent,
     TuningAnalysisComponent,
     TuningMetadataComponent,
@@ -50,10 +50,6 @@ import {TuningSizeComponent} from './tuning-size/tuning-size.component';
   imports: [
     CommonModule,
     UiInfraModule,
-  ],
-  entryComponents: [
-    ErrorDialogComponent,
-    TuningResizeDialogComponent,
   ],
   exports: [EditorComponent],
 })

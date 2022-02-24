@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {debounceTime, mapTo, merge, Observable, skip} from 'rxjs';
+
 import {Injectable} from '@angular/core';
 import {
   ArghoEditorContext,
@@ -30,26 +32,29 @@ export class TuningDataService {
 
     this.keyToSoundMap_ = KeyToSoundMap.calcFor(this.context, this.model.getTuningSnapshot());
 
-    // Re-calculate output frequencies whenever tuning changes.
-    const updateTuning = () => {
-      this.keyToSoundMapNeedsUpdate_ = true;
-
-      // Don't actually update until stack unwinds, to avoid unnecessary
-      // re-calculation for multiple subscription callbacks about the same
-      // change.
-      setTimeout(() => {
-        if (this.keyToSoundMapNeedsUpdate_) {
-          this.keyToSoundMap_ = KeyToSoundMap.calcFor(this.context, this.model.getTuningSnapshot());
-          this.keyToSoundMapNeedsUpdate_ = false;
-        }
-      }, 0);
-    };
-
     // NOTE: This service is a singleton, so no need to track and unsubscribe.
-    this.model.scaleMetadata().subscribe(updateTuning);
-    this.model.scaleRoot().subscribe(updateTuning);
-    this.model.upperDegrees().subscribe(updateTuning);
-    this.model.mappedKeys().subscribe(updateTuning);
+    this.anyTuningChange().subscribe(() => this.updateKeyToSoundMap_());
+  }
+
+  /** Returns stream that notifies whenever tuning is changed in any way. */
+  anyTuningChange(): Observable<void> {
+    // TODO: Consider providing this support from argho-editor-js library.
+    const merged = merge(
+      this.model.tuningMetadata(),
+      this.model.scaleMetadata(),
+      this.model.scaleRoot(),
+      this.model.upperDegrees(),
+      this.model.mappedKeys(),
+    );
+
+    // Consolidate any updates that occur within the same event loop. Skip the
+    // first event, since all of the above emit a value immediately upon
+    // subscription.
+    return merged.pipe(debounceTime(0), skip(1), mapTo<void>(undefined));
+  }
+
+  private updateKeyToSoundMap_(): void {
+    this.keyToSoundMap_ = KeyToSoundMap.calcFor(this.context, this.model.getTuningSnapshot());
   }
 
   keyToSoundMap(): KeyToSoundMap {

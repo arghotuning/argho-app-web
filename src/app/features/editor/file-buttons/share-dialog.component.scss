@@ -8,8 +8,20 @@
 
 .mat-dialog-content {
   max-width: 80vw;
+  width: 560px;
 }
 
 .mat-dialog-actions {
   justify-content: flex-end;
+}
+
+.share-url {
+  margin-top: 1em;
+  width: 100%;
+}
+
+.long-url-warning {
+  fa-icon {
+    color: $color-warning;
+  }
 }

@@ -30,7 +30,7 @@ SPDX-License-Identifier: Apache-2.0
 </div>
 
 <div *ngIf="allInputPorts.length >= 1" class="midi-input-block">
-  <mat-form-field class="midi-inputs" appearance="fill" backgroundColor="primary">
+  <mat-form-field class="midi-inputs" appearance="fill" color="primary">
     <mat-label>MIDI Input Port</mat-label>
     <mat-select [value]="activeInput?.id" (selectionChange)="handleMidiInputChange($event.value)">
       <mat-option *ngFor="let inputPort of allInputPorts" [value]="inputPort.id">{{inputPort.name}}</mat-option>
@@ -41,7 +41,7 @@ SPDX-License-Identifier: Apache-2.0
     </mat-hint>
   </mat-form-field>
 
-  <mat-form-field class="midi-channel" appearance="fill" backgroundColor="primary">
+  <mat-form-field class="midi-channel" appearance="fill" color="primary">
     <mat-label>Channel</mat-label>
     <mat-select [value]="channel" (selectionChange)="handleChannelChange($event.value)">
       <mat-option value="omni">Omni</mat-option>

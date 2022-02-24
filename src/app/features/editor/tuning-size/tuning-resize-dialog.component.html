@@ -27,29 +27,29 @@ SPDX-License-Identifier: Apache-2.0
   <div class="explanation-top-label">Scale pattern repeats after:</div>
 
   <div class="tuning-size-fields">
-    <mat-form-field class="scale-num-octaves" appearance="fill" backgroundColor="primary">
+    <mat-form-field class="scale-num-octaves" appearance="fill" color="primary">
       <mat-label>Octaves</mat-label>
       <input type="number" #numOctavesInput matInput [value]="pendingNumOctaves"
              (change)="handleInputChanges()" [min]="minOctavesValue" [max]="maxOctavesValue"
-             autofocus (keydown.enter)="blurTarget($event.target)">
+            (keydown.enter)="blurTarget($event.target)">
       <mat-hint>{{minOctavesValue}} to {{maxOctavesValue}}</mat-hint>
     </mat-form-field>
-  
-    <mat-form-field class="scale-num-degrees" appearance="fill" backgroundColor="primary">
+
+    <mat-form-field class="scale-num-degrees" appearance="fill" color="primary">
       <mat-label>Scale Degrees</mat-label>
       <input type="number" #numDegreesInput matInput [value]="pendingNumDegrees"
              (change)="handleInputChanges()" [min]="minDegreesValue" [max]="maxDegreesValue"
              [disabled]="pendingMode == 'basic'"
-             autofocus (keydown.enter)="blurTarget($event.target)">
+            (keydown.enter)="blurTarget($event.target)">
       <mat-hint *ngIf="pendingMode == 'advanced'">{{minDegreesValue}} to {{maxDegreesValue}}</mat-hint>
     </mat-form-field>
 
-    <mat-form-field class="mapping-num-keys" appearance="fill" backgroundColor="primary">
+    <mat-form-field class="mapping-num-keys" appearance="fill" color="primary">
       <mat-label>Input Keys</mat-label>
       <input type="number" #numKeysInput matInput [value]="pendingNumKeys"
              (change)="handleInputChanges()" [min]="minKeysValue" [max]="maxKeysValue"
              [disabled]="pendingMode == 'basic'"
-             autofocus (keydown.enter)="blurTarget($event.target)">
+            (keydown.enter)="blurTarget($event.target)">
       <mat-hint *ngIf="pendingMode == 'advanced'">{{minKeysValue}} to {{maxKeysValue}}</mat-hint>
     </mat-form-field>
   </div>
