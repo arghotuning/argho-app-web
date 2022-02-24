@@ -76,6 +76,14 @@
   background-color: $color-black-key-bg;
 }
 
+.mat-row.playing {
+  background-color: $color-playing-row-bg;
+
+  .black-key {
+    background-color: $color-playing-black-key-bg;
+  }
+}
+
 .mat-row:hover {
   background-color: $color-hover-row-bg;
 

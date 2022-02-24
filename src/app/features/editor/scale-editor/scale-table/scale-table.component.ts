@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
+import {MidiService} from 'src/app/infra/synth/midi.service';
 import {StoppableNote, SynthService} from 'src/app/infra/synth/synth.service';
 import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
 import {BaseComponent} from 'src/app/infra/ui/base/base.component';
@@ -34,6 +35,7 @@ import {
   ArghoTuningLimits,
   Cents,
   FreqHz,
+  MidiPitch,
   TunedInterval,
   TunedIntervalSpecType,
 } from '@arghotuning/arghotun';
@@ -97,6 +99,7 @@ export interface TuningTableRow {
   freqHz: string;
   ref12tetPitch: DisplayedMidiPitch;
   centsFrom12tet: string;
+  activelyPlaying: boolean;
 }
 
 /** Type of action to take when popup editor is dismissed. */
@@ -112,6 +115,8 @@ interface PlayingNote {
   note: StoppableNote;
   startTimeMs: number;
 }
+
+const enum MidiStatus {NOTE_ON, NOTE_OFF};
 
 @Component({
   selector: 'app-scale-table',
@@ -134,7 +139,8 @@ export class ScaleTableComponent extends BaseComponent {
   displayedColumns: ScaleTableCol[] = [];
   dataSource: TuningTableRow[] = [];
 
-  private readonly playingNotes_: {[degIndex: number]: PlayingNote | null} = {};
+  private readonly clickedNotes_: {[degIndex: number]: PlayingNote | null} = {};
+  private degsPlayingFromMidiInput_: {[degIndex: number]: number[]} = {};
 
   showPopupEditor = false;
   popupLabel = '';
@@ -154,8 +160,9 @@ export class ScaleTableComponent extends BaseComponent {
   popupInput: ElementRef<HTMLInputElement> | undefined;
 
   constructor(
-    data: TuningDataService,
+    private readonly data: TuningDataService,
     uiService: ScaleTableService,
+    midi: MidiService,
     private readonly synth: SynthService,
     changeDetector: ChangeDetectorRef,
     private readonly snackBar: MatSnackBar,
@@ -178,6 +185,24 @@ export class ScaleTableComponent extends BaseComponent {
 
     this.track(this.model.upperDegrees().subscribe(upperDegrees => {
       this.upperDegrees = upperDegrees;
+      this.updateTableData_();
+      changeDetector.markForCheck();
+    }));
+
+    this.model.mappedKeys().subscribe(_ => {
+      this.degsPlayingFromMidiInput_ = {};  // Reset.
+      this.updateTableData_();
+      changeDetector.markForCheck();
+    });
+
+    this.track(midi.noteOns().subscribe(pitch => {
+      this.handleMidiInput_(pitch, MidiStatus.NOTE_ON);
+      this.updateTableData_();
+      changeDetector.markForCheck();
+    }));
+
+    this.track(midi.noteOffs().subscribe(pitch => {
+      this.handleMidiInput_(pitch, MidiStatus.NOTE_OFF);
       this.updateTableData_();
       changeDetector.markForCheck();
     }));
@@ -222,6 +247,7 @@ export class ScaleTableComponent extends BaseComponent {
       freqHz: toFreqString(this.scaleRoot.rootFreqHz),
       ref12tetPitch: this.scaleRoot.nearestMidiPitch,
       centsFrom12tet: toCentsString(this.scaleRoot.centsFrom12tet),
+      activelyPlaying: !!this.degsPlayingFromMidiInput_[0],
     });
 
     // Upper degrees.
@@ -237,6 +263,7 @@ export class ScaleTableComponent extends BaseComponent {
         freqHz: toFreqString(upperDeg.freqHz),
         ref12tetPitch: upperDeg.refMidiPitch,
         centsFrom12tet: toCentsString(upperDeg.centsFrom12tet),
+        activelyPlaying: !!this.degsPlayingFromMidiInput_[upperDeg.deg.index],
       });
     }
   }
@@ -511,15 +538,15 @@ export class ScaleTableComponent extends BaseComponent {
 
     const freqHz = (degIndex === 0) ?
         this.scaleRoot.rootFreqHz : this.upperDegrees.get(degIndex).freqHz;
-    this.playingNotes_[degIndex] = {
+    this.clickedNotes_[degIndex] = {
       note: this.synth.playNoteOn(freqHz),
       startTimeMs: Date.now(),
     };
   }
 
   stopDegree(degIndex: number): void {
-    const playingNote = this.playingNotes_[degIndex];
-    this.playingNotes_[degIndex] = null;
+    const playingNote = this.clickedNotes_[degIndex];
+    this.clickedNotes_[degIndex] = null;
 
     if (playingNote) {
       const minEndTimeMs = playingNote.startTimeMs + MIN_NOTE_DURATION_MS;
@@ -531,6 +558,29 @@ export class ScaleTableComponent extends BaseComponent {
         setTimeout(() => playingNote.note.stop(), remainingMs);
       } else {
         playingNote.note.stop();  // Stop immediately.
+      }
+    }
+  }
+
+  private handleMidiInput_(pitch: MidiPitch, status: MidiStatus): void {
+    const keyToSoundMap = this.data.keyToSoundMap();
+    if (!keyToSoundMap.isMapped(pitch)) {
+      return;
+    }
+
+    const deg = keyToSoundMap.mappedSoundFor(pitch).scaleDegreeIndex;
+    const activePitches = this.degsPlayingFromMidiInput_[deg] || [];
+    const pos = activePitches.indexOf(pitch);
+
+    if ((status === MidiStatus.NOTE_ON) && (pos === -1)) {
+      // Note on that wasn't actively playing.
+      activePitches.push(pitch);
+      this.degsPlayingFromMidiInput_[deg] = activePitches;
+    } else if ((status === MidiStatus.NOTE_OFF) && (pos >= 0)) {
+      // Note off that was actively playing.
+      activePitches.splice(pos, 1);
+      if (activePitches.length === 0) {
+        delete this.degsPlayingFromMidiInput_[deg];
       }
     }
   }
