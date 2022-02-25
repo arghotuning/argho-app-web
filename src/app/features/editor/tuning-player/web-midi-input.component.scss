@@ -8,6 +8,10 @@
 
 $field-gap: 1em;
 
+.web-midi-state {
+  margin-bottom: $field-gap;
+}
+
 .web-midi-label {
   font-weight: $font-body-med-weight;
 }
@@ -26,7 +30,7 @@ $field-gap: 1em;
     margin-left: $field-gap;
     margin-bottom: $field-gap;
   }
-  
+
   .midi-inputs { width: 12em; }
   .midi-channel { width: 6em; }
 }
