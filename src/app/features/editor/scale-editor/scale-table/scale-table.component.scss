@@ -57,6 +57,20 @@
   position: relative;  // Position popup editor relative to.
 }
 
+.measure-from-arrow {
+  visibility: hidden;
+  left: 0.25em;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;  // Position relative to scale-table-wrapper.
+  transition: opacity 250ms ease-in;
+}
+
+.measure-from-arrow.showing {
+  visibility: visible;
+  opacity: 1;
+}
+
 .scale-in-key {
   color: $color-text-label;
 }

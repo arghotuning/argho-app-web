@@ -27,6 +27,7 @@ import {
   DisplayedIndex,
   DisplayedMidiPitch,
   MeasureFromPreset,
+  ScaleMetadataSnapshot,
   ScaleRoot,
   SimpleAccidental,
   UpperDegrees,
@@ -125,6 +126,8 @@ const enum MidiStatus {NOTE_ON, NOTE_OFF};
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScaleTableComponent extends BaseComponent {
+  readonly ARROW_CANVAS_WIDTH_PX = 24;
+
   ScaleTableCol = ScaleTableCol;
 
   // Font Awesome icons:
@@ -133,6 +136,7 @@ export class ScaleTableComponent extends BaseComponent {
 
   private readonly model: ArghoEditorModel;
 
+  scaleMetadata!: ScaleMetadataSnapshot;
   scaleRoot!: ScaleRoot;
   upperDegrees!: UpperDegrees;
 
@@ -149,6 +153,9 @@ export class ScaleTableComponent extends BaseComponent {
 
   @ViewChild('scaleTable', {read: ElementRef})
   table: ElementRef<HTMLTableElement> | undefined;
+
+  @ViewChild('measureFromArrow', {read: ElementRef})
+  measureFromArrow: ElementRef<HTMLCanvasElement> | undefined;
 
   @ViewChild('popupEditor', {read: ElementRef})
   popupEditor: ElementRef<HTMLElement> | undefined;
@@ -175,6 +182,11 @@ export class ScaleTableComponent extends BaseComponent {
     this.track(uiService.config().subscribe(uiConfig => {
       this.updateDisplayedCols_(uiConfig);
       changeDetector.markForCheck();
+    }));
+
+    this.track(this.model.scaleMetadata().subscribe(scaleMetadata => {
+      this.scaleMetadata = scaleMetadata;
+      // NOTE: No direct update required.
     }));
 
     this.track(this.model.scaleRoot().subscribe(scaleRoot => {
@@ -266,6 +278,115 @@ export class ScaleTableComponent extends BaseComponent {
         activelyPlaying: !!this.degsPlayingFromMidiInput_[upperDeg.deg.index],
       });
     }
+  }
+
+  handleRowHoverStart(e: MouseEvent) {
+    // If all scale degrees are measured from the root, no arrows.
+    if (this.scaleMetadata.measureFromPreset === MeasureFromPreset.SCALE_ROOT) {
+      return;
+    }
+
+    let rowEl = e.currentTarget as HTMLTableRowElement;
+    const degIdx = parseInt(rowEl.getAttribute('data-deg-idx') as string);
+    if (degIdx === 0) {
+      return;
+    }
+
+    const measureFromIdx = this.upperDegrees.get(degIdx).measureFrom.index;
+    const measureFromRowEl = this.rowElFromIndex_(measureFromIdx);
+    if (!measureFromRowEl) {
+      return;
+    }
+
+    this.showMeasureFromArrow_(rowEl, measureFromRowEl);
+  }
+
+  private rowElFromIndex_(idx: number): HTMLTableRowElement | null {
+    if (!this.table) {
+      return null;
+    }
+
+    const bodyEl = this.table.nativeElement.getElementsByTagName('TBODY')[0];
+    return bodyEl.children[idx] as HTMLTableRowElement;
+  }
+
+  private showMeasureFromArrow_(
+    rowEl: HTMLTableRowElement,
+    measureFromRowEl: HTMLTableRowElement,
+  ): void {
+    if (!this.measureFromArrow) {
+      return;
+    }
+
+    const rowRect = rowEl.getBoundingClientRect();
+    const measureFromRowRect = measureFromRowEl.getBoundingClientRect();
+
+    // Position canvas absolutely relative to wrapper parent element.
+    const wrapperEl = this.measureFromArrow!.nativeElement.parentElement as Element;
+    const wrapperRect = wrapperEl.getBoundingClientRect();
+
+    // Stretch from top of top row to bottom of bottom row.
+    const isDownArrow = (measureFromRowRect.y < rowRect.y);
+    const topRowRect = isDownArrow ? measureFromRowRect : rowRect;
+    const bottomRowRect = isDownArrow ? rowRect : measureFromRowRect;
+
+    const canvasEl = this.measureFromArrow.nativeElement;
+    canvasEl.style.top = (topRowRect.y - wrapperRect.y) + 'px';
+    canvasEl.height = bottomRowRect.y + bottomRowRect.height - topRowRect.y;
+
+    // Draw arrow.
+    const g = canvasEl.getContext('2d');
+    if (!g) {
+      return;
+    }
+
+    g.translate(0.5, 0.5);  // Draw on grid for crisper lines.
+
+    const arrowLeftX = Math.floor(canvasEl.width / 4) + 2;
+    const arrowTopY = Math.floor(topRowRect.height / 2);
+    const arrowBottomY = Math.floor(canvasEl.height - bottomRowRect.height / 2);
+
+    const fromY = isDownArrow ? arrowTopY : arrowBottomY;
+    const fromX = canvasEl.width - Math.floor(canvasEl.width / 4);
+
+    const toY = isDownArrow ? arrowBottomY : arrowTopY;
+    const toX = canvasEl.width - 2;
+
+    g.clearRect(0, 0, canvasEl.width, canvasEl.height);
+
+    g.strokeStyle = '#000';
+    g.fillStyle = '#000';
+    g.lineWidth = 1;
+    g.lineJoin = 'round';
+
+    // Lines from the measured from row to the hovered row.
+    g.beginPath();
+    g.moveTo(fromX, fromY);
+    g.lineTo(arrowLeftX, fromY);
+    g.lineTo(arrowLeftX, toY);
+    g.lineTo(toX, toY);
+    g.stroke();
+
+    // Circle endcap next to the measured from row.
+    g.beginPath();
+    g.arc(fromX, fromY, 3, 0, 2 * Math.PI);
+    g.closePath();
+    g.fill();
+
+    // Arrow endcap pointing to the hovered row.
+    g.beginPath();
+    g.moveTo(toX - 6, toY - 6);
+    g.lineTo(toX - 6, toY + 6);
+    g.lineTo(toX, toY);
+    g.closePath();
+    g.fill();
+
+    // Show it.
+    canvasEl.classList.add('showing');
+  }
+
+  handleRowHoverEnd(_: MouseEvent) {
+    this.measureFromArrow?.nativeElement.classList.remove('showing');
   }
 
   handleTableClick(e: MouseEvent) {
@@ -395,7 +516,7 @@ export class ScaleTableComponent extends BaseComponent {
     this.popupLabel = popupLabelForCol(this.popupEditorCol_);
     this.setPopupInputTypeAndRange_();
     this.popupInput.nativeElement.value = this.getPopupFieldValue_();
-    this.setPopupPosition_(rowEl, cellEl);
+    this.setPopupPosition_(cellEl);
 
     // Show popup editor & select field value.
     this.showPopupEditor = true;
@@ -462,7 +583,7 @@ export class ScaleTableComponent extends BaseComponent {
     }
   }
 
-  private setPopupPosition_(rowEl: Element, cellEl: Element) {
+  private setPopupPosition_(cellEl: Element) {
     const popupEl = this.popupEditor!.nativeElement;
 
     // Set size.

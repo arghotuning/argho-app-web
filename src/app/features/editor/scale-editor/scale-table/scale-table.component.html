@@ -6,6 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 <div class="scale-table-wrapper">
 
+<canvas #measureFromArrow class="measure-from-arrow" [width]="ARROW_CANVAS_WIDTH_PX" height="0"></canvas>
+
 <table #scaleTable mat-table [dataSource]="dataSource" class="scale-table mat-elevation-z2"
        (click)="handleTableClick($event)">
   <ng-container [matColumnDef]="ScaleTableCol.INPUT_KEY">
@@ -95,7 +97,9 @@ SPDX-License-Identifier: Apache-2.0
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"
       [attr.data-deg-idx]="row.deg.index"
-      [class.playing]="row.activelyPlaying"></tr>
+      [class.playing]="row.activelyPlaying"
+      (mouseenter)="handleRowHoverStart($event)"
+      (mouseleave)="handleRowHoverEnd($event)"></tr>
 </table>
 
 <mat-card #popupEditor class="scale-field-editor mat-elevation-z6"
