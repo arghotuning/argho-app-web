@@ -51,6 +51,7 @@ export class FileButtonsComponent extends BaseComponent {
   private readonly context: ArghoEditorContext;
   private readonly model: ArghoEditorModel;
 
+  private readonly loadTimeMillis: number;
   hasUnsavedChanges = false;
 
   // Font Awesome icons:
@@ -74,6 +75,7 @@ export class FileButtonsComponent extends BaseComponent {
     super();
     this.context = data.context;
     this.model = data.model;
+    this.loadTimeMillis = Date.now();
 
     // Listen for any unsaved changes.
     this.track(data.anyTuningChange().subscribe(() => this.handleTuningChange_()));
@@ -83,6 +85,13 @@ export class FileButtonsComponent extends BaseComponent {
   }
 
   private handleTuningChange_(): void {
+    // Ignore changes that happen within 2 seconds of load (so that tuning
+    // loaded via t= URL param data isn't immediately marked as having unsaved
+    // changes).
+    if (Date.now() < this.loadTimeMillis + 2000) {
+      return;
+    }
+
     this.hasUnsavedChanges = true;
     this.changeDetector.markForCheck();
   }
