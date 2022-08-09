@@ -11,6 +11,7 @@ import {EditorModule} from './features/editor/editor.module';
 import {NavModule} from './features/nav/nav.module';
 import {SimplePagesModule} from './features/simple-pages/simple-pages.module';
 import {UiInfraModule} from './infra/ui/ui.module';
+import { ScullyLibModule } from '@scullyio/ng-lib';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,6 +22,7 @@ import {UiInfraModule} from './infra/ui/ui.module';
     NavModule,
     SimplePagesModule,
     UiInfraModule,
+    ScullyLibModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
