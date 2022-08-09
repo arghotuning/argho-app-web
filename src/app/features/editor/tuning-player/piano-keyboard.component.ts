@@ -158,7 +158,7 @@ export class PianoKeyboardComponent extends BaseComponent
     }, 0);
   }
 
-  ngOnDestroy(): void {
+  override ngOnDestroy(): void {
     if (this.fullScreenHandler) {
       fscreen.removeEventListener('fullscreenchange', this.fullScreenHandler);
     }

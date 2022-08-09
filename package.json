@@ -12,14 +12,15 @@
     "url": "https://github.com/arghotuning/argho-app-web/issues"
   },
   "homepage": "https://arghotuning.org",
-  "type": "module",
   "scripts": {
     "build": "ng build",
     "e2e": "ng e2e",
     "lint": "ng lint",
     "ng": "ng",
     "start": "ng serve",
-    "test": "ng test"
+    "test": "ng test",
+    "scully": "npx scully --project argho-app-web",
+    "scully:serve": "npx scully serve --project argho-app-web"
   },
   "dependencies": {
     "@angular/animations": "^14.1.1",
@@ -40,6 +41,10 @@
     "@fortawesome/free-brands-svg-icons": "^6.0.0",
     "@fortawesome/free-regular-svg-icons": "^6.0.0",
     "@fortawesome/free-solid-svg-icons": "^6.0.0",
+    "@scullyio/init": "^2.1.36",
+    "@scullyio/ng-lib": "^2.1.0",
+    "@scullyio/scully": "^2.1.0",
+    "@scullyio/scully-plugin-puppeteer": "^2.1.0",
     "@types/webmidi": "^2.0.6",
     "fscreen": "^1.2.0",
     "immutable": "^4.0.0",

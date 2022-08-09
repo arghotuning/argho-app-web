@@ -14,14 +14,18 @@
     "moduleResolution": "Node",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
     "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "strict": true,
     "target": "ES2020"
   },
   "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
     "strictTemplates": true
   }
 }
