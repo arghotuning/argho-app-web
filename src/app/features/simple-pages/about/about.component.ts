@@ -107,6 +107,12 @@ export class AboutComponent {
       licenseType: 'MIT',
     },
     {
+      name: 'protobuf.js',
+      url: 'https://github.com/protobufjs/protobuf.js',
+      copyright: 'Copyright (c) 2016, Daniel Wirtz  All rights reserved.',
+      licenseType: 'BSD-3-Clause',
+    },
+    {
       name: '@protobufjs/base64',
       url: 'https://www.npmjs.com/package/@protobufjs/base64',
       copyright: 'Copyright (c) 2016, Daniel Wirtz  All rights reserved.',
