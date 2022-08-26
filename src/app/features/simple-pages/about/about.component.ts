@@ -50,6 +50,12 @@ export class AboutComponent {
       licenseType: 'MIT',
     },
     {
+      name: 'material-design-icons',
+      url: 'https://github.com/google/material-design-icons',
+      copyright: 'Copyright 2020 Google LLC',
+      licenseType: 'Apache-2.0',
+    },
+    {
       name: 'angular',
       url: 'https://github.com/angular/angular',
       copyright: 'Copyright (c) 2010-2022 Google LLC.',
