@@ -35,7 +35,7 @@ export class AboutComponent {
       licenseType: 'OFL-1.1-no-RFN',
     },
     {
-      name: 'Lora-Cyrillic',
+      name: 'Argho Titles (modified subset of Lora-Cyrillic font)',
       url: 'https://github.com/cyrealtype/Lora-Cyrillic',
       copyright: 'Copyright 2011 The Lora Project Authors (https://github.com/cyrealtype/Lora-Cyrillic), with Reserved Font Name "Lora".',
       licenseType: 'OFL-1.1-RFN',
@@ -77,7 +77,7 @@ export class AboutComponent {
       licenseType: 'Apache-2.0',
     },
     {
-      name: 'bravura',
+      name: 'Argho Accidentals (modified subset of Bravura Text font)',
       url: 'https://github.com/steinbergmedia/bravura',
       copyright: 'Copyright © 2019, Steinberg Media Technologies GmbH (http://www.steinberg.net/), with Reserved Font Name "Bravura".',
       licenseType: 'OFL-1.1-RFN',

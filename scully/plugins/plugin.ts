@@ -1,5 +1,8 @@
+// SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
+//
+// SPDX-License-Identifier: Apache-2.0
 
-import { registerPlugin, getPluginConfig } from '@scullyio/scully';
+import {registerPlugin} from '@scullyio/scully';
 
 export const myPlugin = 'myPlugin';
 

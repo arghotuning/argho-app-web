@@ -3,14 +3,30 @@ Upstream-Name: argho-app-web
 Upstream-Contact: Argho Tuning Project Authors
 Source: https://github.com/arghotuning/argho-app-web
 
-Files: src/assets/bravura-text-flat-sharp.woff2
+Files: src/assets/argho-accidentals.woff2
 Copyright: Copyright © 2019, Steinberg Media Technologies GmbH (http://www.steinberg.net/), with Reserved Font Name Bravura.
 License: OFL-1.1-RFN
 
+Files: src/assets/argho-titles*.woff2
+Copyright: Copyright 2011 The Lora Project Authors (https://github.com/cyrealtype/Lora-Cyrillic), with Reserved Font Name "Lora".
+License: OFL-1.1-RFN
+
+Files: src/assets/inconsolata*.woff2
+Copyright: Copyright 2006 The Inconsolata Project Authors (https://github.com/cyrealtype/Inconsolata)
+License: OFL-1.1-no-RFN
+
 Files: src/assets/logo.svg
+Copyright: 2022 Argho Tuning Project Authors
+License: Apache-2.0
+
+Files: src/assets/scully-routes.json
 Copyright: 2022 Argho Tuning Project Authors
 License: Apache-2.0
 
 Files: src/assets/vst_compatible_logo.svg
 Copyright: (c) 2021, Steinberg Media Technologies GmbH, All Rights Reserved
 License: LicenseRef-Steinberg-VST-usage-guidelines
+
+Files: src/assets/work-sans*.woff2
+Copyright: Copyright 2019 The Work Sans Project Authors (https://github.com/weiweihuanghuang/Work-Sans)
+License: OFL-1.1-no-RFN
