@@ -34,12 +34,12 @@ describe('TuningDataService', () => {
     // debounceTime(0).
     expect(changeCount).toBe(0);
 
-    // But in the next JS event loop, we should get 1 change.
+    // But shortly, we should get 1 change.
     await new Promise<void>(resolve => {
       setTimeout(() => {
         expect(changeCount).toBe(1);
         resolve();
-      }, 0);
+      }, 10);
     });
   });
 });
