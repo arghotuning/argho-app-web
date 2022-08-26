@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {Component} from '@angular/core';
-import {faExternalLinkAlt, faFileCode} from '@fortawesome/free-solid-svg-icons';
+import {
+  faCircleInfo,
+  faExternalLinkAlt,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-about',
@@ -12,8 +15,8 @@ import {faExternalLinkAlt, faFileCode} from '@fortawesome/free-solid-svg-icons';
 })
 export class AboutComponent {
   // Font Awesome icons:
+  faCircleInfo = faCircleInfo;
   faExternalLinkAlt = faExternalLinkAlt;
-  faFileCode = faFileCode;
 
   // Third party projects:
   // TODO: Generate this from ThirdPartyNotices/ folder instead of having to
@@ -48,12 +51,6 @@ export class AboutComponent {
       url: 'https://github.com/FortAwesome/angular-fontawesome',
       copyright: 'Copyright (c) 2018 Fonticons, Inc. and contributors',
       licenseType: 'MIT',
-    },
-    {
-      name: 'material-design-icons',
-      url: 'https://github.com/google/material-design-icons',
-      copyright: 'Copyright 2020 Google LLC',
-      licenseType: 'Apache-2.0',
     },
     {
       name: 'angular',

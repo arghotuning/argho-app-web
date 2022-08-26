@@ -8,6 +8,7 @@ import {
   EventEmitter,
   Output,
 } from '@angular/core';
+import {faBars} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-toolbar',
@@ -16,6 +17,9 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToolbarComponent {
+  // Icons:
+  faBars = faBars;
+
   @Output()
   menuClick = new EventEmitter<void>();
 }

@@ -45,25 +45,24 @@ the VST3 and AU formats.</p>
   <mat-list>
     <ng-container *ngFor="let project of projects">
       <mat-list-item>
-        <mat-icon mat-list-icon>code</mat-icon>
         <div mat-line><a href="{{project.url}}">{{project.name}}</a></div>
         <div mat-line>License: {{project.licenseType}}</div>
-        <div mat-line>Copyright: {{project.copyright}}</div>
+        <div mat-line title="{{project.copyright}}">Copyright: {{project.copyright}}</div>
       </mat-list-item>
       <mat-divider></mat-divider>
     </ng-container>
     <mat-list-item>
-      <mat-icon mat-list-icon>info</mat-icon>
+      <fa-icon matListIcon [icon]="faCircleInfo"></fa-icon>
       <div class="tm-info">VST is a trademark of Steinberg Media Technologies GmbH, registered in Europe and other countries.</div>
     </mat-list-item>
     <mat-divider></mat-divider>
     <mat-list-item>
-      <mat-icon mat-list-icon>info</mat-icon>
+      <fa-icon matListIcon [icon]="faCircleInfo"></fa-icon>
       <div class="tm-info">The Audio Units logo is a trademark of Apple Computer, Inc.</div>
     </mat-list-item>
     <mat-divider></mat-divider>
     <mat-list-item>
-      <mat-icon mat-list-icon>info</mat-icon>
+      <fa-icon matListIcon [icon]="faCircleInfo"></fa-icon>
       <div class="tm-info">All other trademarks are the property of their respective owners.</div>
     </mat-list-item>
   </mat-list>
