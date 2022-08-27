@@ -3,17 +3,20 @@ SPDX-License-Identifier: OFL-1.1-RFN
 
 https://github.com/steinbergmedia/bravura
 
-MODIFICATIONS (subsetting):
+MODIFICATIONS:
 
-Used FontForge to remove all characters except flat and sharp.
-- Shift+Click to select only needed characters
-- Edit > Select > Invert Selection
-- Encoding > Detach & Remove Glyphs
-- File > Generate Fonts
+Used https://github.com/google/woff2 and https://github.com/fonttools/fonttools to subset and modify
+the font name metadata.
 
-The modified font is then used by the distributed web application under the font name "Argho
-Accidentals", since the OFL-1.1-RFN license requires any modifications to be placed under a
-different font name.
+pyftsubset BravuraText.otf --unicodes=266D,266F --output-file=argho-accidentals-orig.otf
+ttx -o argho-accidentals.ttx argho-accidentals-orig.otf
+# Edit argho-accidentals.ttx with a text editor to replace instances of reserved font name
+# Bravura (while retaining it in notices of copyright, trademark, and license), since the
+# OFL-1.1-RFN license requires any modifications (including subsetting) to be placed under a
+# different font name.
+ttx argho-accidentals.ttx
+woff2_compress argho-accidentals.otf
+# Copy resultant argho-accidentals.woff2 to this project's src/assets/ folder.
 
 ================================================================================
 
