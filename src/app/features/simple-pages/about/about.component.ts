@@ -89,12 +89,6 @@ export class AboutComponent {
       licenseType: 'MIT',
     },
     {
-      name: 'google-protobuf',
-      url: 'https://www.npmjs.com/package/google-protobuf',
-      copyright: 'Copyright 2008 Google Inc.  All rights reserved.',
-      licenseType: 'BSD-3-Clause',
-    },
-    {
       name: 'immutable-js',
       url: 'https://github.com/immutable-js/immutable-js',
       copyright: 'Copyright (c) 2014-present, Lee Byron and other contributors.',
@@ -140,12 +134,6 @@ export class AboutComponent {
       name: '@types/fscreen',
       url: 'https://www.npmjs.com/package/@types/fscreen',
       copyright: 'Joscha Feth <https://github.com/joscha>, Terry Mun <https://github.com/terrymun>',
-      licenseType: 'MIT',
-    },
-    {
-      name: '@types/google-protobuf',
-      url: 'https://www.npmjs.com/package/@types/google-protobuf',
-      copyright: 'Marcus Longmuir <https://github.com/marcuslongmuir>, Chaitanya Kamatham <https://github.com/kamthamc>',
       licenseType: 'MIT',
     },
     {
