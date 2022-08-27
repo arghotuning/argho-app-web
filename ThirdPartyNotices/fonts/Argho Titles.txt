@@ -3,13 +3,27 @@ SPDX-License-Identifier: OFL-1.1-RFN
 
 https://github.com/cyrealtype/Lora-Cyrillic
 
-MODIFICATIONS (subsetting):
+MODIFICATIONS:
 
 Subsets of characters in woff2 format are self-hosted, sourced via https://fonts.google.com/.
 
-The modified font is then used by the distributed web application under the font name "Argho
-Titles", since the OFL-1.1-RFN license requires any modifications to be placed under a different
-font name.
+Used https://github.com/google/woff2 and https://github.com/fonttools/fonttools to modify the font
+name metadata.
+
+# For each <subset>: cyrillic-ext, cyrillic, latin-ext, latin, vietnamese:
+
+# Download woff2 sources as lora-<subset>.woff2	as referenced by this Google Fonts CSS stylesheet:
+# https://fonts.googleapis.com/css2?family=Lora:wght@500&display=swap
+
+woff2_decompress lora-<subset>.woff2
+ttx -o argho-titles-<subset>.ttx lora-<subset>.ttf
+# Edit argho-titles-<subset> with a text editor to replace instances of reserved font name
+# Lora (while retaining it in notices of copyright, trademark, and license), since the
+# OFL-1.1-RFN license requires any modifications (including subsetting) to be placed under a
+# different font name.
+ttx argho-titles-<subset>.ttx
+woff2_compress argho-titles-<subset>.ttf
+# Copy resultant argho-titles-<subset>.woff2 to this project's src/assets/ folder.
 
 ================================================================================
 
