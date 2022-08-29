@@ -20,8 +20,31 @@ jobs:
         with:
           node-version: ">=16.10.0"
       
-      - name: Scully build and GitHub Pages deploy
-        uses: cmgriffing/scully-gh-pages-action@7b77d24497dacdcf03e3f7fcf3efe6e5e0893cac
+      - name: Angular Build
+        run: npm run build
+      
+      - name: Scully Build
+        run: npm run scully
+      
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v1.0.3
         with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-          deploy-branch: main
+          path: dist/static
+
+  deploy:
+    needs: build
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy GitHub Pages site
+        id: deployment
+        uses: actions/deploy-pages@v1.0.10
