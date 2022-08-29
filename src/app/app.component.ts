@@ -12,5 +12,4 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 })
 export class AppComponent {
   title = 'argho-app-web';
-  comingSoon = false;  // TODO: Remove this & ComingSoon placeholder.
 }
