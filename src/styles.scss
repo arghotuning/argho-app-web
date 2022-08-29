@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-@import '_colors';
-@import '_fonts';
-
 /* Apply border-box box model sizing; inherit to allow overridding. */
 :root { box-sizing: border-box; }
 *, ::before, ::after { box-sizing: inherit; }
@@ -14,51 +11,10 @@
 html, body { height: 100%; }
 
 body {
-  background-color: $color-bg;
-  color: $color-text;
-  font-family: $font-body;
   line-height: 1.4;
   margin: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: $font-title;
-  font-weight: $font-title-weight;
   margin: 0;
-}
-
-a:link {
-  color: $color-link;
-  text-decoration: none;
-}
-
-a:visited {
-  color: $color-link-visited;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-a:active {
-  color: $color-link-active;
-}
-
-a.mat-button,
-a.mat-raised-button {
-  text-decoration: none;
-}
-
-strong {
-  font-weight: $font-body-med-weight;
-}
-
-.warning-snackbar {
-  background-color: $color-warning;
-  color: $color-text;
-}
-
-.success-snackbar {
-  background-color: $color-success;
-  color: $color-text;
 }

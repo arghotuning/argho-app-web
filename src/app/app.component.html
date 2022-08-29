@@ -4,21 +4,8 @@ SPDX-FileCopyrightText: 2022 Argho Tuning Project Authors
 SPDX-License-Identifier: Apache-2.0
 -->
 
-<div [style.display]="comingSoon ? 'none': 'flex'" class="page-shell">
-  <app-toolbar (menuClick)="sidenav.toggle()"></app-toolbar>
-  <mat-sidenav-container class="page-main">
-    <mat-sidenav #sidenav>
-      <app-sidenav></app-sidenav>
-    </mat-sidenav>
-
-    <mat-sidenav-content>
-      <div class="page-content">
-        <router-outlet></router-outlet>
-      </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-</div>
-
-<div [style.display]="comingSoon ? 'block': 'none'" class="coming-soon-shell">
-  <app-coming-soon></app-coming-soon>
+<div class="page-shell">
+  <div class="page-content">
+    <router-outlet></router-outlet>
+  </div>
 </div>
