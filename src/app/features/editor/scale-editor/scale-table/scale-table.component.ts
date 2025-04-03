@@ -2,16 +2,16 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {MidiService} from 'src/app/infra/synth/midi.service';
-import {StoppableNote, SynthService} from 'src/app/infra/synth/synth.service';
-import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
-import {BaseComponent} from 'src/app/infra/ui/base/base.component';
-import {toFixedClean} from 'src/app/infra/ui/numeric/numeric-util';
+import { MidiService } from 'src/app/infra/synth/midi.service';
+import { StoppableNote, SynthService } from 'src/app/infra/synth/synth.service';
+import { TuningDataService } from 'src/app/infra/tuning-data/tuning-data.service';
+import { BaseComponent } from 'src/app/infra/ui/base/base.component';
+import { toFixedClean } from 'src/app/infra/ui/numeric/numeric-util';
 import {
   ScaleTableColGroup,
   ScaleTableUiConfig,
 } from 'src/app/infra/ui/scale-table/scale-table-ui-config';
-import {ScaleTableService} from 'src/app/infra/ui/scale-table/scale-table.service';
+import { ScaleTableService } from 'src/app/infra/ui/scale-table/scale-table.service';
 
 import {
   ChangeDetectionStrategy,
@@ -21,7 +21,7 @@ import {
   HostListener,
   ViewChild,
 } from '@angular/core';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ArghoEditorModel,
   DisplayedIndex,
@@ -40,14 +40,14 @@ import {
   TunedInterval,
   TunedIntervalSpecType,
 } from '@arghotuning/arghotun';
-import {faAngleDown, faPlayCircle} from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faPlayCircle } from '@fortawesome/free-solid-svg-icons';
 
 function toRatioString(tunedInterval: TunedInterval): string {
   const num = tunedInterval.getRatioNumerator();
   const den = tunedInterval.getRatioDenominator();
 
   const numStr = Number.isInteger(num) ? num.toString() : toFixedClean(num, 4);
-  return `${numStr}\xa0/\xa0${den}`;  // '\xa0' is &nbsp; non-breaking space.
+  return `${numStr}\xa0/\xa0${den}`; // '\xa0' is &nbsp; non-breaking space.
 }
 
 function toCentsString(cents: Cents): string {
@@ -81,11 +81,16 @@ function colForCell(cellEl: Element): ScaleTableCol {
 
 function popupLabelForCol(col: ScaleTableCol): string {
   switch (col) {
-    case ScaleTableCol.MEASURE_FROM: return 'Meas. From';
-    case ScaleTableCol.RATIO: return 'Ratio';
-    case ScaleTableCol.CENTS: return 'Cents';
-    case ScaleTableCol.FREQ: return 'Freq (Hz)';
-    default: return '';
+    case ScaleTableCol.MEASURE_FROM:
+      return 'Meas. From';
+    case ScaleTableCol.RATIO:
+      return 'Ratio';
+    case ScaleTableCol.CENTS:
+      return 'Cents';
+    case ScaleTableCol.FREQ:
+      return 'Freq (Hz)';
+    default:
+      return '';
   }
 }
 
@@ -104,7 +109,10 @@ export interface TuningTableRow {
 }
 
 /** Type of action to take when popup editor is dismissed. */
-const enum PopupEditorAction {DISCARD, TRY_COMMIT}
+const enum PopupEditorAction {
+  DISCARD,
+  TRY_COMMIT,
+}
 
 const POPUP_MIN_WIDTH_PX = 80;
 const POPUP_OFFSET_PX = 2;
@@ -117,7 +125,10 @@ interface PlayingNote {
   startTimeMs: number;
 }
 
-const enum MidiStatus {NOTE_ON, NOTE_OFF};
+const enum MidiStatus {
+  NOTE_ON,
+  NOTE_OFF,
+}
 
 @Component({
   selector: 'app-scale-table',
@@ -143,24 +154,25 @@ export class ScaleTableComponent extends BaseComponent {
   displayedColumns: ScaleTableCol[] = [];
   dataSource: TuningTableRow[] = [];
 
-  private readonly clickedNotes_: {[degIndex: number]: PlayingNote | null} = {};
-  private degsPlayingFromMidiInput_: {[degIndex: number]: number[]} = {};
+  private readonly clickedNotes_: { [degIndex: number]: PlayingNote | null } =
+    {};
+  private degsPlayingFromMidiInput_: { [degIndex: number]: number[] } = {};
 
   showPopupEditor = false;
   popupLabel = '';
   private popupEditorCol_: ScaleTableCol | null = null;
   private popupEditorScaleDegreeIndex_: number | null = null;
 
-  @ViewChild('scaleTable', {read: ElementRef})
+  @ViewChild('scaleTable', { read: ElementRef })
   table: ElementRef<HTMLTableElement> | undefined;
 
-  @ViewChild('measureFromArrow', {read: ElementRef})
+  @ViewChild('measureFromArrow', { read: ElementRef })
   measureFromArrow: ElementRef<HTMLCanvasElement> | undefined;
 
-  @ViewChild('popupEditor', {read: ElementRef})
+  @ViewChild('popupEditor', { read: ElementRef })
   popupEditor: ElementRef<HTMLElement> | undefined;
 
-  @ViewChild('popupField', {read: ElementRef})
+  @ViewChild('popupField', { read: ElementRef })
   popupField: ElementRef<HTMLElement> | undefined;
 
   @ViewChild('popupInput')
@@ -172,52 +184,64 @@ export class ScaleTableComponent extends BaseComponent {
     midi: MidiService,
     private readonly synth: SynthService,
     changeDetector: ChangeDetectorRef,
-    private readonly snackBar: MatSnackBar,
+    private readonly snackBar: MatSnackBar
   ) {
     super();
     this.model = data.model;
 
     // Note: All these subscriptions are called back synchronously the first time.
 
-    this.track(uiService.config().subscribe(uiConfig => {
-      this.updateDisplayedCols_(uiConfig);
-      changeDetector.markForCheck();
-    }));
+    this.track(
+      uiService.config().subscribe((uiConfig) => {
+        this.updateDisplayedCols_(uiConfig);
+        changeDetector.markForCheck();
+      })
+    );
 
-    this.track(this.model.scaleMetadata().subscribe(scaleMetadata => {
-      this.scaleMetadata = scaleMetadata;
-      // NOTE: No direct update required.
-    }));
+    this.track(
+      this.model.scaleMetadata().subscribe((scaleMetadata) => {
+        this.scaleMetadata = scaleMetadata;
+        // NOTE: No direct update required.
+      })
+    );
 
-    this.track(this.model.scaleRoot().subscribe(scaleRoot => {
-      this.scaleRoot = scaleRoot;
-      this.updateTableData_();
-      changeDetector.markForCheck();
-    }));
+    this.track(
+      this.model.scaleRoot().subscribe((scaleRoot) => {
+        this.scaleRoot = scaleRoot;
+        this.updateTableData_();
+        changeDetector.markForCheck();
+      })
+    );
 
-    this.track(this.model.upperDegrees().subscribe(upperDegrees => {
-      this.upperDegrees = upperDegrees;
-      this.updateTableData_();
-      changeDetector.markForCheck();
-    }));
+    this.track(
+      this.model.upperDegrees().subscribe((upperDegrees) => {
+        this.upperDegrees = upperDegrees;
+        this.updateTableData_();
+        changeDetector.markForCheck();
+      })
+    );
 
-    this.model.mappedKeys().subscribe(_ => {
-      this.degsPlayingFromMidiInput_ = {};  // Reset.
+    this.model.mappedKeys().subscribe((_) => {
+      this.degsPlayingFromMidiInput_ = {}; // Reset.
       this.updateTableData_();
       changeDetector.markForCheck();
     });
 
-    this.track(midi.noteOns().subscribe(pitch => {
-      this.handleMidiInput_(pitch, MidiStatus.NOTE_ON);
-      this.updateTableData_();
-      changeDetector.markForCheck();
-    }));
+    this.track(
+      midi.noteOns().subscribe((pitch) => {
+        this.handleMidiInput_(pitch, MidiStatus.NOTE_ON);
+        this.updateTableData_();
+        changeDetector.markForCheck();
+      })
+    );
 
-    this.track(midi.noteOffs().subscribe(pitch => {
-      this.handleMidiInput_(pitch, MidiStatus.NOTE_OFF);
-      this.updateTableData_();
-      changeDetector.markForCheck();
-    }));
+    this.track(
+      midi.noteOffs().subscribe((pitch) => {
+        this.handleMidiInput_(pitch, MidiStatus.NOTE_OFF);
+        this.updateTableData_();
+        changeDetector.markForCheck();
+      })
+    );
   }
 
   private updateDisplayedCols_(uiConfig: ScaleTableUiConfig) {
@@ -254,7 +278,8 @@ export class ScaleTableComponent extends BaseComponent {
     this.dataSource.push({
       editable: false,
       firstMappedPitch: this.scaleRoot.firstMappedPitch,
-      blackKey: this.scaleRoot.firstMappedPitch.accidental !== SimpleAccidental.NATURAL,
+      blackKey:
+        this.scaleRoot.firstMappedPitch.accidental !== SimpleAccidental.NATURAL,
       deg: new DisplayedIndex(0),
       freqHz: toFreqString(this.scaleRoot.rootFreqHz),
       ref12tetPitch: this.scaleRoot.nearestMidiPitch,
@@ -267,7 +292,9 @@ export class ScaleTableComponent extends BaseComponent {
       this.dataSource.push({
         editable: true,
         firstMappedPitch: upperDeg.firstMappedPitch,
-        blackKey: (upperDeg.firstMappedPitch?.accidental || '') !== SimpleAccidental.NATURAL,
+        blackKey:
+          (upperDeg.firstMappedPitch?.accidental || '') !==
+          SimpleAccidental.NATURAL,
         deg: upperDeg.deg,
         measureFrom: upperDeg.measureFrom,
         ratio: toRatioString(upperDeg.tunedInterval),
@@ -312,7 +339,7 @@ export class ScaleTableComponent extends BaseComponent {
 
   private showMeasureFromArrow_(
     rowEl: HTMLTableRowElement,
-    measureFromRowEl: HTMLTableRowElement,
+    measureFromRowEl: HTMLTableRowElement
   ): void {
     if (!this.measureFromArrow) {
       return;
@@ -322,16 +349,17 @@ export class ScaleTableComponent extends BaseComponent {
     const measureFromRowRect = measureFromRowEl.getBoundingClientRect();
 
     // Position canvas absolutely relative to wrapper parent element.
-    const wrapperEl = this.measureFromArrow!.nativeElement.parentElement as Element;
+    const wrapperEl = this.measureFromArrow!.nativeElement
+      .parentElement as Element;
     const wrapperRect = wrapperEl.getBoundingClientRect();
 
     // Stretch from top of top row to bottom of bottom row.
-    const isDownArrow = (measureFromRowRect.y < rowRect.y);
+    const isDownArrow = measureFromRowRect.y < rowRect.y;
     const topRowRect = isDownArrow ? measureFromRowRect : rowRect;
     const bottomRowRect = isDownArrow ? rowRect : measureFromRowRect;
 
     const canvasEl = this.measureFromArrow.nativeElement;
-    canvasEl.style.top = (topRowRect.y - wrapperRect.y) + 'px';
+    canvasEl.style.top = topRowRect.y - wrapperRect.y + 'px';
     canvasEl.height = bottomRowRect.y + bottomRowRect.height - topRowRect.y;
 
     // Draw arrow.
@@ -340,7 +368,7 @@ export class ScaleTableComponent extends BaseComponent {
       return;
     }
 
-    g.translate(0.5, 0.5);  // Draw on grid for crisper lines.
+    g.translate(0.5, 0.5); // Draw on grid for crisper lines.
 
     const arrowLeftX = Math.floor(canvasEl.width / 4) + 2;
     const arrowTopY = Math.floor(topRowRect.height / 2);
@@ -422,7 +450,7 @@ export class ScaleTableComponent extends BaseComponent {
     // Try to update the edited field.
     const valueStr = this.popupInput!.nativeElement.value;
     if (valueStr.trim() === this.getPopupFieldValue_().trim()) {
-      return;  // Unchanged.
+      return; // Unchanged.
     }
 
     const degIndex = this.popupEditorScaleDegreeIndex_!;
@@ -432,8 +460,12 @@ export class ScaleTableComponent extends BaseComponent {
       case ScaleTableCol.MEASURE_FROM:
         const measureFromResult = inputParser.parseMeasureFrom(valueStr);
         if (measureFromResult.hasValidValue()) {
-          await this.model.edit().setUpperDegreeMeasureFrom(
-              degIndex, measureFromResult.getValue().index);
+          await this.model
+            .edit()
+            .setUpperDegreeMeasureFrom(
+              degIndex,
+              measureFromResult.getValue().index
+            );
         }
         if (measureFromResult.hasCorrectionWarning()) {
           correctionWarning = measureFromResult.getCorrectionWarning();
@@ -444,8 +476,13 @@ export class ScaleTableComponent extends BaseComponent {
         const ratioResult = inputParser.parseRatio(valueStr);
         if (ratioResult.hasValidValue()) {
           const ratio = ratioResult.getValue();
-          await this.model.edit().setUpperDegreeRatio(
-              degIndex, ratio.getRatioNumerator(), ratio.getRatioDenominator());
+          await this.model
+            .edit()
+            .setUpperDegreeRatio(
+              degIndex,
+              ratio.getRatioNumerator(),
+              ratio.getRatioDenominator()
+            );
         }
         if (ratioResult.hasCorrectionWarning()) {
           correctionWarning = ratioResult.getCorrectionWarning();
@@ -456,7 +493,9 @@ export class ScaleTableComponent extends BaseComponent {
         const centsResult = inputParser.parseCents(valueStr);
         if (centsResult.hasValidValue()) {
           const cents = centsResult.getValue();
-          await this.model.edit().setUpperDegreeCents(degIndex, cents.getCents());
+          await this.model
+            .edit()
+            .setUpperDegreeCents(degIndex, cents.getCents());
         }
         if (centsResult.hasCorrectionWarning()) {
           correctionWarning = centsResult.getCorrectionWarning();
@@ -468,10 +507,17 @@ export class ScaleTableComponent extends BaseComponent {
         if (freqResult.hasValidValue()) {
           const freqInterval = freqResult.getValue();
           if (freqInterval.getSpecType() === TunedIntervalSpecType.CENTS) {
-            await this.model.edit().setUpperDegreeCents(degIndex, freqInterval.getCents());
+            await this.model
+              .edit()
+              .setUpperDegreeCents(degIndex, freqInterval.getCents());
           } else {
-            await this.model.edit().setUpperDegreeRatio(
-              degIndex, freqInterval.getRatioNumerator(), freqInterval.getRatioDenominator());
+            await this.model
+              .edit()
+              .setUpperDegreeRatio(
+                degIndex,
+                freqInterval.getRatioNumerator(),
+                freqInterval.getRatioDenominator()
+              );
           }
         }
         if (freqResult.hasCorrectionWarning()) {
@@ -481,11 +527,17 @@ export class ScaleTableComponent extends BaseComponent {
 
       case ScaleTableCol.CENTS_FROM_12TET:
         const refMidiPitch = this.upperDegrees.get(degIndex).refMidiPitch;
-        const centsFrom12tetResult =
-            inputParser.parseCentsFrom12tet(refMidiPitch.midiPitch, valueStr);
+        const centsFrom12tetResult = inputParser.parseCentsFrom12tet(
+          refMidiPitch.midiPitch,
+          valueStr
+        );
         if (centsFrom12tetResult.hasValidValue()) {
-          await this.model.edit().setUpperDegreeCents(
-              degIndex, centsFrom12tetResult.getValue().getCents());
+          await this.model
+            .edit()
+            .setUpperDegreeCents(
+              degIndex,
+              centsFrom12tetResult.getValue().getCents()
+            );
         }
         if (centsFrom12tetResult.hasCorrectionWarning()) {
           correctionWarning = centsFrom12tetResult.getCorrectionWarning();
@@ -508,8 +560,9 @@ export class ScaleTableComponent extends BaseComponent {
     }
 
     const rowEl = cellEl.parentElement as Element;
-    this.popupEditorScaleDegreeIndex_ =
-        parseInt(rowEl.getAttribute('data-deg-idx') as string);
+    this.popupEditorScaleDegreeIndex_ = parseInt(
+      rowEl.getAttribute('data-deg-idx') as string
+    );
     this.popupEditorCol_ = colForCell(cellEl);
 
     // Customize value, appearance, and input behavior.
@@ -555,8 +608,8 @@ export class ScaleTableComponent extends BaseComponent {
 
     switch (this.popupEditorCol_) {
       case ScaleTableCol.MEASURE_FROM:
-        minValue = 1;  // Display number of root.
-        maxValue = this.upperDegrees.numUpperDegrees + 1;  // Display number of top degree.
+        minValue = 1; // Display number of root.
+        maxValue = this.upperDegrees.numUpperDegrees + 1; // Display number of top degree.
         break;
 
       case ScaleTableCol.CENTS:
@@ -599,22 +652,36 @@ export class ScaleTableComponent extends BaseComponent {
 
     const fitsLeftAligned = cellRect.left + widthPx < tableRect.right;
     if (fitsLeftAligned) {
-      popupEl.style.left = (cellRect.left - (wrapperRect.left - wrapperEl.scrollLeft) - POPUP_OFFSET_PX) + 'px';
+      popupEl.style.left =
+        cellRect.left -
+        (wrapperRect.left - wrapperEl.scrollLeft) -
+        POPUP_OFFSET_PX +
+        'px';
       popupEl.style.right = 'initial';
     } else {
       popupEl.style.left = 'initial';
-      popupEl.style.right = ((wrapperRect.right - wrapperEl.scrollLeft) - cellRect.right + POPUP_OFFSET_PX) + 'px';
+      popupEl.style.right =
+        wrapperRect.right -
+        wrapperEl.scrollLeft -
+        cellRect.right +
+        POPUP_OFFSET_PX +
+        'px';
     }
 
-    const popupHeight = Math.max(popupEl.getBoundingClientRect().height, 1.2 * cellRect.height);
+    const popupHeight = Math.max(
+      popupEl.getBoundingClientRect().height,
+      1.2 * cellRect.height
+    );
 
     const fitsTopAligned = cellRect.top + popupHeight < tableRect.bottom;
     if (fitsTopAligned) {
-      popupEl.style.top = (cellRect.top - wrapperRect.top - POPUP_OFFSET_PX) + 'px';
+      popupEl.style.top =
+        cellRect.top - wrapperRect.top - POPUP_OFFSET_PX + 'px';
       popupEl.style.bottom = 'initial';
     } else {
       popupEl.style.top = 'initial';
-      popupEl.style.bottom = (wrapperRect.bottom - cellRect.bottom + POPUP_OFFSET_PX) + 'px';
+      popupEl.style.bottom =
+        wrapperRect.bottom - cellRect.bottom + POPUP_OFFSET_PX + 'px';
     }
   }
 
@@ -651,16 +718,21 @@ export class ScaleTableComponent extends BaseComponent {
   }
 
   async setMeasureFromDegBelow(): Promise<void> {
-    await this.model.edit().setMeasureFromPreset(MeasureFromPreset.DEGREE_BELOW);
+    await this.model
+      .edit()
+      .setMeasureFromPreset(MeasureFromPreset.DEGREE_BELOW);
   }
 
-  playDegree(degIndex: number): void {
+  async playDegree(degIndex: number): Promise<void> {
     this.stopDegree(degIndex);
 
-    const freqHz = (degIndex === 0) ?
-        this.scaleRoot.rootFreqHz : this.upperDegrees.get(degIndex).freqHz;
+    const freqHz =
+      degIndex === 0
+        ? this.scaleRoot.rootFreqHz
+        : this.upperDegrees.get(degIndex).freqHz;
+    const note = await this.synth.playNoteOn(freqHz);
     this.clickedNotes_[degIndex] = {
-      note: this.synth.playNoteOn(freqHz),
+      note,
       startTimeMs: Date.now(),
     };
   }
@@ -678,7 +750,7 @@ export class ScaleTableComponent extends BaseComponent {
         // Stop after note reaches minimum duration.
         setTimeout(() => playingNote.note.stop(), remainingMs);
       } else {
-        playingNote.note.stop();  // Stop immediately.
+        playingNote.note.stop(); // Stop immediately.
       }
     }
   }
@@ -693,11 +765,11 @@ export class ScaleTableComponent extends BaseComponent {
     const activePitches = this.degsPlayingFromMidiInput_[deg] || [];
     const pos = activePitches.indexOf(pitch);
 
-    if ((status === MidiStatus.NOTE_ON) && (pos === -1)) {
+    if (status === MidiStatus.NOTE_ON && pos === -1) {
       // Note on that wasn't actively playing.
       activePitches.push(pitch);
       this.degsPlayingFromMidiInput_[deg] = activePitches;
-    } else if ((status === MidiStatus.NOTE_OFF) && (pos >= 0)) {
+    } else if (status === MidiStatus.NOTE_OFF && pos >= 0) {
       // Note off that was actively playing.
       activePitches.splice(pos, 1);
       if (activePitches.length === 0) {

@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-import {StoppableNote, SynthService} from 'src/app/infra/synth/synth.service';
-import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
-import {BaseComponent} from 'src/app/infra/ui/base/base.component';
+import { StoppableNote, SynthService } from 'src/app/infra/synth/synth.service';
+import { TuningDataService } from 'src/app/infra/tuning-data/tuning-data.service';
+import { BaseComponent } from 'src/app/infra/ui/base/base.component';
 
 import {
   ChangeDetectionStrategy,
@@ -14,7 +14,7 @@ import {
   HostListener,
   ViewChild,
 } from '@angular/core';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   ArghoEditorModel,
   DisplayedIndex,
@@ -24,14 +24,14 @@ import {
   SimpleAccidental,
   UpperDegrees,
 } from '@arghotuning/argho-editor';
-import {faPlayCircle} from '@fortawesome/free-solid-svg-icons';
+import { faPlayCircle } from '@fortawesome/free-solid-svg-icons';
 
 export interface MappingTableRow {
   editable: boolean;
-  key: DisplayedIndex,
-  pitch?: DisplayedMidiPitch | null,
-  blackKey: boolean,
-  mappedDeg: DisplayedIndex | null,
+  key: DisplayedIndex;
+  pitch?: DisplayedMidiPitch | null;
+  blackKey: boolean;
+  mappedDeg: DisplayedIndex | null;
 }
 
 // NOTE: These must match up with .mat-column-* suffixes in CSS.
@@ -42,7 +42,10 @@ enum MappingTableCol {
 }
 
 /** Type of action to take when popup editor is dismissed. */
-const enum PopupEditorAction {DISCARD, TRY_COMMIT}
+const enum PopupEditorAction {
+  DISCARD,
+  TRY_COMMIT,
+}
 
 const POPUP_MIN_WIDTH_PX = 80;
 const POPUP_OFFSET_PX = 2;
@@ -81,18 +84,19 @@ export class MappingTableComponent extends BaseComponent {
 
   dataSource: MappingTableRow[] = [];
 
-  private readonly playingNotes_: {[degIndex: number]: PlayingNote | null} = {};
+  private readonly playingNotes_: { [degIndex: number]: PlayingNote | null } =
+    {};
 
   showPopupEditor = false;
   private popupEditorKeyIndex_: number | null = null;
 
-  @ViewChild('mappingTable', {read: ElementRef})
+  @ViewChild('mappingTable', { read: ElementRef })
   table: ElementRef<HTMLTableElement> | undefined;
 
-  @ViewChild('popupEditor', {read: ElementRef})
+  @ViewChild('popupEditor', { read: ElementRef })
   popupEditor: ElementRef<HTMLElement> | undefined;
 
-  @ViewChild('popupField', {read: ElementRef})
+  @ViewChild('popupField', { read: ElementRef })
   popupField: ElementRef<HTMLElement> | undefined;
 
   @ViewChild('popupInput')
@@ -102,38 +106,45 @@ export class MappingTableComponent extends BaseComponent {
     data: TuningDataService,
     private readonly synth: SynthService,
     changeDetector: ChangeDetectorRef,
-    private readonly snackBar: MatSnackBar,
+    private readonly snackBar: MatSnackBar
   ) {
     super();
     this.model = data.model;
 
     // Note: Subscriptions are called back synchronously the first time.
-    this.track(this.model.mappedKeys().subscribe(mappedKeys => {
-      this.mappedKeys = mappedKeys;
-      this.updateTableData_();
-      changeDetector.markForCheck();
-    }));
+    this.track(
+      this.model.mappedKeys().subscribe((mappedKeys) => {
+        this.mappedKeys = mappedKeys;
+        this.updateTableData_();
+        changeDetector.markForCheck();
+      })
+    );
 
-    this.track(this.model.scaleRoot().subscribe(scaleRoot => {
-      this.scaleRoot = scaleRoot;
-      // Doesn't affect mapping table data, only playback...
-      changeDetector.markForCheck();
-    }));
+    this.track(
+      this.model.scaleRoot().subscribe((scaleRoot) => {
+        this.scaleRoot = scaleRoot;
+        // Doesn't affect mapping table data, only playback...
+        changeDetector.markForCheck();
+      })
+    );
 
-    this.track(this.model.upperDegrees().subscribe(upperDegrees => {
-      this.upperDegrees = upperDegrees;
-      // Doesn't affect mapping table data, only playback...
-      changeDetector.markForCheck();
-    }));
+    this.track(
+      this.model.upperDegrees().subscribe((upperDegrees) => {
+        this.upperDegrees = upperDegrees;
+        // Doesn't affect mapping table data, only playback...
+        changeDetector.markForCheck();
+      })
+    );
   }
 
   private updateTableData_() {
-    this.dataSource = this.mappedKeys.getAll().map(mappedKey => {
+    this.dataSource = this.mappedKeys.getAll().map((mappedKey) => {
       return {
         editable: mappedKey.key.index !== 0,
         key: mappedKey.key,
         pitch: mappedKey.inputPitch,
-        blackKey: (mappedKey.inputPitch?.accidental || '') !== SimpleAccidental.NATURAL,
+        blackKey:
+          (mappedKey.inputPitch?.accidental || '') !== SimpleAccidental.NATURAL,
         mappedDeg: mappedKey.mappedDegree,
       };
     });
@@ -172,7 +183,7 @@ export class MappingTableComponent extends BaseComponent {
     // Try to update the scale degree field.
     const valueStr = this.popupInput!.nativeElement.value;
     if (valueStr.trim() === this.getPopupFieldValue_().trim()) {
-      return;  // Unchanged.
+      return; // Unchanged.
     }
 
     const keyIndex = this.popupEditorKeyIndex_!;
@@ -181,8 +192,9 @@ export class MappingTableComponent extends BaseComponent {
     const parseResult = inputParser.parseScaleDegree(valueStr);
     if (parseResult.hasValidValue()) {
       const degOrNull = parseResult.getValue().degreeOrNull;
-      await this.model.editAdvanced().setMappedScaleDegree(
-        keyIndex, degOrNull ? degOrNull!.index : null);
+      await this.model
+        .editAdvanced()
+        .setMappedScaleDegree(keyIndex, degOrNull ? degOrNull!.index : null);
     }
 
     if (parseResult.hasCorrectionWarning()) {
@@ -200,8 +212,9 @@ export class MappingTableComponent extends BaseComponent {
     }
 
     const rowEl = cellEl.parentElement as Element;
-    this.popupEditorKeyIndex_ =
-      parseInt(rowEl.getAttribute('data-key-idx') as string);
+    this.popupEditorKeyIndex_ = parseInt(
+      rowEl.getAttribute('data-key-idx') as string
+    );
     this.popupInput.nativeElement.value = this.getPopupFieldValue_();
     this.setPopupPosition_(rowEl, cellEl);
 
@@ -233,22 +246,36 @@ export class MappingTableComponent extends BaseComponent {
 
     const fitsLeftAligned = cellRect.left + widthPx < tableRect.right;
     if (fitsLeftAligned) {
-      popupEl.style.left = (cellRect.left - (wrapperRect.left - wrapperEl.scrollLeft) - POPUP_OFFSET_PX) + 'px';
+      popupEl.style.left =
+        cellRect.left -
+        (wrapperRect.left - wrapperEl.scrollLeft) -
+        POPUP_OFFSET_PX +
+        'px';
       popupEl.style.right = 'initial';
     } else {
       popupEl.style.left = 'initial';
-      popupEl.style.right = ((wrapperRect.right - wrapperEl.scrollLeft) - cellRect.right + POPUP_OFFSET_PX) + 'px';
+      popupEl.style.right =
+        wrapperRect.right -
+        wrapperEl.scrollLeft -
+        cellRect.right +
+        POPUP_OFFSET_PX +
+        'px';
     }
 
-    const popupHeight = Math.max(popupEl.getBoundingClientRect().height, 1.2 * cellRect.height);
+    const popupHeight = Math.max(
+      popupEl.getBoundingClientRect().height,
+      1.2 * cellRect.height
+    );
 
     const fitsTopAligned = cellRect.top + popupHeight < tableRect.bottom;
     if (fitsTopAligned) {
-      popupEl.style.top = (cellRect.top - wrapperRect.top - POPUP_OFFSET_PX) + 'px';
+      popupEl.style.top =
+        cellRect.top - wrapperRect.top - POPUP_OFFSET_PX + 'px';
       popupEl.style.bottom = 'initial';
     } else {
       popupEl.style.top = 'initial';
-      popupEl.style.bottom = (wrapperRect.bottom - cellRect.bottom + POPUP_OFFSET_PX) + 'px';
+      popupEl.style.bottom =
+        wrapperRect.bottom - cellRect.bottom + POPUP_OFFSET_PX + 'px';
     }
   }
 
@@ -280,13 +307,17 @@ export class MappingTableComponent extends BaseComponent {
     }
   }
 
-  playDegree(degIndex: number): void {
+  async playDegree(degIndex: number): Promise<void> {
     this.stopDegree(degIndex);
 
-    const freqHz = (degIndex === 0) ?
-      this.scaleRoot.rootFreqHz : this.upperDegrees.get(degIndex).freqHz;
+    const freqHz =
+      degIndex === 0
+        ? this.scaleRoot.rootFreqHz
+        : this.upperDegrees.get(degIndex).freqHz;
+
+    const note = await this.synth.playNoteOn(freqHz);
     this.playingNotes_[degIndex] = {
-      note: this.synth.playNoteOn(freqHz),
+      note,
       startTimeMs: Date.now(),
     };
   }
@@ -304,7 +335,7 @@ export class MappingTableComponent extends BaseComponent {
         // Stop after note reaches minimum duration.
         setTimeout(() => playingNote.note.stop(), remainingMs);
       } else {
-        playingNote.note.stop();  // Stop immediately.
+        playingNote.note.stop(); // Stop immediately.
       }
     }
   }

@@ -4,14 +4,14 @@
 
 ///  <reference types="@types/webmidi"/>
 
-import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { TuningDataService } from 'src/app/infra/tuning-data/tuning-data.service';
 
-import {Injectable} from '@angular/core';
-import {DisplayedIndex} from '@arghotuning/argho-editor';
-import {MidiPitch} from '@arghotuning/arghotun';
+import { Injectable } from '@angular/core';
+import { DisplayedIndex } from '@arghotuning/argho-editor';
+import { MidiPitch } from '@arghotuning/arghotun';
 
-import {StoppableNote, SynthService} from './synth.service';
+import { StoppableNote, SynthService } from './synth.service';
 
 export enum WebMidiAccessState {
   UNSUPPORTED,
@@ -35,35 +35,37 @@ export interface OpenedMidiInput {
   readonly channel: 'omni' | DisplayedIndex;
 }
 
-const STARTING_ACCESS_STATE = navigator['requestMIDIAccess'] ?
-    WebMidiAccessState.UNREQUESTED :
-    WebMidiAccessState.UNSUPPORTED;
+const STARTING_ACCESS_STATE = navigator['requestMIDIAccess']
+  ? WebMidiAccessState.UNREQUESTED
+  : WebMidiAccessState.UNSUPPORTED;
 
 const MIDI_CMD_NOTE_ON = 0x90;
 const MIDI_CMD_NOTE_OFF = 0x80;
 
 function midiCommand(msg: WebMidi.MIDIMessageEvent): number {
-  return msg.data[0] & 0xF0;
+  return msg.data[0] & 0xf0;
 }
 
 function midiChannel(msg: WebMidi.MIDIMessageEvent): number {
   // (Assuming this is a channel-voice message).
-  return msg.data[0] & 0x0F;
+  return msg.data[0] & 0x0f;
 }
 
 function midiPitch(msg: WebMidi.MIDIMessageEvent): number {
   // (Assuming this is a note on/off message).
-  return msg.data[1] & 0x7F;
+  return msg.data[1] & 0x7f;
 }
 
 function midiVelocity(msg: WebMidi.MIDIMessageEvent): number {
   // (Assuming this is a note on/off message).
-  return msg.data[2] & 0x7F;
+  return msg.data[2] & 0x7f;
 }
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class MidiService {
-  private accessState_ = new BehaviorSubject<WebMidiAccessState>(STARTING_ACCESS_STATE);
+  private accessState_ = new BehaviorSubject<WebMidiAccessState>(
+    STARTING_ACCESS_STATE
+  );
 
   private access_: WebMidi.MIDIAccess | undefined;
 
@@ -71,13 +73,13 @@ export class MidiService {
   private activeInput_ = new BehaviorSubject<OpenedMidiInput | null>(null);
   private midiChannel_: 'omni' | DisplayedIndex = 'omni';
 
-  private readonly playingNotes_: {[midiPitch: number]: StoppableNote} = {};
+  private readonly playingNotes_: { [midiPitch: number]: StoppableNote } = {};
   private noteOns_ = new Subject<MidiPitch>();
   private noteOffs_ = new Subject<MidiPitch>();
 
   constructor(
     private readonly data: TuningDataService,
-    private readonly synth: SynthService,
+    private readonly synth: SynthService
   ) {}
 
   noteOns(): Observable<MidiPitch> {
@@ -97,20 +99,23 @@ export class MidiService {
       return Promise.reject();
     }
 
-    return navigator.requestMIDIAccess()
-        .then(access => {
-          this.access_ = access;
-          this.initInputs_();
-          this.accessState_.next(WebMidiAccessState.GRANTED);
-        })
-        .catch(err => {
-          this.accessState_.next(WebMidiAccessState.DENIED);
-          throw err;
-        });
+    return navigator
+      .requestMIDIAccess()
+      .then((access) => {
+        this.access_ = access;
+        this.initInputs_();
+        this.accessState_.next(WebMidiAccessState.GRANTED);
+      })
+      .catch((err) => {
+        this.accessState_.next(WebMidiAccessState.DENIED);
+        throw err;
+      });
   }
 
   private initInputs_(): void {
-    this.allInputs_ = new BehaviorSubject<WebMidiInputPorts>(this.getAllCurrentInputs_());
+    this.allInputs_ = new BehaviorSubject<WebMidiInputPorts>(
+      this.getAllCurrentInputs_()
+    );
     if (this.allInputs_.value.inputs.length >= 1) {
       // Auto open the first input.
       this.openInput(this.allInputs_.value.inputs[0].id);
@@ -123,9 +128,9 @@ export class MidiService {
 
   private getAllCurrentInputs_(): WebMidiInputPorts {
     const inputs: WebMidiInputPort[] = [];
-    this.access_!.inputs.forEach(input => {
+    this.access_!.inputs.forEach((input) => {
       if (input.state === 'disconnected') {
-        return;  // Not available to the system.
+        return; // Not available to the system.
       }
 
       inputs.push({
@@ -134,7 +139,7 @@ export class MidiService {
       });
     });
 
-    return {inputs};
+    return { inputs };
   }
 
   activeInput(): Observable<OpenedMidiInput | null> {
@@ -170,21 +175,24 @@ export class MidiService {
     const currentActiveInput = this.activeInput_.value;
     if (currentActiveInput) {
       if (currentActiveInput.id === id) {
-        return Promise.resolve();  // Already opened.
+        return Promise.resolve(); // Already opened.
       }
 
       await this.closeInput(currentActiveInput.id);
     }
-
 
     const input = this.access_!.inputs.get(id);
     if (!input) {
       return Promise.reject();
     }
 
-    const midiMessageListener = (msg: WebMidi.MIDIMessageEvent) => this.handleMidiMessage_(msg);
+    const midiMessageListener = (msg: WebMidi.MIDIMessageEvent) => {
+      this.handleMidiMessage_(msg);
+    };
 
-    const stateChangeListener = (connectionEvent: WebMidi.MIDIConnectionEvent) => {
+    const stateChangeListener = (
+      connectionEvent: WebMidi.MIDIConnectionEvent
+    ) => {
       switch (input.connection) {
         case 'pending':
           this.activeInput_.next({
@@ -211,8 +219,14 @@ export class MidiService {
 
           // Clean these listeners up, since they aren't needed unless the
           // input port is opened again.
-          input.removeEventListener('midimessage', midiMessageListener as EventListener);
-          input.removeEventListener('statechange', stateChangeListener as EventListener);
+          input.removeEventListener(
+            'midimessage',
+            midiMessageListener as EventListener
+          );
+          input.removeEventListener(
+            'statechange',
+            stateChangeListener as EventListener
+          );
           break;
       }
     };
@@ -222,7 +236,9 @@ export class MidiService {
     return input.open().then(() => undefined);
   }
 
-  private handleMidiMessage_(msg: WebMidi.MIDIMessageEvent): void {
+  private async handleMidiMessage_(
+    msg: WebMidi.MIDIMessageEvent
+  ): Promise<void> {
     let cmd = midiCommand(msg);
 
     // Only handle note on & note off messgaes.
@@ -245,23 +261,23 @@ export class MidiService {
       cmd = MIDI_CMD_NOTE_OFF;
     }
 
-    this.handleNote_(pitch, cmd);
+    await this.handleNote_(pitch, cmd);
   }
 
   /** Plays note on from on-screen piano. */
-  playNoteOn(pitch: MidiPitch): void {
-    this.handleNote_(pitch, MIDI_CMD_NOTE_ON);
+  async playNoteOn(pitch: MidiPitch): Promise<void> {
+    await this.handleNote_(pitch, MIDI_CMD_NOTE_ON);
   }
 
   /** Stops note from on-screen piano. */
-  stopNote(pitch: MidiPitch): void {
+  async stopNote(pitch: MidiPitch): Promise<void> {
     this.handleNote_(pitch, MIDI_CMD_NOTE_OFF);
   }
 
-  handleNote_(pitch: MidiPitch, cmd: number): void {
+  async handleNote_(pitch: MidiPitch, cmd: number): Promise<void> {
     const keyToSoundMap = this.data.keyToSoundMap();
     if (!keyToSoundMap.isMapped(pitch)) {
-      return;  // Unmapped.
+      return; // Unmapped.
     }
 
     const freqHz = keyToSoundMap.mappedSoundFor(pitch).freqHz;
@@ -272,7 +288,7 @@ export class MidiService {
         if (currentlyPlayingNote) {
           currentlyPlayingNote.stop();
         }
-        this.playingNotes_[pitch] = this.synth.playNoteOn(freqHz);
+        this.playingNotes_[pitch] = await this.synth.playNoteOn(freqHz);
         this.noteOns_.next(pitch);
         break;
 

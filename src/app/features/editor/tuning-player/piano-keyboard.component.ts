@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import fscreen from 'fscreen';
-import {MidiService} from 'src/app/infra/synth/midi.service';
-import {TuningDataService} from 'src/app/infra/tuning-data/tuning-data.service';
-import {BaseComponent} from 'src/app/infra/ui/base/base.component';
+import { MidiService } from 'src/app/infra/synth/midi.service';
+import { TuningDataService } from 'src/app/infra/tuning-data/tuning-data.service';
+import { BaseComponent } from 'src/app/infra/ui/base/base.component';
 
 import {
   AfterViewInit,
@@ -27,7 +27,7 @@ import {
   KeyToSoundMap,
   MidiPitch,
 } from '@arghotuning/arghotun';
-import {SizeProp} from '@fortawesome/fontawesome-svg-core';
+import { SizeProp } from '@fortawesome/fontawesome-svg-core';
 import {
   faCircleArrowLeft,
   faCircleArrowRight,
@@ -75,8 +75,10 @@ export interface PianoKeyBlock {
   styleUrls: ['./piano-keyboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PianoKeyboardComponent extends BaseComponent
-    implements AfterViewInit, OnDestroy {
+export class PianoKeyboardComponent
+  extends BaseComponent
+  implements AfterViewInit, OnDestroy
+{
   settings!: ArghoEditorSettings;
   displayPref!: AccidentalDisplayPref;
 
@@ -85,7 +87,7 @@ export class PianoKeyboardComponent extends BaseComponent
 
   keyBlocks: PianoKeyBlock[] = [];
 
-  activePoints: {[pointerId: number]: MidiPitch} = {};
+  activePoints: { [pointerId: number]: MidiPitch } = {};
 
   supportsFullScreen = fscreen.fullscreenEnabled;
   isFullScreen = false;
@@ -110,44 +112,56 @@ export class PianoKeyboardComponent extends BaseComponent
   constructor(
     private readonly data: TuningDataService,
     private readonly midi: MidiService,
-    private readonly changeDetector: ChangeDetectorRef,
+    private readonly changeDetector: ChangeDetectorRef
   ) {
     super();
 
     // NOTE: Always called back synchronously to start.
-    this.track(this.data.model.settings().subscribe(settings => {
-      this.settings = settings;
-      this.updatePianoKeys_();
-      this.changeDetector.markForCheck();
-    }));
-
-    this.track(this.data.model.tuningMetadata().subscribe(metadata => {
-      this.displayPref = metadata.accidentalDisplayPref;
-      this.updatePianoKeys_();
-      this.changeDetector.markForCheck();
-    }));
-
-    this.track(this.data.model.mappedKeys().subscribe(_ => {
-      // Whenever mapping changes (e.g. new tuning loaded), redraw keyboard.
-      // TODO: Unsure why setTimeout() hack is required here but not in similar
-      // cases elsewhere... Change detection not properly triggered without it.
-      setTimeout(() => {
+    this.track(
+      this.data.model.settings().subscribe((settings) => {
+        this.settings = settings;
         this.updatePianoKeys_();
         this.changeDetector.markForCheck();
-      }, 0);
-    }));
+      })
+    );
 
-    this.track(this.midi.noteOns().subscribe(pitch => {
-      this.displayNoteOn_(pitch);
-      this.changeDetector.markForCheck();
-    }));
+    this.track(
+      this.data.model.tuningMetadata().subscribe((metadata) => {
+        this.displayPref = metadata.accidentalDisplayPref;
+        this.updatePianoKeys_();
+        this.changeDetector.markForCheck();
+      })
+    );
 
-    this.track(this.midi.noteOffs().subscribe(pitch => {
-      this.displayNoteOff_(pitch);
-      this.changeDetector.markForCheck();
-    }));
+    this.track(
+      this.data.model.mappedKeys().subscribe((_) => {
+        // Whenever mapping changes (e.g. new tuning loaded), redraw keyboard.
+        // TODO: Unsure why setTimeout() hack is required here but not in similar
+        // cases elsewhere... Change detection not properly triggered without it.
+        setTimeout(() => {
+          this.updatePianoKeys_();
+          this.changeDetector.markForCheck();
+        }, 0);
+      })
+    );
 
-    this.fullScreenHandler = () => { this.handleFullScreenChange_(); };
+    this.track(
+      this.midi.noteOns().subscribe((pitch) => {
+        this.displayNoteOn_(pitch);
+        this.changeDetector.markForCheck();
+      })
+    );
+
+    this.track(
+      this.midi.noteOffs().subscribe((pitch) => {
+        this.displayNoteOff_(pitch);
+        this.changeDetector.markForCheck();
+      })
+    );
+
+    this.fullScreenHandler = () => {
+      this.handleFullScreenChange_();
+    };
     fscreen.addEventListener('fullscreenchange', this.fullScreenHandler);
   }
 
@@ -206,38 +220,57 @@ export class PianoKeyboardComponent extends BaseComponent
       const containerArea = containerWidthPx * containerHeightPx;
 
       // Don't scale keys to be taller than screen height.
-      const maxHeightScaleFactor =
-        Math.min(containerHeightPx / BASE_WHITE_KEY_HEIGHT_PX, MAX_SCALE_RATIO);
+      const maxHeightScaleFactor = Math.min(
+        containerHeightPx / BASE_WHITE_KEY_HEIGHT_PX,
+        MAX_SCALE_RATIO
+      );
 
       // Figure out max scale factor for 1, 2, and 3 octave widths.
-      const baseWidth1OctPx = BASE_CONTROLS_WIDTH_PX
-        + NUM_WHITE_KEYS_1OCT * BASE_WHITE_KEY_WIDTH_PX;
-      const scaleFactor1Oct =
-        Math.min(containerWidthPx / baseWidth1OctPx, maxHeightScaleFactor, MAX_SCALE_RATIO);
-      const area1Oct = (scaleFactor1Oct * baseWidth1OctPx)
-        * (scaleFactor1Oct * BASE_WHITE_KEY_HEIGHT_PX);
+      const baseWidth1OctPx =
+        BASE_CONTROLS_WIDTH_PX + NUM_WHITE_KEYS_1OCT * BASE_WHITE_KEY_WIDTH_PX;
+      const scaleFactor1Oct = Math.min(
+        containerWidthPx / baseWidth1OctPx,
+        maxHeightScaleFactor,
+        MAX_SCALE_RATIO
+      );
+      const area1Oct =
+        scaleFactor1Oct *
+        baseWidth1OctPx *
+        (scaleFactor1Oct * BASE_WHITE_KEY_HEIGHT_PX);
 
-      const baseWidth2OctPx = BASE_CONTROLS_WIDTH_PX
-        + NUM_WHITE_KEYS_2OCT * BASE_WHITE_KEY_WIDTH_PX;
-      const scaleFactor2Oct =
-        Math.min(containerWidthPx / baseWidth2OctPx, maxHeightScaleFactor, MAX_SCALE_RATIO);
-      const area2Oct = (scaleFactor2Oct * baseWidth2OctPx)
-        * (scaleFactor2Oct * BASE_WHITE_KEY_HEIGHT_PX);
+      const baseWidth2OctPx =
+        BASE_CONTROLS_WIDTH_PX + NUM_WHITE_KEYS_2OCT * BASE_WHITE_KEY_WIDTH_PX;
+      const scaleFactor2Oct = Math.min(
+        containerWidthPx / baseWidth2OctPx,
+        maxHeightScaleFactor,
+        MAX_SCALE_RATIO
+      );
+      const area2Oct =
+        scaleFactor2Oct *
+        baseWidth2OctPx *
+        (scaleFactor2Oct * BASE_WHITE_KEY_HEIGHT_PX);
 
-      const baseWidth3OctPx = BASE_CONTROLS_WIDTH_PX
-        + NUM_WHITE_KEYS_3OCT * BASE_WHITE_KEY_WIDTH_PX;
-      const scaleFactor3Oct =
-        Math.min(containerWidthPx / baseWidth3OctPx, maxHeightScaleFactor, MAX_SCALE_RATIO);
-      const area3Oct = (scaleFactor3Oct * baseWidth3OctPx)
-        * (scaleFactor3Oct * BASE_WHITE_KEY_HEIGHT_PX);
+      const baseWidth3OctPx =
+        BASE_CONTROLS_WIDTH_PX + NUM_WHITE_KEYS_3OCT * BASE_WHITE_KEY_WIDTH_PX;
+      const scaleFactor3Oct = Math.min(
+        containerWidthPx / baseWidth3OctPx,
+        maxHeightScaleFactor,
+        MAX_SCALE_RATIO
+      );
+      const area3Oct =
+        scaleFactor3Oct *
+        baseWidth3OctPx *
+        (scaleFactor3Oct * BASE_WHITE_KEY_HEIGHT_PX);
 
       // Chose scaling that fills max area of screen, but only choose 1 octave
       // if 2 octaves would be too small.
       const maxArea = Math.max(area3Oct, area2Oct, area1Oct);
       if (maxArea === area3Oct) {
         keyScaleFactor = scaleFactor3Oct;
-      } else if ((maxArea === area2Oct)
-          || (area2Oct / containerArea >= MIN_AREA_RATIO_TO_PREFER_2OCT)) {
+      } else if (
+        maxArea === area2Oct ||
+        area2Oct / containerArea >= MIN_AREA_RATIO_TO_PREFER_2OCT
+      ) {
         keyScaleFactor = scaleFactor2Oct;
       } else {
         keyScaleFactor = scaleFactor1Oct;
@@ -246,22 +279,29 @@ export class PianoKeyboardComponent extends BaseComponent
 
     // With scale factor chosen, fit as many octaves as possible.
     const controlsWidthPx = Math.floor(keyScaleFactor * BASE_CONTROLS_WIDTH_PX);
-    const whiteKeyWidthPx = Math.floor(keyScaleFactor * BASE_WHITE_KEY_WIDTH_PX);
-    const whiteKeyHeightPx = Math.floor(keyScaleFactor * BASE_WHITE_KEY_HEIGHT_PX);
+    const whiteKeyWidthPx = Math.floor(
+      keyScaleFactor * BASE_WHITE_KEY_WIDTH_PX
+    );
+    const whiteKeyHeightPx = Math.floor(
+      keyScaleFactor * BASE_WHITE_KEY_HEIGHT_PX
+    );
     this.scaleKeys_(controlsWidthPx, whiteKeyWidthPx, whiteKeyHeightPx);
     this.scaleControls_(keyScaleFactor);
 
     const keyboardWidth = containerWidthPx - controlsWidthPx;
     const maxNumWhiteKeys = Math.floor(keyboardWidth / whiteKeyWidthPx);
-    this.numOctaves = (maxNumWhiteKeys >= NUM_WHITE_KEYS_3OCT)
-      ? 3
-      : (maxNumWhiteKeys >= NUM_WHITE_KEYS_2OCT) ? 2 : 1;
+    this.numOctaves =
+      maxNumWhiteKeys >= NUM_WHITE_KEYS_3OCT
+        ? 3
+        : maxNumWhiteKeys >= NUM_WHITE_KEYS_2OCT
+        ? 2
+        : 1;
   }
 
   private scaleKeys_(
     controlsWidthPx: number,
     whiteKeyWidthPx: number,
-    whiteKeyHeightPx: number,
+    whiteKeyHeightPx: number
   ): void {
     if (!this.pianoContainer) {
       return;
@@ -274,7 +314,7 @@ export class PianoKeyboardComponent extends BaseComponent
   }
 
   private scaleControls_(keyScaleFactor: number): void {
-    this.controlIconSize = (keyScaleFactor >= 1.5) ? '2x' : '1x';
+    this.controlIconSize = keyScaleFactor >= 1.5 ? '2x' : '1x';
   }
 
   private updatePianoKeys_(): void {
@@ -291,10 +331,14 @@ export class PianoKeyboardComponent extends BaseComponent
     const keyToSoundMap = this.data.keyToSoundMap();
 
     for (let octIndex = 0; octIndex < this.numOctaves; octIndex++) {
-      const octStartPitch = this.startPitch + octIndex * MIDI_PITCHES_PER_OCTAVE;
+      const octStartPitch =
+        this.startPitch + octIndex * MIDI_PITCHES_PER_OCTAVE;
 
       for (let pc = 0; pc < MIDI_PITCHES_PER_OCTAVE; pc++) {
-        const keyBlock = this.keyBlockOrNull_(octStartPitch + pc, keyToSoundMap);
+        const keyBlock = this.keyBlockOrNull_(
+          octStartPitch + pc,
+          keyToSoundMap
+        );
         if (keyBlock) {
           this.keyBlocks.push(keyBlock);
         }
@@ -311,19 +355,24 @@ export class PianoKeyboardComponent extends BaseComponent
 
   private keyBlockOrNull_(
     pitch: MidiPitch,
-    keyToSoundMap: KeyToSoundMap,
+    keyToSoundMap: KeyToSoundMap
   ): PianoKeyBlock | null {
-    const whiteKeyPitch = new DisplayedMidiPitch(pitch, this.displayPref, this.settings);
+    const whiteKeyPitch = new DisplayedMidiPitch(
+      pitch,
+      this.displayPref,
+      this.settings
+    );
     if (whiteKeyPitch.accidental !== SimpleAccidental.NATURAL) {
-      return null;  // Not a white key.
+      return null; // Not a white key.
     }
 
     const pianoKeyFor = (dp: DisplayedMidiPitch): PianoKey => {
       const color = keyToSoundMap.isMapped(dp.midiPitch)
-          ? ((keyToSoundMap.mappedSoundFor(dp.midiPitch).scaleDegreeIndex === 0)
-            ? KeyColor.ROOT : KeyColor.UPPER_DEG)
-          : KeyColor.UNMAPPED;
-      return {pitch: dp, color};
+        ? keyToSoundMap.mappedSoundFor(dp.midiPitch).scaleDegreeIndex === 0
+          ? KeyColor.ROOT
+          : KeyColor.UPPER_DEG
+        : KeyColor.UNMAPPED;
+      return { pitch: dp, color };
     };
 
     const blackKeyPitch = this.sharpKeyAfter_(whiteKeyPitch);
@@ -337,38 +386,48 @@ export class PianoKeyboardComponent extends BaseComponent
     return MIDI_PITCH_C9 - MIDI_PITCHES_PER_OCTAVE * this.numOctaves;
   }
 
-  private sharpKeyAfter_(pitch: DisplayedMidiPitch): DisplayedMidiPitch | undefined {
+  private sharpKeyAfter_(
+    pitch: DisplayedMidiPitch
+  ): DisplayedMidiPitch | undefined {
     if (pitch.midiPitch === this.endPitch_()) {
       return undefined;
     }
 
-    if (pitch.accidental !== SimpleAccidental.NATURAL
-      || (pitch.letter !== PitchLetter.C
-        && pitch.letter !== PitchLetter.D
-        && pitch.letter !== PitchLetter.F
-        && pitch.letter !== PitchLetter.G
-        && pitch.letter !== PitchLetter.A)) {
+    if (
+      pitch.accidental !== SimpleAccidental.NATURAL ||
+      (pitch.letter !== PitchLetter.C &&
+        pitch.letter !== PitchLetter.D &&
+        pitch.letter !== PitchLetter.F &&
+        pitch.letter !== PitchLetter.G &&
+        pitch.letter !== PitchLetter.A)
+    ) {
       return undefined;
     }
 
-    return new DisplayedMidiPitch(pitch.midiPitch + 1, this.displayPref, this.settings);
+    return new DisplayedMidiPitch(
+      pitch.midiPitch + 1,
+      this.displayPref,
+      this.settings
+    );
   }
 
-  handlePianoKeyDown(event: PointerEvent): void {
+  async handlePianoKeyDown(event: PointerEvent): Promise<void> {
     const key = this.keyForTarget_(event.target as HTMLElement);
     if (key === null) {
       return;
     }
 
     this.activePoints[event.pointerId] = key;
-    this.midi.playNoteOn(key);
+    await this.midi.playNoteOn(key);
   }
 
   keyForTarget_(targetEl: HTMLElement): MidiPitch | null {
     // Find first parent <div> (or self).
     let keyEl = targetEl;
-    while (!keyEl.classList.contains('piano-keys')
-        && !keyEl.hasAttribute('data-key')) {
+    while (
+      !keyEl.classList.contains('piano-keys') &&
+      !keyEl.hasAttribute('data-key')
+    ) {
       if (!keyEl.parentElement) {
         break;
       }
@@ -407,7 +466,7 @@ export class PianoKeyboardComponent extends BaseComponent
     }
 
     const endPitch = this.endPitch_();
-    if ((key < this.startPitch) || (endPitch < key)) {
+    if (key < this.startPitch || endPitch < key) {
       return null;
     }
 
@@ -428,7 +487,7 @@ export class PianoKeyboardComponent extends BaseComponent
 
     const keyBlockEls = this.pianoKeys.nativeElement.children;
     if (keyBlockEls.length <= keyBlockIndex) {
-      return null;  // Shouldn't happen, but guard to be safe.
+      return null; // Shouldn't happen, but guard to be safe.
     }
 
     const keyBlockEl = keyBlockEls[keyBlockIndex];
@@ -447,7 +506,7 @@ export class PianoKeyboardComponent extends BaseComponent
       return false;
     }
 
-    return (MIDI_PITCH_MIN <= this.startPitch - MIDI_PITCHES_PER_OCTAVE);
+    return MIDI_PITCH_MIN <= this.startPitch - MIDI_PITCHES_PER_OCTAVE;
   }
 
   canShiftOctaveUp(): boolean {
@@ -455,7 +514,7 @@ export class PianoKeyboardComponent extends BaseComponent
       return false;
     }
 
-    return (this.startPitch + MIDI_PITCHES_PER_OCTAVE <= this.maxStartPitch_());
+    return this.startPitch + MIDI_PITCHES_PER_OCTAVE <= this.maxStartPitch_();
   }
 
   shiftByOctaves(numOctaves: number): void {

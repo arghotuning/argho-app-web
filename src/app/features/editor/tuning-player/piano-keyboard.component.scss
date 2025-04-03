@@ -15,6 +15,10 @@ $key-border: 1px solid #000;
   --white-key-height: 0;
 
   margin-bottom: 0.5em;
+
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .piano-container.fullscreen {
@@ -52,7 +56,9 @@ $key-border: 1px solid #000;
 
 .piano-keys {
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;  /* Prevent popup context menu on longpress. */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   min-width: calc(8 * var(--white-key-width));
   touch-action: none;  /* Manage touches manually. */
 }
@@ -67,6 +73,10 @@ $key-border: 1px solid #000;
   position: relative;
   width: var(--white-key-width);
 
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+
   .pitch-label {
     bottom: 0.125em;
     font-size: 0.8rem;
@@ -75,6 +85,8 @@ $key-border: 1px solid #000;
     position: absolute;
     right: 0;
     text-align: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
     user-select: none;
   }
 
@@ -86,6 +98,10 @@ $key-border: 1px solid #000;
     top: 0;
     width: calc(0.75 * var(--white-key-width));
     z-index: 100;  /* TODO: Centrally managed constants. */
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .black-key.unmapped {
